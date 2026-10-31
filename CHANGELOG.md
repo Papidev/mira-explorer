@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.20.3
+
+### Patch Changes
+
+- Show Related People chronologically by birth date, with unknown dates first.
+
 ## 0.20.2
 
 ### Patch Changes

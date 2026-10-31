@@ -167,7 +167,7 @@ _Avoid_: Production output, AI output
 
 ### People
 
-- Select at most ten Related People significant to understanding the POI, ordered from most to least significant.
+- Select at most ten Related People significant to understanding the POI. Display them by birth date, oldest to newest, with unknown birth dates first. Preserve the existing order for equal dates and among undated People.
 - A Person is canonical and reused across Stories, with one app-owned ID and a retained Wikidata identity. It requires a resolved identity, name, source-grounded description, and its own Sources, separate from Story Sources.
 - Curiosities, birth/death dates, and at most one image are optional. Dates may be exact or approximate and omitted when unknown or inapplicable; curiosities must be source-supported.
 - Wikipedia supplies Person content, Wikidata canonical identity, and Commons image and rights metadata. Successfully generated People are available in the editorial workflow without separate approval.
