@@ -41,7 +41,7 @@ export const CategoryRow = ({
         )
           model.moveCategory(model.draggedCategoryId, category.id);
       }}
-      className={`flex flex-wrap items-center gap-2 rounded-md border-b border-gray-100 py-3 [&_[role=tooltip]]:right-0 [&_[role=tooltip]]:left-auto [&_[role=tooltip]]:translate-x-0 ${model.draggedCategoryId && model.draggedCategoryId !== category.id && !category.parent ? "bg-indigo-50 outline-1 outline-indigo-200" : ""}`}
+      className={`flex flex-wrap items-center gap-2 rounded-md border-b border-gray-100 py-3 [&_[role=tooltip]]:right-0 [&_[role=tooltip]]:left-auto [&_[role=tooltip]]:translate-x-0 ${model.draggedCategoryId && model.draggedCategoryId !== category.id && !category.parent ? "bg-blue-50 outline-1 outline-blue-200" : ""}`}
     >
       <button
         type="button"

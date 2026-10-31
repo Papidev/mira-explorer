@@ -107,7 +107,7 @@ export const PeopleTable = ({
                     type="button"
                     onClick={() => setSelectedId(person.id)}
                     aria-haspopup="dialog"
-                    className="cursor-pointer text-left font-semibold text-violet-700 hover:underline"
+                    className="cursor-pointer text-left font-semibold text-sky-800 hover:underline"
                   >
                     {person.name}
                   </button>
@@ -122,7 +122,7 @@ export const PeopleTable = ({
                     onClick={() => setSelectedId(person.id)}
                     aria-haspopup="dialog"
                     aria-label={`View ${person.linkedPois.length} linked POIs for ${person.name}`}
-                    className="cursor-pointer rounded-full bg-violet-50 px-3 py-1 font-semibold text-violet-700 tabular-nums hover:bg-violet-100 focus-visible:outline-2 focus-visible:outline-violet-700"
+                    className="cursor-pointer rounded-full bg-sky-50 px-3 py-1 font-semibold text-sky-800 tabular-nums hover:bg-sky-100 focus-visible:outline-2 focus-visible:outline-sky-800"
                   >
                     {person.linkedPois.length}
                   </button>

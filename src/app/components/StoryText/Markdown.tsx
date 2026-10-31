@@ -36,7 +36,7 @@ export const Markdown = ({
       components={{
         ...(inline ? { p: ({ children }) => <>{children}</> } : {}),
         strong: ({ children }) => (
-          <strong className="font-semibold text-sky-800">{children}</strong>
+          <strong className="text-emphasis font-semibold">{children}</strong>
         ),
         a: ({ node, children, href }) => {
           const personId = node?.properties["data-person-id"];
@@ -71,7 +71,7 @@ export const Markdown = ({
   return inline ? (
     rendered
   ) : (
-    <div className="prose prose-zinc prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-sky-800 prose-a:decoration-sky-300 prose-a:underline-offset-4 prose-a:hover:text-sky-950 prose-blockquote:border-amber-300 prose-li:marker:text-zinc-700 max-w-none text-base/7 text-zinc-800 [&_ul>li]:marker:text-2xl">
+    <div className="prose prose-zinc prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-sky-800 prose-a:decoration-sky-300 prose-a:underline-offset-4 prose-a:hover:text-sky-950 prose-blockquote:border-brand prose-li:marker:text-zinc-700 max-w-none text-base/7 text-zinc-800 [&_ul>li]:marker:text-2xl">
       {rendered}
     </div>
   );

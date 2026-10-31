@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.20.2
+
+### Patch Changes
+
+- Improve Story readability with distinct violet emphasis and sky-blue links, coordinated section colors, tighter drawer spacing, and consistent palette accents across visitor and admin controls.
+
 ## 0.20.1
 
 ### Patch Changes

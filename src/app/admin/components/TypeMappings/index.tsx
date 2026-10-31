@@ -39,7 +39,7 @@ export const TypeMappings = ({
               Shared category rules for acquired Wikidata types across all cities.
             </p>
           </div>
-          <p className="rounded-md bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
+          <p className="rounded-md bg-blue-50 px-4 py-3 text-sm text-blue-900">
             {model.types.length} types ·{" "}
             {model.types.filter((type) => type.status === "Unmapped").length} unmapped
           </p>
@@ -54,7 +54,7 @@ export const TypeMappings = ({
                 )
               }
               onClick={model.classifyUnmapped}
-              className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-brand-action hover:bg-brand cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {model.saving ? "Working…" : "Classify unmapped types"}
             </button>
@@ -90,7 +90,7 @@ export const TypeMappings = ({
             type="checkbox"
             checked={model.showIgnored}
             onChange={(event) => model.setShowIgnored(event.target.checked)}
-            className="size-4 cursor-pointer accent-indigo-600"
+            className="size-4 cursor-pointer accent-blue-900"
           />
           Show ignored types
         </label>
@@ -108,7 +108,7 @@ export const TypeMappings = ({
                   disabled={model.saving}
                   aria-pressed={model.selected?.id === type.id}
                   onClick={() => model.setSelectedId(type.id)}
-                  className="flex w-full cursor-pointer items-start justify-between gap-3 border-b border-gray-100 p-4 text-left hover:bg-gray-50 disabled:cursor-not-allowed aria-pressed:border-l-4 aria-pressed:border-l-indigo-600 aria-pressed:bg-indigo-50"
+                  className="flex w-full cursor-pointer items-start justify-between gap-3 border-b border-gray-100 p-4 text-left hover:bg-gray-50 disabled:cursor-not-allowed aria-pressed:border-l-4 aria-pressed:border-l-blue-900 aria-pressed:bg-blue-50"
                 >
                   <span>
                     <span className="block text-sm font-medium text-gray-900">{type.label}</span>
@@ -116,7 +116,7 @@ export const TypeMappings = ({
                       {type.id} · {type.pois.length} POIs
                     </span>
                     {Boolean(type.categories?.length) && (
-                      <span className="mt-1 block text-xs text-indigo-700">
+                      <span className="mt-1 block text-xs text-blue-900">
                         {expandPoiCategorySelection(type.categories ?? [], model.categories)
                           .map(
                             (id) =>

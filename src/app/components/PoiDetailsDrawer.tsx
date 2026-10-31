@@ -138,7 +138,7 @@ export const PoiDetailsDrawer = ({
               </h2>
               <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
             </div>
-            <div className="px-5 py-4 text-sm/6 text-black/80">
+            <div className="px-5 pt-2 pb-4 text-sm/6 text-black/80">
               {excludedByFilters && (
                 <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
                   This place is excluded by your active filters.

@@ -33,17 +33,17 @@ export const RelatedPeopleControl = ({
 
   return (
     <>
-      <div className="mt-2 flex w-full items-stretch rounded-md border border-violet-200 bg-violet-50">
+      <div className="mt-2 flex w-full items-stretch rounded-md border border-sky-200 bg-sky-50">
         <button
           type="button"
           aria-haspopup="dialog"
           onClick={() => setIsDrawerOpen(true)}
           disabled={isInProgress}
-          className="inline-flex min-w-0 flex-1 cursor-pointer flex-wrap items-center gap-1.5 rounded-l-md px-2 py-1 text-xs font-medium text-violet-900 hover:bg-violet-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700 disabled:cursor-not-allowed disabled:opacity-50 [&>*]:pointer-events-none"
+          className="inline-flex min-w-0 flex-1 cursor-pointer flex-wrap items-center gap-1.5 rounded-l-md px-2 py-1 text-xs font-medium text-sky-800 hover:bg-sky-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800 disabled:cursor-not-allowed disabled:opacity-50 [&>*]:pointer-events-none"
         >
           <UserGroupIcon className="size-4" aria-hidden="true" />
           Related People
-          <span className="rounded bg-violet-100 px-1.5 tabular-nums">{relatedPeople.length}</span>
+          <span className="rounded bg-sky-100 px-1.5 tabular-nums">{relatedPeople.length}</span>
           {unresolvedCount ? (
             <span className="rounded bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-900">
               {unresolvedCount} unresolved

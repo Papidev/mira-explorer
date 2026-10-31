@@ -31,7 +31,7 @@ export const Person = ({ person }: { person: PublicPerson }) => (
       </figure>
     ) : null}
     {person.birthDate || person.deathDate ? (
-      <dl className="grid grid-cols-2 gap-3 rounded-lg bg-amber-50 p-3 text-sm/6">
+      <dl className="bg-brand-soft grid grid-cols-2 gap-3 rounded-lg p-3 text-sm/6">
         {person.birthDate ? (
           <div>
             <dt className="font-semibold">Born</dt>
@@ -54,11 +54,11 @@ export const Person = ({ person }: { person: PublicPerson }) => (
       ))}
     </div>
     {person.curiosities.length > 0 ? (
-      <section className="rounded-xl bg-sky-50/55 px-4 py-3 ring-1 ring-sky-950/5">
+      <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
         <h3 className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-950 uppercase">
           Curiosities
         </h3>
-        <ul className="mt-3 list-disc space-y-3 pl-5 marker:text-sky-400">
+        <ul className="marker:text-emphasis mt-3 list-disc space-y-3 pl-5">
           {person.curiosities.map((curiosity) => (
             <li key={curiosity}>
               <StoryText text={curiosity} textFormat={person.textFormat} />

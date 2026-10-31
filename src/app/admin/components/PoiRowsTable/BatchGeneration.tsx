@@ -63,7 +63,7 @@ export const BatchGeneration = ({
             type="button"
             aria-haspopup="dialog"
             onClick={() => setIsOpen(true)}
-            className="cursor-pointer text-violet-700 underline"
+            className="cursor-pointer text-sky-800 underline"
           >
             Show generation logs
           </button>
