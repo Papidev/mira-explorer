@@ -1,5 +1,6 @@
 import type { HistoryInsight, PublicStoryContent } from "@/server/storyWorkflow";
 import { Topic } from "@/app/components/Topic/Topic";
+import { useStoryText } from "@/app/components/StoryText/useStoryText";
 import { StoryText } from "@/app/components/StoryText";
 import { WikipediaLinks } from "@/app/components/WikipediaLinks";
 
@@ -58,21 +59,23 @@ export const StoryContent = ({
     return left.time.startYear - right.time.startYear;
   });
 
+  const text = useStoryText(content, history, Boolean(onOpenPerson));
+
   return (
     <div className="mt-4 space-y-6 text-base/7 text-zinc-800">
       {content.textFormat === "markdown" ? (
-        <StoryText text={content.introduction} textFormat={content.textFormat} />
+        <StoryText
+          {...text.introduction[0]}
+          textFormat={content.textFormat}
+          onOpenPerson={onOpenPerson}
+        />
       ) : (
         <div className="space-y-4">
-          {content.introduction
-            .split(/\r?\n\s*\r?\n/)
-            .map((paragraph) => paragraph.trim())
-            .filter(Boolean)
-            .map((paragraph, index) => (
-              <p key={index} className="whitespace-pre-line">
-                <StoryText text={paragraph} emphasis={content.introductionEmphasis} />
-              </p>
-            ))}
+          {text.introduction.map((paragraph, index) => (
+            <p key={index} className="whitespace-pre-line">
+              <StoryText {...paragraph} onOpenPerson={onOpenPerson} />
+            </p>
+          ))}
         </div>
       )}
       {period ? (
@@ -85,11 +88,9 @@ export const StoryContent = ({
       ) : null}
       {history.length > 0 ? (
         <section className="rounded-xl bg-orange-50/55 px-4 py-3 ring-1 ring-orange-950/5">
-          <h3 className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-950 uppercase">
-            History
-          </h3>
-          <ul className="mt-3 list-disc space-y-3 pl-5 marker:text-orange-400">
-            {history.map(({ description, time, emphasis }, index) => (
+          <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">History</h3>
+          <ul className="mt-3 list-disc space-y-3 pl-5 marker:text-2xl marker:font-semibold marker:text-orange-700">
+            {history.map(({ time }, index) => (
               <li key={`history-${index}`} className="pl-1">
                 {time ? (
                   <p className="text-sm font-semibold text-orange-700">
@@ -97,10 +98,14 @@ export const StoryContent = ({
                   </p>
                 ) : null}
                 {content.textFormat === "markdown" ? (
-                  <StoryText text={description} textFormat={content.textFormat} />
+                  <StoryText
+                    {...text.history[index]}
+                    textFormat={content.textFormat}
+                    onOpenPerson={onOpenPerson}
+                  />
                 ) : (
                   <p>
-                    <StoryText text={description} emphasis={emphasis} />
+                    <StoryText {...text.history[index]} onOpenPerson={onOpenPerson} />
                   </p>
                 )}
               </li>
@@ -110,36 +115,36 @@ export const StoryContent = ({
       ) : null}
       <Topic
         title="Architecture"
-        insights={content.topics.design.map(({ description, emphasis }, index) => (
+        insights={text.design.map((paragraph, index) => (
           <StoryText
             key={index}
-            text={description}
-            emphasis={emphasis}
+            {...paragraph}
+            onOpenPerson={onOpenPerson}
             textFormat={content.textFormat}
           />
         ))}
       />
       <Topic
         title="Art"
-        insights={content.topics.art.map(({ description, emphasis }, index) => (
+        insights={text.art.map((paragraph, index) => (
           <StoryText
             key={index}
-            text={description}
-            emphasis={emphasis}
+            {...paragraph}
+            onOpenPerson={onOpenPerson}
             textFormat={content.textFormat}
           />
         ))}
       />
       {content.relatedPeople.length > 0 ? (
         <section className="rounded-xl bg-sky-50/55 px-4 py-3 ring-1 ring-sky-950/5">
-          <h3 className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-950 uppercase">
+          <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
             Related People
           </h3>
           <ul className="mt-3 space-y-3">
             {content.relatedPeople.map(({ name, personId }, index) => (
               <li
                 key={personId ?? `${name}-${index}`}
-                className="relative pl-5 before:absolute before:top-0 before:left-1 before:text-sky-400 before:content-['•']"
+                className="relative pl-5 before:absolute before:top-0 before:left-1 before:text-2xl before:leading-7 before:font-semibold before:text-sky-700 before:content-['•']"
               >
                 {personId && onOpenPerson ? (
                   <button

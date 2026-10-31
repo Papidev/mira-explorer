@@ -12,6 +12,22 @@
     z-index: 1;
   }
 
+  .poi-marker > svg {
+    transform-origin: bottom center;
+    transition: scale 160ms ease-out;
+  }
+
+  .selected-poi-marker > svg {
+    scale: 1.4;
+    filter: drop-shadow(0 0 2px white) drop-shadow(0 2px 4px rgb(0 0 0 / 35%));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .poi-marker > svg {
+      transition: none;
+    }
+  }
+
   .selected-poi-marker svg g[fill]:not([fill="#000000"]):not([fill="none"]) > path {
     filter: brightness(0.75);
   }

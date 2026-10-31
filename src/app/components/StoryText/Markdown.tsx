@@ -1,8 +1,20 @@
 import ReactMarkdown from "react-markdown";
+import type { Root } from "mdast";
 
-export const Markdown = ({ text }: { text: string }) => (
-  <div className="prose prose-zinc prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-sky-800 prose-a:decoration-sky-300 prose-a:underline-offset-4 prose-a:hover:text-sky-950 prose-strong:font-semibold prose-strong:text-amber-900 prose-blockquote:border-amber-300 max-w-none text-base/7 text-zinc-800">
+export const Markdown = ({
+  text,
+  tree,
+  inline = false,
+  onOpenPerson,
+}: {
+  text: string;
+  tree?: Root;
+  inline?: boolean;
+  onOpenPerson?: (personId: string) => void;
+}) => {
+  const rendered = (
     <ReactMarkdown
+      remarkPlugins={tree ? [() => () => tree] : []}
       allowedElements={[
         "p",
         "strong",
@@ -22,6 +34,29 @@ export const Markdown = ({ text }: { text: string }) => (
       ]}
       unwrapDisallowed
       components={{
+        ...(inline ? { p: ({ children }) => <>{children}</> } : {}),
+        strong: ({ children }) => (
+          <strong className="font-semibold text-sky-800">{children}</strong>
+        ),
+        a: ({ node, children, href }) => {
+          const personId = node?.properties["data-person-id"];
+          return (
+            <a
+              href={href}
+              onClick={
+                typeof personId === "string" && onOpenPerson
+                  ? (event) => {
+                      event.preventDefault();
+                      onOpenPerson(personId);
+                    }
+                  : undefined
+              }
+              className="cursor-pointer font-semibold text-sky-800 underline decoration-sky-300 underline-offset-4 hover:text-sky-950 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800"
+            >
+              {children}
+            </a>
+          );
+        },
         h1: ({ children }) => <h4 className="text-lg font-semibold text-zinc-950">{children}</h4>,
         h2: ({ children }) => <h4 className="text-lg font-semibold text-zinc-950">{children}</h4>,
         h3: ({ children }) => <h4 className="font-semibold text-zinc-950">{children}</h4>,
@@ -32,5 +67,12 @@ export const Markdown = ({ text }: { text: string }) => (
     >
       {text}
     </ReactMarkdown>
-  </div>
-);
+  );
+  return inline ? (
+    rendered
+  ) : (
+    <div className="prose prose-zinc prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-sky-800 prose-a:decoration-sky-300 prose-a:underline-offset-4 prose-a:hover:text-sky-950 prose-blockquote:border-amber-300 prose-li:marker:text-zinc-700 max-w-none text-base/7 text-zinc-800 [&_ul>li]:marker:text-2xl">
+      {rendered}
+    </div>
+  );
+};
