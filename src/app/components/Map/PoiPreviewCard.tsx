@@ -21,7 +21,7 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
         event.stopPropagation();
         onOpenDetails();
       }}
-      className="group block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl bg-white text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600"
+      className="group block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl bg-white text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-900"
     >
       <div className="relative aspect-2/1 w-full bg-zinc-100">
         {poi.mainImageUrl && !hasImageError ? (

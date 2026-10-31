@@ -30,7 +30,7 @@ export const CategoryManager = ({ model }: { model: ReturnType<typeof useTypeMap
           if (!model.saving && model.draggedCategoryId)
             model.moveCategory(model.draggedCategoryId, null);
         }}
-        className={`mt-3 rounded-md border border-dashed p-3 text-sm ${model.draggedCategoryId ? "border-indigo-400 bg-indigo-50 text-indigo-800" : "border-gray-300 text-gray-500"}`}
+        className={`mt-3 rounded-md border border-dashed p-3 text-sm ${model.draggedCategoryId ? "border-blue-900 bg-blue-50 text-blue-900" : "border-gray-300 text-gray-500"}`}
       >
         Top level · drop here to remove a parent
       </div>
@@ -78,7 +78,7 @@ export const CategoryManager = ({ model }: { model: ReturnType<typeof useTypeMap
         </label>
         <button
           disabled={model.saving || !name.trim()}
-          className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="bg-brand-action hover:bg-brand cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Add category
         </button>

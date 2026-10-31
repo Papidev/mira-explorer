@@ -37,7 +37,7 @@ const SourceLinks = ({ sourceIds, sources }: { sourceIds: string[]; sources: Sou
           href={source.url}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-blue-700 underline"
+          className="font-medium text-sky-800 underline"
         >
           {source.title}
         </a>

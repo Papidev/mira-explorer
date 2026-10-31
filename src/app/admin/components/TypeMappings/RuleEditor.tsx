@@ -23,7 +23,7 @@ export const RuleEditor = ({
           <h3 className="text-lg font-semibold text-gray-900">{type.label}</h3>
           <p className="mt-1 text-xs text-gray-500">
             <a
-              className="text-indigo-600 hover:underline"
+              className="text-sky-800 hover:underline"
               href={`https://www.wikidata.org/wiki/${type.id}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -39,7 +39,7 @@ export const RuleEditor = ({
             <button
               disabled={model.saving || !draft.length}
               onClick={() => void model.save(type.id, draft)}
-              className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-brand-action hover:bg-brand cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {model.saving ? "Saving…" : "Save categories"}
             </button>

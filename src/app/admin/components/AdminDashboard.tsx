@@ -87,7 +87,7 @@ export const AdminDashboard = ({
               href="/rome"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-violet-700 hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-sky-800 hover:underline"
             >
               Open Rome map
               <ArrowTopRightOnSquareIcon className="h-4 w-4" aria-hidden="true" />
@@ -126,7 +126,7 @@ export const AdminDashboard = ({
           {["POIs", "People", "Type mappings"].map((label) => (
             <Tab
               key={label}
-              className="-mb-px flex cursor-pointer items-center gap-2 border-b-2 border-transparent px-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-indigo-600 data-selected:border-indigo-600 data-selected:text-indigo-600"
+              className="-mb-px flex cursor-pointer items-center gap-2 border-b-2 border-transparent px-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-blue-900 data-selected:border-blue-900 data-selected:text-blue-900"
             >
               {label}
               <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs">

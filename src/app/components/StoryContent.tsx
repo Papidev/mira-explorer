@@ -79,7 +79,7 @@ export const StoryContent = ({
         </div>
       )}
       {period ? (
-        <dl className="grid gap-2 rounded-lg bg-amber-50 p-3 text-sm/6">
+        <dl className="bg-brand-soft grid gap-2 rounded-lg p-3 text-sm/6">
           <div>
             <dt className="font-semibold text-zinc-950">Period</dt>
             <dd>{period}</dd>
@@ -87,11 +87,11 @@ export const StoryContent = ({
         </dl>
       ) : null}
       {history.length > 0 ? (
-        <section className="rounded-xl bg-orange-50/55 px-4 py-3 ring-1 ring-orange-950/5">
+        <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
           <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
             <span
               aria-hidden="true"
-              className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-orange-700"
+              className="text-emphasis size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat"
             />
             History
           </h3>
@@ -101,15 +101,15 @@ export const StoryContent = ({
                 {index < history.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className="absolute top-2 left-1 h-full w-0.5 bg-orange-200"
+                    className="absolute top-2 left-1 h-full w-0.5 bg-violet-200"
                   />
                 ) : null}
                 <span
                   aria-hidden="true"
-                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-orange-700" : "border-2 border-orange-700 bg-orange-50"}`}
+                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-emphasis" : "border-emphasis border-2 bg-zinc-50"}`}
                 />
                 {time ? (
-                  <p className="text-sm/6 font-semibold text-orange-700">
+                  <p className="text-emphasis text-sm/6 font-semibold">
                     {formatHistoricalTime(time)}
                   </p>
                 ) : null}
@@ -152,7 +152,7 @@ export const StoryContent = ({
         ))}
       />
       {content.relatedPeople.length > 0 ? (
-        <section className="rounded-xl bg-sky-50/55 px-4 py-3 ring-1 ring-sky-950/5">
+        <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
           <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
             Related People
           </h3>
