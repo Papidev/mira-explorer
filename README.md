@@ -28,7 +28,7 @@ Mira's primary brand color is yellow, supported by white and zinc neutrals. The 
 
 Dark blue (`blue-900`) is the current secondary accent alongside the yellow palette. Category checkboxes use it for checkmarks, partial-selection minus signs, and selected borders on white, including “All categories”. Use this shade for control selection, focus, active tabs, and panel resize feedback. Primary actions use yellow with dark text; navigation links retain sky blue. Yellow remains the primary brand and action color.
 
-Violet (an equal mix of `violet-700` and `violet-800` in OKLCH) is the palette's text-emphasis color, exposed as `emphasis` in the theme (`text-emphasis`). Use it for non-interactive highlighted terms in Stories and biographies, with semibold weight and no underline, and for editorial section icons, bullets, and the History timeline on neutral surfaces. Links remain sky blue (`sky-800`) and underlined, so emphasis and navigation are visually distinct.
+Violet (an equal mix of `violet-700` and `violet-800` in OKLCH) is the palette's text-emphasis color, exposed as `emphasis` in the theme (`text-emphasis`). Use it for non-interactive highlighted terms in Stories and biographies, with semibold weight and no underline, and for Art section icons and bullets, plus Person curiosity bullets. Links remain sky blue (`sky-800`) and underlined, so emphasis and navigation are visually distinct.
 
 The short yellow stroke below the detail drawer title is an approved Mira brand motif. Reuse it sparingly below important page, panel, or section titles to give them emphasis on a neutral background. Prefer this restrained accent over a full-width tinted title band; do not add it to every heading. Match the drawer reference: `mt-3 block h-1 w-10 rounded-full bg-brand`, left-aligned with the title, with `aria-hidden="true"` because it is decorative.
 
@@ -193,8 +193,12 @@ Selected map markers grow by 40%, with a light outline and stronger shadow,
 while retaining their category color.
 History uses a vertical timeline in chronological order; undated entries follow
 dated events with a hollow point and no date label. Architecture and Art retain
-spaced bullet lists. History, Architecture, Art, Related People, and Person curiosities
-use neutral surfaces. Editorial icons, bullets, and the History timeline use violet;
+spaced bullet lists. History uses a faint yellow surface, Architecture faint blue,
+and Art faint violet. Related People uses a white surface with a sky-blue border;
+Person curiosities retain a neutral surface with violet bullets. Section icons and bullets
+match their surface hue: dark yellow (`yellow-800`) for History, dark blue (`blue-900`)
+for Architecture, and the violet emphasis color for Art. History dates and timeline
+markers use dark yellow, connected by a pale yellow line;
 Related People links retain sky blue. Period and life-date metadata use the soft
 yellow brand background, while headings and body text stay neutral.
 Section headings include small decorative icons in their accent color: a scroll

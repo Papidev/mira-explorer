@@ -87,11 +87,11 @@ export const StoryContent = ({
         </dl>
       ) : null}
       {history.length > 0 ? (
-        <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
+        <section className="bg-brand-soft/40 rounded-xl px-4 py-3 ring-1 ring-yellow-950/5">
           <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
             <span
               aria-hidden="true"
-              className="text-emphasis size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat"
+              className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-yellow-800"
             />
             History
           </h3>
@@ -101,15 +101,15 @@ export const StoryContent = ({
                 {index < history.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className="absolute top-2 left-1 h-full w-0.5 bg-violet-200"
+                    className="absolute top-2 left-1 h-full w-0.5 bg-yellow-200"
                   />
                 ) : null}
                 <span
                   aria-hidden="true"
-                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-emphasis" : "border-emphasis border-2 bg-zinc-50"}`}
+                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-yellow-800" : "border-2 border-yellow-800 bg-yellow-50"}`}
                 />
                 {time ? (
-                  <p className="text-emphasis text-sm/6 font-semibold">
+                  <p className="text-sm/6 font-semibold text-yellow-800">
                     {formatHistoricalTime(time)}
                   </p>
                 ) : null}
@@ -152,7 +152,7 @@ export const StoryContent = ({
         ))}
       />
       {content.relatedPeople.length > 0 ? (
-        <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
+        <section className="rounded-xl bg-white px-4 py-3 ring-1 ring-sky-200">
           <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
             Related People
           </h3>
