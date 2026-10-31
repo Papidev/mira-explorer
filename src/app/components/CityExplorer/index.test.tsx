@@ -1017,7 +1017,7 @@ describe("visitor place search", () => {
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
     const search = screen.getByRole("combobox", { name: "Search" });
     await user.type(search, "A Church");
-    await user.click(await screen.findByRole("option", { name: /A Church\s*Rome/ }));
+    await user.click(await screen.findByRole("option", { name: "A Church" }));
     expect(await screen.findByRole("heading", { name: "A Church" })).toBeVisible();
     expect(screen.getByText("This place is excluded by your active filters.")).toBeVisible();
     expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
@@ -1042,9 +1042,9 @@ describe("visitor place search", () => {
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     const search = screen.getByRole("combobox", { name: "Search" });
     await user.type(search, "A Church");
-    await user.click(await screen.findByRole("option", { name: /A Church\s*Rome/ }));
+    await user.click(await screen.findByRole("option", { name: "A Church" }));
     await user.type(search, "A Museum");
-    await user.click(await screen.findByRole("option", { name: /A Museum\s*Rome/ }));
+    await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(
       screen.queryByRole("button", { name: "Open details for A Church" }),
     ).not.toBeInTheDocument();
@@ -1072,7 +1072,7 @@ describe("visitor place search", () => {
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
     await user.click(screen.getByRole("button", { name: "Open filters" }));
     await user.type(screen.getByRole("combobox", { name: "Search" }), "museum");
-    await user.click(await screen.findByRole("option", { name: /A Museum\s*Rome/ }));
+    await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
     expect(cameraUpdates.at(-1)).toEqual({ center: [12, 41], offset: [0, 0] });
