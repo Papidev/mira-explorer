@@ -189,6 +189,9 @@ Person name; unresolved People stay plain text. Existing Markdown links retain
 their destinations. Person links take precedence over keyword emphasis.
 Selected map markers grow by 40%, with a light outline and stronger shadow,
 while retaining their category color.
+History uses a vertical timeline in chronological order; undated entries follow
+dated events with a hollow point and no date label. Architecture and Art retain
+spaced bullet lists.
 
 Typography variants and the choice of A are preserved locally on
 `feat/story-typography-prototype-reference` (`7bf851d`). Its development-only

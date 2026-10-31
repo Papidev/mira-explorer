@@ -89,11 +89,21 @@ export const StoryContent = ({
       {history.length > 0 ? (
         <section className="rounded-xl bg-orange-50/55 px-4 py-3 ring-1 ring-orange-950/5">
           <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">History</h3>
-          <ul className="mt-3 list-disc space-y-3 pl-5 marker:text-2xl marker:font-semibold marker:text-orange-700">
+          <ol role="list" className="mt-4 list-none">
             {history.map(({ time }, index) => (
-              <li key={`history-${index}`} className="pl-1">
+              <li key={`history-${index}`} className="relative pb-6 pl-6 last:pb-0">
+                {index < history.length - 1 ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-2 left-1 h-full w-0.5 bg-orange-200"
+                  />
+                ) : null}
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-orange-700" : "border-2 border-orange-700 bg-orange-50"}`}
+                />
                 {time ? (
-                  <p className="text-sm font-semibold text-orange-700">
+                  <p className="text-sm/6 font-semibold text-orange-700">
                     {formatHistoricalTime(time)}
                   </p>
                 ) : null}
@@ -110,7 +120,7 @@ export const StoryContent = ({
                 )}
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
       ) : null}
       <Topic

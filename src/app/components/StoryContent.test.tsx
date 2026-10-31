@@ -120,6 +120,7 @@ describe("StoryContent", () => {
     );
 
     expect(html).toContain("Roman Republic");
+    expect(html).not.toContain("Date unknown");
     expect(html).toContain("c. 6th–5th century BC");
     expect(html).toContain("c. 10th century AD");
     expect(html).not.toContain("1000 AD");
