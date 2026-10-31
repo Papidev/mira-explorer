@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.20.1
+
+### Patch Changes
+
+- Improve Story readability with inline Person links, distinct section colors and icons, and a chronological History timeline. Make selected map markers more visible, simplify search result subtitles, and slightly enlarge the Mira wordmark in the Rome header.
+
 ## 0.20.0
 
 ### Minor Changes
