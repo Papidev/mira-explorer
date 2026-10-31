@@ -88,7 +88,13 @@ export const StoryContent = ({
       ) : null}
       {history.length > 0 ? (
         <section className="rounded-xl bg-orange-50/55 px-4 py-3 ring-1 ring-orange-950/5">
-          <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">History</h3>
+          <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
+            <span
+              aria-hidden="true"
+              className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-orange-700"
+            />
+            History
+          </h3>
           <ol role="list" className="mt-4 list-none">
             {history.map(({ time }, index) => (
               <li key={`history-${index}`} className="relative pb-6 pl-6 last:pb-0">

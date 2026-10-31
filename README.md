@@ -191,7 +191,12 @@ Selected map markers grow by 40%, with a light outline and stronger shadow,
 while retaining their category color.
 History uses a vertical timeline in chronological order; undated entries follow
 dated events with a hollow point and no date label. Architecture and Art retain
-spaced bullet lists.
+spaced bullet lists. Architecture uses a faint sky-blue surface and sky-blue bullets;
+Art uses a faint emerald surface and emerald bullets. History retains its warm
+orange accent, while headings and body text stay neutral.
+Section headings include small decorative icons in their accent color: a scroll
+for History, a classical building for Architecture, and a palette for Art. Icons
+align with the title text baseline.
 
 Typography variants and the choice of A are preserved locally on
 `feat/story-typography-prototype-reference` (`7bf851d`). Its development-only
