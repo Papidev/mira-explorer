@@ -1,16 +1,29 @@
 import type { ReactNode } from "react";
+import type { Root } from "mdast";
 import { Markdown } from "./Markdown";
 
 export const StoryText = ({
   text,
   emphasis = [],
   textFormat,
+  tree,
+  onOpenPerson,
 }: {
   text: string;
   emphasis?: string[];
   textFormat?: "markdown";
+  tree?: Root;
+  onOpenPerson?: (personId: string) => void;
 }) => {
-  if (textFormat === "markdown") return <Markdown text={text} />;
+  if (tree || textFormat === "markdown")
+    return (
+      <Markdown
+        text={text}
+        tree={tree}
+        inline={textFormat !== "markdown"}
+        onOpenPerson={onOpenPerson}
+      />
+    );
   const parts: ReactNode[] = [];
   let cursor = 0;
 
@@ -21,7 +34,7 @@ export const StoryText = ({
     if (start < cursor) continue;
     parts.push(text.slice(cursor, start));
     parts.push(
-      <strong key={start} className="font-semibold text-amber-900">
+      <strong key={start} className="font-semibold text-sky-800">
         {phrase}
       </strong>,
     );

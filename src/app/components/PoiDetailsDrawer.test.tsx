@@ -194,8 +194,8 @@ describe("online Story details", () => {
     const user = userEvent.setup();
     render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={() => {}} />);
     expect(await screen.findByText("Image unavailable")).toBeInTheDocument();
-    expect(screen.getByText("Vespasian", { selector: "strong" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Vespasian" }));
+    expect(screen.getByRole("link", { name: "Vespasian" })).toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "Vespasian" }));
     expect(await screen.findByText("Roman", { selector: "strong" })).toBeInTheDocument();
   });
 

@@ -177,11 +177,30 @@ The primary Wikipedia Source retains its text snapshot and metadata with ID `wik
 
 New Story Content uses `textFormat: "markdown"`. Write Markdown inside
 `introduction.text` and topic `description` strings: blank lines separate
-paragraphs, `**important detail**` applies the app’s colored bold style, and
+paragraphs, `**important detail**` applies blue semibold text without an underline, and
 `*work title*` adds italics. Lists, links, headings, and block quotes are supported;
 React owns their styling. The Main Image stays separate; embedded images, HTML,
 and JSX are not rendered as Story elements. Generation favors short paragraphs
 and selective bold, without a fixed quota.
+
+The first eligible full-name mention of each Related Person in the Story opens
+their sheet, using the same blue with an underline. Names must match the saved Related
+Person name; unresolved People stay plain text. Existing Markdown links retain
+their destinations. Person links take precedence over keyword emphasis.
+Selected map markers grow by 40%, with a light outline and stronger shadow,
+while retaining their category color.
+History uses a vertical timeline in chronological order; undated entries follow
+dated events with a hollow point and no date label. Architecture and Art retain
+spaced bullet lists. Architecture uses a faint sky-blue surface and sky-blue bullets;
+Art uses a faint emerald surface and emerald bullets. History retains its warm
+orange accent, while headings and body text stay neutral.
+Section headings include small decorative icons in their accent color: a scroll
+for History, a classical building for Architecture, and a palette for Art. Icons
+align with the title text baseline.
+
+Typography variants and the choice of A are preserved locally on
+`feat/story-typography-prototype-reference` (`7bf851d`). Its development-only
+comparison opens at `/rome?poiId=castle-of-the-holy-angel&variant=A` (or `B`).
 
 Existing Stories without `textFormat` retain plain-text rendering and their
 optional `emphasis` arrays; no saved content is migrated automatically. When

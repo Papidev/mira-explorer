@@ -53,9 +53,7 @@ export const Search = ({ pois, onSelect }: { pois: Poi[]; onSelect: (poi: Poi) =
             className="group cursor-pointer rounded-md px-3 py-2.5 text-zinc-900 select-none data-focus:bg-yellow-100 data-focus:outline-hidden"
           >
             <span className="block text-sm font-medium">{poi.name}</span>
-            <span className="mt-1 block text-xs text-zinc-500">
-              {[poi.address, poi.city].filter(Boolean).join(" · ")}
-            </span>
+            {poi.address && <span className="mt-1 block text-xs text-zinc-500">{poi.address}</span>}
           </ComboboxOption>
         ))}
       </ComboboxOptions>
