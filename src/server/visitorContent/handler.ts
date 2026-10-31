@@ -1,3 +1,4 @@
+import { compareBirthDates } from "@/utils/compareBirthDates";
 import { z } from "zod";
 import type {
   PublishedCityPreview,
@@ -44,6 +45,24 @@ export const createVisitorHandler = (
       const headers = { "Cache-Control": "no-store" };
       try {
         const content = await getStory(city, poiId);
+        if (content) {
+          const datedPeople = await Promise.all(
+            content.storyContent.relatedPeople.map(async (person) => ({
+              person,
+              birthDate: person.personId
+                ? content.detail
+                  ? (await reads.getPerson(person.personId))?.content.birthDate
+                  : local?.getPerson(person.personId)?.birthDate
+                : undefined,
+            })),
+          );
+          content.storyContent = {
+            ...content.storyContent,
+            relatedPeople: datedPeople
+              .sort((left, right) => compareBirthDates(left.birthDate, right.birthDate))
+              .map(({ person }) => person),
+          };
+        }
         return Response.json(content ?? { storyContent: null }, {
           status: content ? 200 : 404,
           headers,

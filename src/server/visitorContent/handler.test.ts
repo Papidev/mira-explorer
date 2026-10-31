@@ -26,6 +26,103 @@ describe("visitor APIs", () => {
     });
   });
 
+  it.each([false, true])(
+    "orders People by birth date, unknown dates first (local: %s)",
+    async (isLocal) => {
+      const dates = [
+        { id: "modern", birthDate: { year: 1600, month: 2, day: 2, precision: "exact" as const } },
+        { id: "unknown" },
+        { id: "ancient", birthDate: { year: -100, precision: "approximate" as const } },
+        {
+          id: "earlier-day",
+          birthDate: { year: 1600, month: 2, day: 1, precision: "exact" as const },
+        },
+        { id: "also-unknown" },
+        {
+          id: "earlier-month",
+          birthDate: { year: 1600, month: 1, precision: "approximate" as const },
+        },
+        {
+          id: "same-date",
+          birthDate: { year: 1600, month: 2, day: 2, precision: "approximate" as const },
+        },
+      ];
+      const detail = structuredClone(write.detail);
+      detail.story.relatedPeople = dates.map(({ id }) => ({
+        personId: id,
+        name: id,
+        sourceIds: ["wikipedia"],
+      }));
+      const original = structuredClone(detail);
+      const local = createPublicCatalog(() => ({
+        version: 1,
+        city: "rome",
+        categoryDefinitions: [],
+        pois: [
+          {
+            poi: {
+              id: "local",
+              name: "Local",
+              city: "rome",
+              coordinates: detail.coordinates,
+              funFacts: [],
+            },
+            storyContent: {
+              introduction: "Local",
+              topics: { history: [], design: [], art: [] },
+              relatedPeople: detail.story.relatedPeople,
+            },
+            mainImage: {
+              thumbnailUrl: "",
+              originalImageUrl: "",
+              commonsPageUrl: "",
+              license: "",
+              attribution: "",
+            },
+          },
+        ],
+        people: dates.map(({ id, birthDate }) => ({
+          id,
+          name: id,
+          description: ["Biography", "Context"],
+          curiosities: [],
+          birthDate,
+        })),
+      }));
+      const handler = createVisitorHandler(
+        {
+          getCity: async () => ({ city: "rome", pois: [], categoryDefinitions: [] }),
+          getStory: async () => detail,
+          getPerson: async (id) => ({
+            ...write.people[0].person,
+            id,
+            content: {
+              ...write.people[0].person.content,
+              birthDate: dates.find((person) => person.id === id)?.birthDate,
+            },
+          }),
+        },
+        isLocal ? local : undefined,
+      );
+      const response = await handler.getStory("rome", isLocal ? "local" : detail.id);
+      expect(response.status).toBe(200);
+      expect(
+        (await response.json()).storyContent.relatedPeople.map(
+          ({ personId }: { personId: string }) => personId,
+        ),
+      ).toEqual([
+        "unknown",
+        "also-unknown",
+        "ancient",
+        "earlier-month",
+        "earlier-day",
+        "modern",
+        "same-date",
+      ]);
+      expect(detail).toEqual(original);
+    },
+  );
+
   it("does not fall back to a legacy slug, missing publication or another city's Story", async () => {
     for (const [city, id] of [
       ["rome", "colosseum"],
