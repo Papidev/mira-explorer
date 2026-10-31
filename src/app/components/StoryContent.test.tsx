@@ -23,10 +23,10 @@ describe("StoryContent", () => {
     );
 
     expect(html).toContain("<p>The temple stands beside the river.</p>");
-    expect(html).toContain('<strong class="font-semibold text-sky-800">bronze doors</strong>');
+    expect(html).toContain('<strong class="text-emphasis font-semibold">bronze doors</strong>');
     expect(html).toContain("<em>ancient columns</em>");
     expect(html).toContain('href="https://example.com/temple"');
-    expect(html).toContain('<strong class="font-semibold text-sky-800">restoration</strong>');
+    expect(html).toContain('<strong class="text-emphasis font-semibold">restoration</strong>');
     expect(html).toContain("<p>It reopened later.</p>");
     expect(html).toContain("<ul>");
     expect(html).toContain("<ol>");
@@ -72,7 +72,7 @@ describe("StoryContent", () => {
         '<p class="whitespace-pre-line">The temple stands beside the river.</p>',
       );
       expect(html).toContain(
-        '<p class="whitespace-pre-line">Its <strong class="font-semibold text-sky-800">bronze doors</strong> survive.\nLook for the original hinges.</p>',
+        '<p class="whitespace-pre-line">Its <strong class="text-emphasis font-semibold">bronze doors</strong> survive.\nLook for the original hinges.</p>',
       );
       expect(html.match(/<p\b/g)).toHaveLength(2);
     },
@@ -130,14 +130,14 @@ describe("StoryContent", () => {
     expect(html.indexOf("Design")).toBeLessThan(html.indexOf("Art insight"));
     expect(html.indexOf("Art insight")).toBeLessThan(html.indexOf("Related Person"));
     expect(html).toContain(
-      '<strong class="font-semibold text-sky-800">C++ and &lt;script&gt;</strong>',
+      '<strong class="text-emphasis font-semibold">C++ and &lt;script&gt;</strong>',
     );
     expect(html).toContain("C++ appears again.");
     expect(html).toContain("**Literal stars** stay plain.");
     expect(html).not.toContain("<script>");
     expect(html).not.toContain("missing phrase");
-    expect(html).toContain('<strong class="font-semibold text-sky-800">Undated</strong>');
-    expect(html).toContain('<strong class="font-semibold text-sky-800">Design</strong>');
+    expect(html).toContain('<strong class="text-emphasis font-semibold">Undated</strong>');
+    expect(html).toContain('<strong class="text-emphasis font-semibold">Design</strong>');
     expect(html).toContain("Art insight</li>");
   });
 });

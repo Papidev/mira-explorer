@@ -37,7 +37,7 @@ describe("People mentioned in a Story", () => {
       expect(screen.getAllByRole("link", { name: "Bernini" })).toHaveLength(1);
       expect(screen.getAllByRole("link", { name: "Borromini" })).toHaveLength(1);
       expect(screen.getByRole("link", { name: "Bernini" }).closest("strong")).toBeNull();
-      expect(screen.getByText("fountain")).toHaveClass("font-semibold", "text-sky-800");
+      expect(screen.getByText("fountain")).toHaveClass("font-semibold", "text-emphasis");
       expect(screen.getByText("fountain")).not.toHaveClass("underline");
       expect(screen.getByRole("link", { name: "Bernini" })).toHaveClass(
         "text-sky-800",

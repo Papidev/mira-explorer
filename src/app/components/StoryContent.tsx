@@ -62,7 +62,7 @@ export const StoryContent = ({
   const text = useStoryText(content, history, Boolean(onOpenPerson));
 
   return (
-    <div className="mt-4 space-y-6 text-base/7 text-zinc-800">
+    <div className="space-y-6 text-base/7 text-zinc-800">
       {content.textFormat === "markdown" ? (
         <StoryText
           {...text.introduction[0]}

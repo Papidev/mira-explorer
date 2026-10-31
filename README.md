@@ -28,6 +28,8 @@ Mira's primary brand color is yellow, supported by white and zinc neutrals. The 
 
 Dark blue (`blue-900`) is the current secondary accent alongside the yellow palette. Category checkboxes use it for checkmarks, partial-selection minus signs, and selected borders on white, including “All categories”. Keep this shade for now and reuse it sparingly for specific secondary accents where needed; yellow remains the primary brand and action color.
 
+Violet (`violet-700`) is the palette's text-emphasis color, exposed as `emphasis` in the theme (`text-emphasis`). Use it for non-interactive highlighted terms in Stories and biographies, with semibold weight and no underline. Links remain sky blue (`sky-800`) and underlined, so emphasis and navigation are visually distinct.
+
 The short yellow stroke below the detail drawer title is an approved Mira brand motif. Reuse it sparingly below important page, panel, or section titles to give them emphasis on a neutral background. Prefer this restrained accent over a full-width tinted title band; do not add it to every heading. Match the drawer reference: `mt-3 block h-1 w-10 rounded-full bg-brand`, left-aligned with the title, with `aria-hidden="true"` because it is decorative.
 
 ## Getting Started
@@ -177,14 +179,14 @@ The primary Wikipedia Source retains its text snapshot and metadata with ID `wik
 
 New Story Content uses `textFormat: "markdown"`. Write Markdown inside
 `introduction.text` and topic `description` strings: blank lines separate
-paragraphs, `**important detail**` applies blue semibold text without an underline, and
+paragraphs, `**important detail**` applies violet semibold text without an underline, and
 `*work title*` adds italics. Lists, links, headings, and block quotes are supported;
 React owns their styling. The Main Image stays separate; embedded images, HTML,
 and JSX are not rendered as Story elements. Generation favors short paragraphs
 and selective bold, without a fixed quota.
 
 The first eligible full-name mention of each Related Person in the Story opens
-their sheet, using the same blue with an underline. Names must match the saved Related
+their sheet, using sky blue with an underline. Names must match the saved Related
 Person name; unresolved People stay plain text. Existing Markdown links retain
 their destinations. Person links take precedence over keyword emphasis.
 Selected map markers grow by 40%, with a light outline and stronger shadow,

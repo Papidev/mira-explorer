@@ -36,7 +36,7 @@ export const Markdown = ({
       components={{
         ...(inline ? { p: ({ children }) => <>{children}</> } : {}),
         strong: ({ children }) => (
-          <strong className="font-semibold text-sky-800">{children}</strong>
+          <strong className="text-emphasis font-semibold">{children}</strong>
         ),
         a: ({ node, children, href }) => {
           const personId = node?.properties["data-person-id"];
