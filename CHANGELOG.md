@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.0
+
+### Minor Changes
+
+- Add stable readable links for places and people, and persist licensed Person portraits in online publications.
+
 ## 0.20.4
 
 ### Patch Changes

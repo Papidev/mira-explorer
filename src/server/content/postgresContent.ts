@@ -1167,8 +1167,8 @@ export const createPostgresContent = (pool: Pool) => ({
         if (candidate) {
           await client.query(
             `INSERT INTO content.people
-            (id, wikidata_id, profile_version, name, content, sources, generation, request_digest)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING`,
+            (id, wikidata_id, profile_version, name, content, sources, generation, request_digest, image)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (id) DO NOTHING`,
             [
               candidate.person.id,
               candidate.wikidataId,
@@ -1178,6 +1178,7 @@ export const createPostgresContent = (pool: Pool) => ({
               JSON.stringify(candidate.person.sources),
               JSON.stringify(candidate.generation),
               digest(candidate),
+              candidate.person.image ? JSON.stringify(candidate.person.image) : null,
             ],
           );
         }
@@ -1258,7 +1259,7 @@ export const createPostgresContent = (pool: Pool) => ({
         throw new ContentWriteError("conflict", "A newer Person Profile is already saved.");
       await client.query(
         `UPDATE content.people SET profile_version = $2, name = $3, content = $4,
-        sources = $5, generation = $6, request_digest = $7, updated_at = now() WHERE id = $1`,
+        sources = $5, generation = $6, request_digest = $7, image = COALESCE($8, image), updated_at = now() WHERE id = $1`,
         [
           input.person.id,
           input.profileVersion,
@@ -1267,6 +1268,7 @@ export const createPostgresContent = (pool: Pool) => ({
           JSON.stringify(input.person.sources),
           JSON.stringify(input.generation),
           requestDigest,
+          input.person.image ? JSON.stringify(input.person.image) : null,
         ],
       );
       return "saved" as const;
@@ -1342,6 +1344,7 @@ export const createPostgresContent = (pool: Pool) => ({
     } = await pool.query(
       `SELECT
       COALESCE((SELECT jsonb_agg(p.response || jsonb_build_object(
+        'slug', identity.slug,
         'wikidataId', identity.wikidata_id,
         'name', ${poiDisplayNameSql},
         'introduction', s.response #>> '{story,introduction,text}',
@@ -1374,10 +1377,15 @@ export const createPostgresContent = (pool: Pool) => ({
     );
     return result ? publishedPoiDetailSchema.parse(result.response) : undefined;
   },
-  getPerson: async (personId: string) => {
+  getPerson: async (personId: string, bySlug = false) => {
     const {
       rows: [result],
-    } = await pool.query("SELECT response FROM content.visitor_people WHERE id = $1", [personId]);
+    } = await pool.query(
+      `SELECT p.response || jsonb_strip_nulls(jsonb_build_object('slug', identity.slug, 'image', identity.image)) AS response
+       FROM content.visitor_people p JOIN content.people identity ON identity.id = p.id
+       WHERE ${bySlug ? "identity.slug" : "p.id"} = $1`,
+      [personId],
+    );
     return result ? publishedPersonSchema.parse(result.response) : undefined;
   },
 });

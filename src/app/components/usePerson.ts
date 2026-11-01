@@ -3,32 +3,32 @@
 import { useEffect, useState } from "react";
 import type { PublicPerson } from "@/server/person";
 
-export const usePerson = (personId?: string, city?: string, poiId?: string) => {
+export const usePerson = (personId?: string, city?: string, poiId?: string, bySlug = false) => {
   const [state, setState] = useState<{
-    personId: string | null;
+    requestKey: string | null;
     person: PublicPerson | null;
-    poiId?: string;
-  }>({ personId: null, person: null });
+  }>({ requestKey: null, person: null });
+  const requestKey = JSON.stringify([personId, city, poiId, bySlug]);
 
   useEffect(() => {
     if (!personId) return;
     const controller = new AbortController();
     void fetch(
-      `/api/people/${encodeURIComponent(personId)}${city && poiId ? `?${new URLSearchParams({ city, poiId })}` : ""}`,
+      `/api/people/${bySlug ? "by-slug/" : ""}${encodeURIComponent(personId)}${city ? `?${new URLSearchParams({ city, ...(poiId ? { poiId } : {}) })}` : ""}`,
       { signal: controller.signal },
     )
       .then(async (response) =>
         response.ok ? ((await response.json()) as { person?: PublicPerson | null }) : {},
       )
-      .then(({ person }) => setState({ personId, poiId, person: person ?? null }))
+      .then(({ person }) => setState({ requestKey, person: person ?? null }))
       .catch(() => {
-        if (!controller.signal.aborted) setState({ personId, poiId, person: null });
+        if (!controller.signal.aborted) setState({ requestKey, person: null });
       });
     return () => controller.abort();
-  }, [personId, city, poiId]);
+  }, [personId, city, poiId, bySlug, requestKey]);
 
   return {
-    person: state.personId === personId && state.poiId === poiId ? state.person : null,
-    isLoading: Boolean(personId) && (state.personId !== personId || state.poiId !== poiId),
+    person: state.requestKey === requestKey ? state.person : null,
+    isLoading: Boolean(personId) && state.requestKey !== requestKey,
   };
 };

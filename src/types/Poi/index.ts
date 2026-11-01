@@ -2,6 +2,7 @@ import type { PoiCategory } from "@/types/PoiCategory";
 
 export type Poi = {
   id: string;
+  slug?: string;
   wikidataId?: string;
   categories?: PoiCategory[];
   name: string;

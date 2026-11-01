@@ -42,10 +42,12 @@ export const toVisitorStory = (detail: PublishedPoiDetail) => ({
 
 export const toVisitorPerson = (person: PublishedPerson): PublicPerson => ({
   id: person.id,
+  ...(person.slug ? { slug: person.slug } : {}),
   name: person.name,
   textFormat: person.textFormat,
   description: person.content.description.map(({ text }) => text) as [string, string],
   curiosities: person.content.curiosities.map(({ text }) => text),
+  ...(person.image ? { image: person.image } : {}),
   birthDate: person.content.birthDate,
   deathDate: person.content.deathDate,
   wikipediaSources: toWikipediaSources(person.sources),

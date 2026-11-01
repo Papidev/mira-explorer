@@ -43,6 +43,12 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       await pool.query(
         await readFile(new URL("./schema/005-deleted-category-names.sql", import.meta.url), "utf8"),
       );
+      await pool.query(
+        await readFile(new URL("./schema/006-public-slugs.sql", import.meta.url), "utf8"),
+      );
+      await pool.query(
+        await readFile(new URL("./schema/007-person-images.sql", import.meta.url), "utf8"),
+      );
     });
     beforeEach(async () => {
       await pool.query(
@@ -1793,6 +1799,101 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       expect((await repository.getPoiBaseline(write.detail.id))?.name).toBe(catalog.pois[0].name);
     });
 
+    it("backfills existing identities without changing their content", async () => {
+      const write = example();
+      await prepare([write]);
+      await repository.saveStory(write);
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        const before = await client.query("SELECT to_jsonb(p) - 'slug' AS poi FROM content.pois p");
+        const people = await client.query(
+          "SELECT to_jsonb(p) - 'slug' AS person FROM content.people p",
+        );
+        await client.query(`DROP TRIGGER assign_public_slug ON content.pois;
+          DROP TRIGGER assign_public_slug ON content.people;
+          DROP FUNCTION content.assign_public_slug();
+          ALTER TABLE content.pois DROP COLUMN slug;
+          ALTER TABLE content.people DROP COLUMN slug;`);
+        const migration = await readFile(
+          new URL("./schema/006-public-slugs.sql", import.meta.url),
+          "utf8",
+        );
+        await client.query(migration.replace(/^BEGIN;$/m, "").replace(/^COMMIT;$/m, ""));
+        expect((await client.query("SELECT slug FROM content.pois")).rows).toEqual([
+          { slug: "colosseum" },
+        ]);
+        expect((await client.query("SELECT slug FROM content.people")).rows).toEqual([
+          { slug: "vespasian" },
+        ]);
+        expect(
+          (await client.query("SELECT to_jsonb(p) - 'slug' AS poi FROM content.pois p")).rows,
+        ).toEqual(before.rows);
+        expect(
+          (await client.query("SELECT to_jsonb(p) - 'slug' AS person FROM content.people p")).rows,
+        ).toEqual(people.rows);
+      } finally {
+        await client.query("ROLLBACK");
+        client.release();
+      }
+    });
+
+    it("keeps POI and Person slugs stable across renames and resolves only published People", async () => {
+      const write = example();
+      await prepare([write]);
+      expect(await repository.getPerson("vespasian", true)).toBeUndefined();
+      await repository.saveStory(write);
+      expect((await repository.getCityPreviews("rome")).pois[0].slug).toBe("colosseum");
+      expect(await repository.getPerson("vespasian", true)).toMatchObject({
+        id: "vespasian",
+        slug: "vespasian",
+      });
+      await pool.query(
+        "UPDATE content.pois SET name='Renamed', wikipedia_pages='[]', slug='other' WHERE id=$1",
+        [write.detail.id],
+      );
+      await pool.query(
+        "UPDATE content.people SET name='Renamed Person', slug='other' WHERE id='vespasian'",
+      );
+      expect((await repository.getCityPreviews("rome")).pois[0].slug).toBe("colosseum");
+      expect(await repository.getPerson("vespasian", true)).toMatchObject({
+        name: "Renamed Person",
+        slug: "vespasian",
+      });
+      await pool.query("UPDATE content.pois SET removed_at=now() WHERE id=$1", [write.detail.id]);
+      expect(await repository.getPerson("vespasian", true)).toBeUndefined();
+    });
+
+    it("allocates unique readable slugs for homonyms, accents and concurrent new POIs", async () => {
+      const write = example();
+      await prepare([write]);
+      const insert = (name: string) =>
+        pool.query(
+          `INSERT INTO content.pois (id,city,name,latitude,longitude,wikipedia_pages,input_revision,input_digest)
+         VALUES ($1,'rome',$2,0,0,'[]',$3,'test') RETURNING slug`,
+          [randomUUID(), name, randomUUID()],
+        );
+      await repository.saveStory(write);
+      const insertPerson = (index: number) =>
+        pool.query(
+          `INSERT INTO content.people (id,wikidata_id,profile_version,name,content,sources,generation,request_digest)
+         SELECT $1,$2,$3,'Église',content,sources,generation,'test'
+         FROM content.people WHERE id='vespasian' RETURNING slug`,
+          [`person-${index}`, `Q${1000 + index}`, randomUUID()],
+        );
+      const profiles = await Promise.all([insertPerson(1), insertPerson(2)]);
+      expect(profiles.map(({ rows }) => rows[0].slug).sort()).toEqual(["eglise", "eglise-2"]);
+      expect(await repository.getPerson("eglise", true)).toBeUndefined();
+      const results = await Promise.all([insert("Église"), insert("Église"), insert("Église")]);
+      expect(results.map(({ rows }) => rows[0].slug).sort()).toEqual([
+        "eglise",
+        "eglise-2",
+        "eglise-3",
+      ]);
+      await pool.query("UPDATE content.pois SET removed_at=now() WHERE slug='eglise'");
+      expect((await insert("Église")).rows[0].slug).toBe("eglise-4");
+    });
+
     it("loads published previews with the selected image and hides removed POIs", async () => {
       const write = example();
       const catalog = await prepare([write]);
@@ -1803,6 +1904,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
           id: write.detail.id,
           city: "rome",
           name: "Colosseum",
+          slug: "colosseum",
           coordinates: write.detail.coordinates,
           categoryIds: [],
           wikidataId: "Q10285",
@@ -2061,6 +2163,34 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       expect(await repository.getStory(write.detail.id)).toBeUndefined();
     });
 
+    it("persists a Person portrait on first Story publication and exposes it to the reader role", async () => {
+      const write = example();
+      write.people[0].person.image = {
+        id: "Portrait.jpg",
+        commonsPageUrl: "https://commons.wikimedia.org/wiki/File:Portrait.jpg",
+        thumbnailUrl: "https://upload.wikimedia.org/thumb.jpg",
+        originalImageUrl: "https://upload.wikimedia.org/portrait.jpg",
+        license: "Public domain",
+        attribution: "Archive",
+      };
+      await prepare([write]);
+      await repository.saveStory(write);
+      expect((await repository.getPerson("vespasian"))?.image).toEqual(
+        write.people[0].person.image,
+      );
+      const reader = await pool.connect();
+      try {
+        await reader.query("SET ROLE historical_explorer_reader");
+        const response = await reader.query(
+          "SELECT image FROM content.people WHERE id = 'vespasian'",
+        );
+        expect(response.rows[0].image).toEqual(write.people[0].person.image);
+      } finally {
+        await reader.query("RESET ROLE");
+        reader.release();
+      }
+    });
+
     it("updates one shared profile without letting delayed POI payloads overwrite it", async () => {
       const first = example();
       const second = example();
@@ -2070,13 +2200,25 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         ...first.people[0],
         expectedProfileVersion: first.people[0].profileVersion,
         profileVersion: randomUUID(),
-        person: { ...first.people[0].person, name: "Updated Vespasian" },
+        person: {
+          ...first.people[0].person,
+          name: "Updated Vespasian",
+          image: {
+            id: "Portrait.jpg",
+            commonsPageUrl: "https://commons.wikimedia.org/wiki/File:Portrait.jpg",
+            thumbnailUrl: "https://upload.wikimedia.org/thumb.jpg",
+            originalImageUrl: "https://upload.wikimedia.org/portrait.jpg",
+            license: "Public domain",
+            attribution: "Archive",
+          },
+        },
       };
       expect(await repository.savePerson(update)).toBe("saved");
       expect(await repository.savePerson(update)).toBe("already-saved");
       await repository.saveStory(second);
       expect(await repository.getPerson("vespasian")).toMatchObject({ name: "Updated Vespasian" });
       expect((await repository.getPerson("vespasian"))?.linkedPois).toHaveLength(2);
+      expect((await repository.getPerson("vespasian"))?.image).toEqual(update.person.image);
       await expect(
         repository.savePerson({ ...update, profileVersion: randomUUID() }),
       ).rejects.toMatchObject({ reason: "conflict" });

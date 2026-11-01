@@ -196,7 +196,7 @@ const Home = () => {
               {discoveries.map(({ poi, mainImage }) => (
                 <article key={poi.id}>
                   <Link
-                    href={`/rome?poiId=${encodeURIComponent(poi.id)}`}
+                    href={`/rome?poi=${encodeURIComponent(poi.id)}`}
                     className="group block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
                   >
                     <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-zinc-200">

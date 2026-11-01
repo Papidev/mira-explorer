@@ -204,7 +204,7 @@ export type PublicStoryContent = {
     design: Array<Pick<StoryInsight, "description" | "emphasis">>;
     art: Array<Pick<StoryInsight, "description" | "emphasis">>;
   };
-  relatedPeople: Array<Pick<RelatedPerson, "name" | "personId">>;
+  relatedPeople: Array<Pick<RelatedPerson, "name" | "personId"> & { slug?: string }>;
 };
 
 export const toPublicStoryContent = (storyContent: StoryContent): PublicStoryContent => ({

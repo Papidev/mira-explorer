@@ -220,14 +220,48 @@ describe("local-only POI fallback", () => {
       local,
     );
     expect(await (await handler.getStory("rome", "colosseum")).json()).toEqual({
-      storyContent: localStory,
+      storyContent: {
+        ...localStory,
+        relatedPeople: [{ ...localStory.relatedPeople[0], slug: "vespasian" }],
+      },
       detail: null,
     });
     expect(await (await handler.getPerson("vespasian", "rome", "colosseum")).json()).toEqual({
-      person: localPerson,
+      person: { ...localPerson, slug: "vespasian" },
       detail: null,
     });
     expect((await handler.getPerson("unrelated-person", "rome", "colosseum")).status).toBe(404);
+  });
+
+  it("opens a local-only Person slug directly only while its Story remains visible", async () => {
+    let onlineCity = city;
+    const handler = createVisitorHandler(
+      {
+        getCity: async () => onlineCity,
+        getStory: async () => null,
+        getPerson: async () => null,
+        getPersonBySlug: async () => null,
+      },
+      local,
+    );
+    expect((await handler.getPerson("vespasian", "rome", undefined, true)).status).toBe(200);
+    onlineCity = { ...city, removedPois: [{ id: write.detail.id, wikidataId: "Q10285" }] };
+    expect((await handler.getPerson("vespasian", "rome", undefined, true)).status).toBe(404);
+  });
+
+  it("never falls back to local People after an online slug lookup fails", async () => {
+    const handler = createVisitorHandler(
+      {
+        getCity: async () => city,
+        getStory: async () => null,
+        getPerson: async () => null,
+        getPersonBySlug: async () => {
+          throw new Error("Offline");
+        },
+      },
+      local,
+    );
+    expect((await handler.getPerson("vespasian", "rome", undefined, true)).status).toBe(503);
   });
 
   it("resolves legacy aliases to online content and never fills gaps with the local version", async () => {
@@ -273,5 +307,23 @@ describe("local-only POI fallback", () => {
       local,
     );
     expect((await unavailable.getStory("rome", "colosseum")).status).toBe(503);
+  });
+  it("resolves a Person slug while enforcing city and parent-Story membership", async () => {
+    const person = { ...write.people[0].person, id: "internal-id", slug: "vespasian" };
+    const detail = structuredClone(write.detail);
+    detail.story.relatedPeople[0].personId = person.id;
+    const handler = createVisitorHandler({
+      getStory: async () => detail,
+      getPerson: async () => person,
+      getPersonBySlug: async (slug) => (slug === "vespasian" ? person : null),
+    });
+    expect(
+      await (await handler.getPerson("vespasian", "rome", undefined, true)).json(),
+    ).toMatchObject({ person: { id: "internal-id", slug: "vespasian" } });
+    expect((await handler.getPerson("vespasian", "rome", detail.id, true)).status).toBe(200);
+    expect((await handler.getPerson("vespasian", "paris", undefined, true)).status).toBe(404);
+    expect((await handler.getPerson("missing", "rome", undefined, true)).status).toBe(404);
+    detail.story.relatedPeople = [];
+    expect((await handler.getPerson("vespasian", "rome", detail.id, true)).status).toBe(404);
   });
 });
