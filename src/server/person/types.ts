@@ -101,6 +101,7 @@ export const personSchema = z
 export type Person = z.infer<typeof personSchema>;
 
 export type PublicPerson = {
+  slug?: string;
   textFormat?: "markdown";
   wikipediaSources?: WikipediaSource[];
   id: string;

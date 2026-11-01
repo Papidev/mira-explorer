@@ -8,6 +8,8 @@ import Link from "next/link";
 type Props = {
   searchParams: Promise<{
     poiId?: string;
+    poi?: string;
+    person?: string;
   }>;
 };
 
@@ -53,7 +55,11 @@ const RomePage = async ({ searchParams }: Props) => {
       </header>
 
       <section className="min-h-0 flex-1">
-        <RomeMap initialSelectedPoiId={initialSelectedPoiId} />
+        <RomeMap
+          initialSelectedPoiId={initialSelectedPoiId}
+          initialPoiSlug={query.poi}
+          initialPersonSlug={query.person}
+        />
       </section>
     </main>
   );

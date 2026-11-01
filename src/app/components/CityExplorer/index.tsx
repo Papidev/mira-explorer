@@ -23,6 +23,8 @@ type Props = {
   coordinates: [number, number];
   initialZoom: number;
   initialSelectedPoiId?: string | null;
+  initialPersonSlug?: string | null;
+  aliases?: Record<string, string>;
   pois: Poi[];
   categoryDefinitions?: PoiCategoryDefinition[];
 };
@@ -32,6 +34,8 @@ export const CityExplorer = ({
   coordinates,
   initialZoom,
   initialSelectedPoiId = null,
+  initialPersonSlug = null,
+  aliases = {},
   pois,
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
 }: Props) => {
@@ -55,7 +59,12 @@ export const CityExplorer = ({
   const openFiltersSwipe = useFilterSwipe("right", () => setSidebarOpen(true));
   const closeFiltersSwipe = useFilterSwipe("left", () => setSidebarOpen(false));
   const [zoom, setZoom] = useState(initialZoom);
-  const { selectedPoiId, selectPoi } = useSelectedPoi(initialSelectedPoiId);
+  const { selectedPoiId, selectPoi, selectedPersonSlug, selectPerson } = useSelectedPoi(
+    initialSelectedPoiId,
+    pois,
+    initialPersonSlug,
+    aliases,
+  );
   const [previousSelectedPoiId, setPreviousSelectedPoiId] = useState(selectedPoiId);
   const [openRequestId, setOpenRequestId] = useState(0);
   const [searchPoiId, setSearchPoiId] = useState<string | null>(null);
@@ -173,7 +182,7 @@ export const CityExplorer = ({
             aria-controls="discovery-sidebar"
             {...openFiltersSwipe}
             onClick={() => setSidebarOpen(true)}
-            className={selectedPoi ? "hidden md:block" : undefined}
+            className={selectedPoi || selectedPersonSlug ? "hidden md:block" : undefined}
           />
         )}
         <Map
@@ -187,11 +196,15 @@ export const CityExplorer = ({
           onZoomChange={setZoom}
           onOpenPoiDetails={openPoi}
           onMapClick={() => selectPoi(null)}
-          controlsRightInset={selectedPoi ? (detailsWidth ?? 448) : 0}
-          hideControlsOnMobile={sidebarVisible || Boolean(selectedPoi)}
+          controlsRightInset={selectedPoi || selectedPersonSlug ? (detailsWidth ?? 448) : 0}
+          hideControlsOnMobile={
+            sidebarVisible || Boolean(selectedPoi) || Boolean(selectedPersonSlug)
+          }
         />
         <PoiDetailsDrawer
           citySlug={citySlug}
+          personSlug={selectedPersonSlug}
+          onSelectPerson={selectPerson}
           openRequestId={openRequestId}
           poi={selectedPoi}
           excludedByFilters={searchExcluded}

@@ -6,9 +6,15 @@ import { CityExplorer } from "@/app/components/CityExplorer";
 
 type Props = {
   initialSelectedPoiId?: string;
+  initialPoiSlug?: string;
+  initialPersonSlug?: string;
 };
 
-export const RomeMap = async ({ initialSelectedPoiId }: Props = {}) => {
+export const RomeMap = async ({
+  initialSelectedPoiId,
+  initialPoiSlug,
+  initialPersonSlug,
+}: Props = {}) => {
   await connection();
   const city = await visitorContent.getCity("rome").catch(() => null);
   if (!city)
@@ -24,9 +30,18 @@ export const RomeMap = async ({ initialSelectedPoiId }: Props = {}) => {
         No published places are available yet.
       </p>
     );
-  const initialSelectedPoi = initialSelectedPoiId
-    ? pois.find((poi) => poi.id === (aliases[initialSelectedPoiId] ?? initialSelectedPoiId))
-    : undefined;
+  const slugMatches = initialPoiSlug
+    ? pois.filter((poi) => (poi.slug ?? poi.id) === initialPoiSlug)
+    : [];
+  const initialSelectedPoi = initialPoiSlug
+    ? slugMatches.length === 1
+      ? slugMatches[0]
+      : slugMatches.length === 0 && aliases[initialPoiSlug]
+        ? pois.find((poi) => poi.id === aliases[initialPoiSlug])
+        : undefined
+    : initialSelectedPoiId
+      ? pois.find((poi) => poi.id === (aliases[initialSelectedPoiId] ?? initialSelectedPoiId))
+      : undefined;
   const coordinates: [number, number] = initialSelectedPoi
     ? [initialSelectedPoi.coordinates.lng, initialSelectedPoi.coordinates.lat]
     : pois[0]
@@ -41,6 +56,8 @@ export const RomeMap = async ({ initialSelectedPoiId }: Props = {}) => {
       initialZoom={15}
       initialSelectedPoiId={initialSelectedPoi?.id ?? null}
       pois={pois}
+      aliases={aliases}
+      initialPersonSlug={initialPersonSlug}
     />
   );
 };

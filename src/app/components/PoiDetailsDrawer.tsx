@@ -21,6 +21,8 @@ export const PoiDetailsDrawer = ({
   width,
   onResize,
   excludedByFilters = false,
+  personSlug,
+  onSelectPerson,
 }: {
   citySlug: string;
   onClose: () => void;
@@ -29,6 +31,8 @@ export const PoiDetailsDrawer = ({
   width?: number;
   onResize?: (width: number) => void;
   excludedByFilters?: boolean;
+  personSlug?: string | null;
+  onSelectPerson?: (slug: string | null) => void;
 }) => {
   const [poi, setPoi] = useState(selectedPoi);
   if (selectedPoi && selectedPoi !== poi) setPoi(selectedPoi);
@@ -37,19 +41,27 @@ export const PoiDetailsDrawer = ({
     id: string;
     openRequestId: number;
   }>();
-  const selectedPersonId =
-    selectedPerson?.openRequestId === openRequestId ? selectedPerson.id : undefined;
+  const selectedPersonId = onSelectPerson
+    ? (personSlug ?? undefined)
+    : selectedPerson?.openRequestId === openRequestId
+      ? selectedPerson.id
+      : undefined;
   const { content, detail, isLoading, showLoading } = usePoiStoryContent({
     citySlug,
     poiId: poi?.id,
   });
   const mainImage = detail?.gallery.find(({ id }) => id === detail.mainImageId);
   const mainImageUrl = detail ? mainImage?.thumbnailUrl : content ? poi?.mainImageUrl : undefined;
-  const { person, isLoading: isPersonLoading } = usePerson(selectedPersonId, citySlug, poi?.id);
+  const { person, isLoading: isPersonLoading } = usePerson(
+    selectedPersonId,
+    citySlug,
+    selectedPoi?.id,
+    Boolean(onSelectPerson),
+  );
 
   return (
     <Drawer
-      open={Boolean(selectedPoi)}
+      open={Boolean(selectedPoi || selectedPersonId)}
       side="right"
       width={width}
       afterLeave={() => {
@@ -59,7 +71,7 @@ export const PoiDetailsDrawer = ({
         }
       }}
     >
-      {poi ? (
+      {poi || selectedPersonId ? (
         <>
           {onResize ? (
             <PanelResizeHandle edge="left" label="Resize details panel" onResize={onResize} />
@@ -78,16 +90,22 @@ export const PoiDetailsDrawer = ({
               </span>
             </div>
           ) : null}
-          <div key={poi.id} className="h-full overflow-y-auto">
+          <div key={poi?.id ?? "person"} className="h-full overflow-y-auto">
             <div className="absolute top-4 right-4 z-10">
-              <DrawerCloseButton onClick={onClose} />
+              <DrawerCloseButton
+                onClick={
+                  selectedPersonId && selectedPoi && onSelectPerson
+                    ? () => onSelectPerson(null)
+                    : onClose
+                }
+              />
             </div>
             {!selectedPersonId && mainImageUrl && mainImageUrl !== failedMainImageUrl ? (
               <figure>
                 <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-zinc-100">
                   <Image
                     src={mainImageUrl}
-                    alt={`Main image of ${detail?.name ?? poi.name}`}
+                    alt={`Main image of ${detail?.name ?? poi?.name}`}
                     fill
                     sizes={`(min-width: 768px) ${width ?? 448}px, 100vw`}
                     className="object-cover"
@@ -123,18 +141,20 @@ export const PoiDetailsDrawer = ({
               </div>
             ) : null}
             <div className="px-5 py-4 pr-16">
-              {selectedPersonId ? (
+              {selectedPersonId && selectedPoi ? (
                 <button
                   type="button"
-                  onClick={() => setSelectedPerson(undefined)}
+                  onClick={() =>
+                    onSelectPerson ? onSelectPerson(null) : setSelectedPerson(undefined)
+                  }
                   className="mb-3 inline-flex max-w-full cursor-pointer items-center gap-2 rounded-sm py-2 text-sm text-black/60 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black/60"
                 >
                   <ArrowLeftIcon className="size-4 shrink-0" aria-hidden="true" />
-                  <span className="truncate">Back to {poi.name}</span>
+                  <span className="truncate">Back to {selectedPoi.name}</span>
                 </button>
               ) : null}
               <h2 className="font-serif text-2xl/7 tracking-tight text-black">
-                {selectedPersonId ? (person?.name ?? "Person") : (detail?.name ?? poi.name)}
+                {selectedPersonId ? (person?.name ?? "Person") : (detail?.name ?? poi?.name)}
               </h2>
               <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
             </div>
@@ -150,15 +170,22 @@ export const PoiDetailsDrawer = ({
                 ) : (
                   <p className="text-black/60">This person is unavailable.</p>
                 )
-              ) : !detail && poi.shortDescription ? (
+              ) : !detail && poi?.shortDescription ? (
                 <p>{poi.shortDescription}</p>
               ) : null}
               {!selectedPersonId &&
                 (isLoading ? null : content ? (
                   <StoryContent
                     content={content}
-                    period={detail ? undefined : poi.period}
-                    onOpenPerson={(personId) => setSelectedPerson({ id: personId, openRequestId })}
+                    period={detail ? undefined : poi?.period}
+                    onOpenPerson={(personId) =>
+                      onSelectPerson
+                        ? onSelectPerson(
+                            content.relatedPeople.find((person) => person.personId === personId)
+                              ?.slug ?? personId,
+                          )
+                        : setSelectedPerson({ id: personId, openRequestId })
+                    }
                   />
                 ) : (
                   <p className="mt-4 text-black/60">This place is unavailable.</p>

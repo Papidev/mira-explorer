@@ -406,7 +406,7 @@ describe("visitor category filtering", () => {
       }),
     );
     expect(screen.getByRole("heading", { name: "A Church" })).toBeInTheDocument();
-    expect(new URLSearchParams(window.location.search).get("poiId")).toBe("church");
+    expect(new URLSearchParams(window.location.search).get("poi")).toBe("church");
     expect(
       screen.getByRole("button", { name: "Open details for A Church", pressed: true }),
     ).toHaveClass("selected-poi-marker");
@@ -415,7 +415,7 @@ describe("visitor category filtering", () => {
     expect(screen.getByRole("status")).toHaveTextContent("0 places");
     expect(screen.queryByRole("button", { name: /Open details for/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "A Church" })).not.toBeInTheDocument();
-    expect(new URLSearchParams(window.location.search).has("poiId")).toBe(false);
+    expect(new URLSearchParams(window.location.search).has("poi")).toBe(false);
     window.history.back();
     expect(await screen.findByRole("heading", { name: "A Church" })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("4 places");
@@ -980,7 +980,7 @@ describe("visitor place search", () => {
       screen.getByRole("button", { name: "Open details for Café Museum", pressed: true }),
     ).toHaveClass("selected-poi-marker");
     expect(cameraUpdates.at(-1)).toEqual({ center: [12.5, 41.8], offset: [-48, 0] });
-    expect(new URLSearchParams(window.location.search).get("poiId")).toBe("cafe");
+    expect(new URLSearchParams(window.location.search).get("poi")).toBe("cafe");
     expect(search).toHaveValue("");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
 
@@ -1006,7 +1006,7 @@ describe("visitor place search", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(search).toHaveValue("");
-    expect(new URLSearchParams(window.location.search).has("poiId")).toBe(false);
+    expect(new URLSearchParams(window.location.search).has("poi")).toBe(false);
   });
 
   it("opens an excluded search result without changing filters or their count, then removes its marker on close", async () => {
@@ -1079,4 +1079,106 @@ describe("visitor place search", () => {
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });
+  it("opens a stable POI slug, retains its context for People, and follows browser history", async () => {
+    const user = userEvent.setup();
+    const place = {
+      ...pois[0],
+      id: "8aa5be62-82a6-4776-a2cd-bc5b1be60996",
+      slug: "colosseum",
+      name: "Renamed Colosseum",
+    };
+    server.use(
+      http.get("*/api/pois/rome/:id/dialog-content", () =>
+        HttpResponse.json({
+          storyContent: {
+            introduction: "A shared Story.",
+            topics: { history: [], design: [], art: [] },
+            relatedPeople: [
+              { personId: "internal-person-id", name: "Vespasian", slug: "vespasian" },
+            ],
+          },
+        }),
+      ),
+      http.get("*/api/people/by-slug/vespasian", ({ request }) => {
+        expect(new URL(request.url).searchParams.get("poiId")).toBe(place.id);
+        return HttpResponse.json({
+          person: {
+            id: "internal-person-id",
+            name: "Vespasian",
+            description: ["A shared biography.", "More context."],
+            curiosities: [],
+          },
+        });
+      }),
+    );
+    window.history.replaceState(null, "", "/rome?poi=colosseum&source=share#map");
+    render(
+      <CityExplorer citySlug="rome" coordinates={[12.5, 41.9]} initialZoom={15} pois={[place]} />,
+    );
+    expect(await screen.findByText("A shared Story.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Vespasian" }));
+    expect(await screen.findByText("A shared biography.")).toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get("person")).toBe("vespasian");
+    expect(new URLSearchParams(window.location.search).get("poi")).toBe("colosseum");
+    window.history.back();
+    expect(await screen.findByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
+    window.history.forward();
+    expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Back to Renamed Colosseum" }));
+    expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
+    expect(window.location.search).toBe("?poi=colosseum&source=share");
+    expect(window.location.hash).toBe("#map");
+  });
+
+  it.each(["?person=vespasian", "?poi=museum&person=vespasian"])(
+    "opens a shared Person URL %s",
+    async (query) => {
+      server.use(
+        http.get("*/api/people/by-slug/vespasian", () =>
+          HttpResponse.json({
+            person: {
+              id: "another-id",
+              name: "Vespasian",
+              description: ["Shared profile.", "Context."],
+              curiosities: [],
+            },
+          }),
+        ),
+      );
+      window.history.replaceState(null, "", `/rome${query}`);
+      render(
+        <CityExplorer citySlug="rome" coordinates={[12.5, 41.9]} initialZoom={15} pois={pois} />,
+      );
+      expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
+      expect(screen.getByText("Shared profile.")).toBeInTheDocument();
+      if (query.includes("poi="))
+        expect(screen.getByRole("button", { name: "Back to A Museum" })).toBeInTheDocument();
+      else expect(screen.queryByRole("button", { name: /^Back to/ })).not.toBeInTheDocument();
+      await userEvent.setup().click(screen.getByRole("button", { name: "Close" }));
+      expect(window.location.search).toBe(query.includes("poi=") ? "?poi=museum" : "");
+      if (query.includes("poi="))
+        expect(screen.getByRole("heading", { name: "A Museum" })).toBeInTheDocument();
+    },
+  );
+
+  it.each(["poiId", "poi"])(
+    "replaces a legacy %s link with its canonical slug and preserves other URL parts",
+    async (parameter) => {
+      window.history.replaceState(null, "", `/rome?${parameter}=old-local-id&source=share#map`);
+      render(
+        <CityExplorer
+          citySlug="rome"
+          coordinates={[12.5, 41.9]}
+          initialZoom={15}
+          pois={[{ ...pois[1], id: "online-id", slug: "colosseum" }]}
+          aliases={{ "old-local-id": "online-id" }}
+        />,
+      );
+      expect(await screen.findByRole("heading", { name: "A Museum" })).toBeInTheDocument();
+      expect(new URLSearchParams(window.location.search).get("poi")).toBe("colosseum");
+      expect(new URLSearchParams(window.location.search).get("source")).toBe("share");
+      expect(new URLSearchParams(window.location.search).has("poiId")).toBe(false);
+      expect(window.location.hash).toBe("#map");
+    },
+  );
 });

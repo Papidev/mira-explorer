@@ -186,8 +186,13 @@ export const publishedPersonSchema = z
   .object({
     id: z.string().trim().min(1),
     name: z.string().trim().min(1),
+    slug: z
+      .string()
+      .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+      .optional(),
     textFormat: z.literal("markdown"),
     content: personContentSchema,
+    image: publishedImageSchema.optional(),
     sources: sourcesSchema,
     linkedPois: z
       .array(publishedPoiSummarySchema)
@@ -218,6 +223,10 @@ export type PublishedSource = z.infer<typeof publishedSourceSchema>;
 export const publishedCityPreviewSchema = publishedCityMapSchema.safeExtend({
   pois: z.array(
     publishedPoiSummarySchema.extend({
+      slug: z
+        .string()
+        .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+        .optional(),
       mainImage: publishedImageSchema.nullable(),
       introduction: z.string(),
       wikidataId: z.string().nullable().optional(),

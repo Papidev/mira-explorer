@@ -68,3 +68,16 @@ describe("online visitor presentation", () => {
     expect(visitor.image).toBeUndefined();
   });
 });
+
+it("passes licensed published portraits to the visitor Person renderer", () => {
+  const person = exampleStoryWrite().people[0].person;
+  person.image = {
+    id: "Portrait.jpg",
+    commonsPageUrl: "https://commons.wikimedia.org/wiki/File:Portrait.jpg",
+    thumbnailUrl: "https://upload.wikimedia.org/thumb.jpg",
+    originalImageUrl: "https://upload.wikimedia.org/portrait.jpg",
+    license: "Public domain",
+    attribution: "Archive",
+  };
+  expect(toVisitorPerson(person).image).toEqual(person.image);
+});

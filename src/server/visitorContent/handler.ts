@@ -15,6 +15,7 @@ export const createVisitorHandler = (
     getCity?: (city: string) => Promise<PublishedCityPreview>;
     getStory: (id: string) => Promise<PublishedPoiDetail | null>;
     getPerson: (id: string) => Promise<PublishedPerson | null>;
+    getPersonBySlug?: (slug: string) => Promise<PublishedPerson | null>;
   },
   local?: ReturnType<typeof createPublicCatalog>,
 ) => {
@@ -47,14 +48,24 @@ export const createVisitorHandler = (
         const content = await getStory(city, poiId);
         if (content) {
           const datedPeople = await Promise.all(
-            content.storyContent.relatedPeople.map(async (person) => ({
-              person,
-              birthDate: person.personId
+            content.storyContent.relatedPeople.map(async (person) => {
+              const profile = person.personId
                 ? content.detail
-                  ? (await reads.getPerson(person.personId))?.content.birthDate
-                  : local?.getPerson(person.personId)?.birthDate
-                : undefined,
-            })),
+                  ? await reads.getPerson(person.personId)
+                  : local?.getPerson(person.personId)
+                : undefined;
+              return {
+                person: {
+                  ...person,
+                  ...(profile ? { slug: profile.slug ?? profile.id } : {}),
+                },
+                birthDate: profile
+                  ? "content" in profile
+                    ? profile.content.birthDate
+                    : profile.birthDate
+                  : undefined,
+              };
+            }),
           );
           content.storyContent = {
             ...content.storyContent,
@@ -71,23 +82,53 @@ export const createVisitorHandler = (
         return Response.json({ storyContent: null }, { status: 503, headers });
       }
     },
-    getPerson: async (personId: string, city?: string, poiId?: string) => {
+    getPerson: async (personId: string, city?: string, poiId?: string, bySlug = false) => {
       const headers = { "Cache-Control": "no-store" };
       try {
-        if (city && poiId) {
-          const parent = await getStory(city, poiId);
-          if (!parent?.storyContent.relatedPeople.some((person) => person.personId === personId))
-            return Response.json({ person: null }, { status: 404, headers });
-          if (!parent.detail) {
-            const person = local?.getPerson(personId) ?? null;
-            return Response.json({ person, detail: null }, { status: person ? 200 : 404, headers });
+        const parent = city && poiId ? await getStory(city, poiId) : undefined;
+        if (city && poiId && !parent)
+          return Response.json({ person: null }, { status: 404, headers });
+        const localPerson = bySlug ? local?.getPersonBySlug(personId) : local?.getPerson(personId);
+        if (parent && !parent.detail) {
+          const person =
+            localPerson &&
+            parent.storyContent.relatedPeople.some(({ personId }) => personId === localPerson.id)
+              ? { ...localPerson, slug: localPerson.id }
+              : null;
+          return Response.json({ person, detail: null }, { status: person ? 200 : 404, headers });
+        }
+        const detail = bySlug
+          ? await reads.getPersonBySlug?.(personId)
+          : await reads.getPerson(personId);
+        if (
+          detail &&
+          (!city || detail.linkedPois.some((poi) => poi.city === city)) &&
+          (!parent ||
+            parent.storyContent.relatedPeople.some(({ personId }) => personId === detail.id))
+        )
+          return Response.json({ person: toVisitorPerson(detail), detail }, { headers });
+        // A local-only standalone profile is visible only through a still-visible local Story.
+        if (bySlug && !parent && localPerson && local) {
+          for (const poi of local.getPois(city ?? "rome")) {
+            if (
+              !local
+                .getStoryContent(city ?? "rome", poi.id)
+                ?.relatedPeople.some(({ personId }) => personId === localPerson.id)
+            )
+              continue;
+            const story = await getStory(city ?? "rome", poi.id);
+            if (
+              story &&
+              !story.detail &&
+              story.storyContent.relatedPeople.some(({ personId }) => personId === localPerson.id)
+            )
+              return Response.json(
+                { person: { ...localPerson, slug: localPerson.id }, detail: null },
+                { headers },
+              );
           }
         }
-        const detail = await reads.getPerson(personId);
-        return Response.json(
-          { person: detail ? toVisitorPerson(detail) : null, detail },
-          { status: detail ? 200 : 404, headers },
-        );
+        return Response.json({ person: null }, { status: 404, headers });
       } catch {
         return Response.json({ person: null }, { status: 503, headers });
       }

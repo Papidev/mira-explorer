@@ -33,7 +33,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
       </div>
 
       <Link
-        href={`/rome?poiId=${encodeURIComponent(cover.poi.id)}`}
+        href={`/rome?poi=${encodeURIComponent(cover.poi.id)}`}
         className="group absolute right-0 bottom-0 left-6 rounded-2xl border border-zinc-900/10 bg-white p-5 shadow-xl transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800 sm:left-auto sm:w-80"
       >
         <span className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-600 uppercase">
