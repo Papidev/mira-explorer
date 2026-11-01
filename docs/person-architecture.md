@@ -6,7 +6,7 @@ Story generation selects at most ten significant Related People in order. It dis
 
 Each Person lives once at `data/people/<person-id>/person.json`; source text is separate under `data/generated/people/`. Display names omit trailing Wikipedia disambiguation qualifiers without rewriting saved records. Full Wikipedia/source titles and stable IDs retain identity information.
 
-A Person has a two-paragraph description, source-supported curiosities, optional exact or approximate birth/death dates, and at most one optional Commons image. Its internal Wikipedia Source is separate from Story Sources; Wikidata supplies identity and Commons image rights.
+A Person has a two-paragraph description, source-supported curiosities, optional exact or approximate birth/death dates, and at most one optional Commons image. Its internal Wikipedia Source is separate from Story Sources; Wikidata supplies identity and Commons image rights. When Commons explicitly marks an image as public domain with no attribution required, a missing author does not exclude it: use Wikimedia Commons as the displayed credit without inventing an author. Other images still require attribution metadata.
 
 ## Resolution
 

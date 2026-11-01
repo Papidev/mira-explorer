@@ -41,6 +41,18 @@
       "precision": "approximate"
     }
   },
+  "image": {
+    "commonsFileName": "Nuremberg_chronicles_-_Felicitas_with_her_Seven_Sons_(CXIIIIr).jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Nuremberg_chronicles_-_Felicitas_with_her_Seven_Sons_(CXIIIIr).jpg",
+    "thumbnailUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Nuremberg_chronicles_-_Felicitas_with_her_Seven_Sons_%28CXIIIIr%29.jpg/960px-Nuremberg_chronicles_-_Felicitas_with_her_Seven_Sons_%28CXIIIIr%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Nuremberg_chronicles_-_Felicitas_with_her_Seven_Sons_%28CXIIIIr%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 1312,
+    "height": 1724,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",

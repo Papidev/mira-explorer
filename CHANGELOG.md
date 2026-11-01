@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.20.4
+
+### Patch Changes
+
+- Restore missing People images, including Benito Mussolini, and retain Commons public-domain images when author metadata is absent and attribution is explicitly not required.
+
 ## 0.20.3
 
 ### Patch Changes

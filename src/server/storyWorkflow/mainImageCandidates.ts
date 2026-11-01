@@ -157,7 +157,12 @@ const fetchCommonsCandidate = async (
     stripHtml(getExtMetadataString(imageInfo.extmetadata, "Artist")) ??
     stripHtml(getExtMetadataString(imageInfo.extmetadata, "Credit"));
   const attribution =
-    stripHtml(getExtMetadataString(imageInfo.extmetadata, "Attribution")) ?? author;
+    stripHtml(getExtMetadataString(imageInfo.extmetadata, "Attribution")) ??
+    author ??
+    (getExtMetadataString(imageInfo.extmetadata, "License") === "pd" &&
+    getExtMetadataString(imageInfo.extmetadata, "AttributionRequired") === "false"
+      ? "Wikimedia Commons"
+      : undefined);
 
   return {
     commonsFileName: normalizedFileName,

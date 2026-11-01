@@ -37,6 +37,18 @@
       }
     ]
   },
+  "image": {
+    "commonsFileName": "Celli_Angelo_1886-1914.jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Celli_Angelo_1886-1914.jpg",
+    "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Celli_Angelo_1886-1914.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Celli_Angelo_1886-1914.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 682,
+    "height": 992,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",

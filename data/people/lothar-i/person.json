@@ -47,6 +47,18 @@
       "precision": "exact"
     }
   },
+  "image": {
+    "commonsFileName": "Lothar_I.jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Lothar_I.jpg",
+    "thumbnailUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Lothar_I.jpg/960px-Lothar_I.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Lothar_I.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 1278,
+    "height": 1975,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",

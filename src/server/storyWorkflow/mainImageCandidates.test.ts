@@ -11,6 +11,61 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Main Image Candidates", () => {
+  it.each([
+    { license: "pd", required: "false", attribution: "Wikimedia Commons" },
+    { license: "pd", required: "true", attribution: undefined },
+    { license: "pd", required: undefined, attribution: undefined },
+    { license: "cc-by-sa-4.0", required: "false", attribution: undefined },
+  ])(
+    "handles missing author for $license with attribution required=$required",
+    async ({ license, required, attribution }) => {
+      server.use(
+        http.get("https://en.wikipedia.org/w/api.php", () =>
+          HttpResponse.json({ query: { pages: [{ pageimage: "Portrait.jpg" }] } }),
+        ),
+        http.get("https://commons.wikimedia.org/w/api.php", () =>
+          HttpResponse.json({
+            query: {
+              pages: [
+                {
+                  imageinfo: [
+                    {
+                      url: "https://upload.wikimedia.org/original.jpg",
+                      thumburl: "https://upload.wikimedia.org/thumb.jpg",
+                      extmetadata: {
+                        License: { value: license },
+                        LicenseShortName: {
+                          value: license === "pd" ? "Public domain" : "CC BY-SA 4.0",
+                        },
+                        ...(required ? { AttributionRequired: { value: required } } : {}),
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          }),
+        ),
+      );
+      const candidates = await fetchMainImageCandidates(
+        {
+          id: "portrait",
+          name: "Portrait",
+          city: "",
+          coordinates: { lat: 0, lng: 0 },
+          sourceHints: {},
+        },
+        "Portrait",
+      );
+      expect(candidates).toHaveLength(1);
+      expect(candidates[0].attribution).toBe(attribution);
+      expect(candidates[0].author).toBeUndefined();
+      expect(candidates.filter(({ license, attribution }) => license && attribution)).toHaveLength(
+        attribution ? 1 : 0,
+      );
+    },
+  );
+
   it("discovers the page image from the Italian source edition", async () => {
     server.use(
       http.get("https://it.wikipedia.org/w/api.php", ({ request }) => {

@@ -41,6 +41,18 @@
       }
     ]
   },
+  "image": {
+    "commonsFileName": "RomaForoRomanoColonnaFoca2.JPG",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:RomaForoRomanoColonnaFoca2.JPG",
+    "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/76/RomaForoRomanoColonnaFoca2.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/76/RomaForoRomanoColonnaFoca2.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 903,
+    "height": 1929,
+    "discoveredVia": "wikipedia-page-image",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",
