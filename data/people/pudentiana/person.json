@@ -21,6 +21,18 @@
       }
     ]
   },
+  "image": {
+    "commonsFileName": "Pudentiana,_detail_of_a_mosaic_in_Santa_Pudenziana.jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Pudentiana%2C_detail_of_a_mosaic_in_Santa_Pudenziana.jpg",
+    "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Pudentiana%2C_detail_of_a_mosaic_in_Santa_Pudenziana.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Pudentiana%2C_detail_of_a_mosaic_in_Santa_Pudenziana.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 155,
+    "height": 167,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",

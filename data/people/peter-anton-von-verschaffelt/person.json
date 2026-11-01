@@ -41,6 +41,18 @@
       "precision": "exact"
     }
   },
+  "image": {
+    "commonsFileName": "Peter_Anton_Verschaffelt.jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Peter_Anton_Verschaffelt.jpg",
+    "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Peter_Anton_Verschaffelt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Peter_Anton_Verschaffelt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 564,
+    "height": 657,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",

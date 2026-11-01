@@ -49,6 +49,18 @@
       "precision": "exact"
     }
   },
+  "image": {
+    "commonsFileName": "Mussolini_mezzobusto.jpg",
+    "commonsPageUrl": "https://commons.wikimedia.org/wiki/File:Mussolini_mezzobusto.jpg",
+    "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Mussolini_mezzobusto.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Mussolini_mezzobusto.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "license": "Public domain",
+    "attribution": "Wikimedia Commons",
+    "width": 958,
+    "height": 1297,
+    "discoveredVia": "wikidata-p18",
+    "isProposed": true
+  },
   "source": {
     "id": "wikipedia",
     "kind": "wikipedia",
