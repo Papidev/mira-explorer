@@ -54,6 +54,43 @@ describe("People mentioned in a Story", () => {
     },
   );
 
+  it.each(["markdown", undefined] as const)(
+    "links names with Unicode spaces while preserving the Story text (%s)",
+    async (textFormat) => {
+      const opened: string[] = [];
+      render(
+        <StoryContent
+          onOpenPerson={(id) => opened.push(id)}
+          content={{
+            textFormat,
+            introduction: "Named after Nilde\u202fIotti.",
+            topics: {
+              history: [{ description: "Nilde\u202fIotti met President Roberto\u202fFico." }],
+              design: [{ description: "Ernesto\u00a0Basile designed the library." }],
+              art: [],
+            },
+            relatedPeople: [
+              { name: "Nilde Iotti", personId: "nilde-iotti" },
+              { name: "Roberto Fico", personId: "roberto-fico" },
+              { name: "Ernesto Basile", personId: "ernesto-basile" },
+            ],
+          }}
+        />,
+      );
+      for (const name of [/Nilde\sIotti/, /Roberto\sFico/, /Ernesto\sBasile/]) {
+        expect(screen.getAllByRole("link", { name })).toHaveLength(1);
+      }
+      expect(screen.getByRole("link", { name: /Roberto\sFico/ }).textContent).toBe(
+        "Roberto\u202fFico",
+      );
+      expect(screen.getByRole("link", { name: /Ernesto\sBasile/ }).textContent).toBe(
+        "Ernesto\u00a0Basile",
+      );
+      await userEvent.setup().click(screen.getByRole("link", { name: /Roberto\sFico/ }));
+      expect(opened).toEqual(["roberto-fico"]);
+    },
+  );
+
   it("keeps existing links and avoids partial names and unresolved People", () => {
     render(
       <StoryContent

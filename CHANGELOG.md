@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.1
+
+### Patch Changes
+
+- Recognize Person names containing Unicode spaces when linking Story text, while preserving the original text and first-mention behavior.
+
 ## 0.21.0
 
 ### Minor Changes

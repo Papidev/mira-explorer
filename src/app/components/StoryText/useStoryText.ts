@@ -16,19 +16,21 @@ export const useStoryText = (
     // Existing links, code, and HTML keep their original content and destination.
     if (node.type === "link" || node.type === "linkReference") return [node];
     if (node.type === "text") {
+      // Normalize whitespace only for matching, keeping original text and offsets.
+      const normalized = node.value.replace(/\s/gu, " ");
       const parts: PhrasingContent[] = [];
       let cursor = 0;
       while (cursor < node.value.length) {
         const match = people
           .filter(({ personId }) => !linked.has(personId!))
           .map((person) => {
-            let start = node.value.indexOf(person.name, cursor);
+            let start = normalized.indexOf(person.name.replace(/\s/gu, " "), cursor);
             while (
               start >= 0 &&
               (/[\p{L}\p{N}_]/u.test(node.value[start - 1] ?? "") ||
                 /[\p{L}\p{N}_]/u.test(node.value[start + person.name.length] ?? ""))
             )
-              start = node.value.indexOf(person.name, start + 1);
+              start = normalized.indexOf(person.name.replace(/\s/gu, " "), start + 1);
             return { ...person, start };
           })
           .filter((person) => person.start >= 0)
@@ -40,7 +42,7 @@ export const useStoryText = (
           type: "link",
           url: `#person-${encodeURIComponent(match.personId!)}`,
           data: { hProperties: { "data-person-id": match.personId! } },
-          children: [{ type: "text", value: match.name }],
+          children: [{ type: "text", value: node.value.slice(start, start + match.name.length) }],
         });
         linked.add(match.personId!);
         cursor = start + match.name.length;
