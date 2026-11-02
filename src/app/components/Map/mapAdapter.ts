@@ -281,6 +281,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         style: MAP_STYLE_URL,
         center: initialView.center,
         zoom: initialView.zoom,
+        minZoom: 7,
       });
 
       const navigationControl = new maplibregl.NavigationControl();
