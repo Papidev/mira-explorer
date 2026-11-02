@@ -47,14 +47,18 @@ export const HomeCuriosity = () => (
           </p>
         </div>
         <p>
-          In several languages around the world, “mira” means “look”, “observe”.
+          In several languages around the world, “mira” means look, observe.
           <br />
-          In Italian, it means something more: it carries a poetic, literary meaning — to admire, to
-          contemplate with admiration.
+          In Italian, something more: it carries a poetic, literary meaning:
+          <br />
+          <strong className="font-semibold text-zinc-900">
+            to admire, to contemplate with admiration.
+          </strong>
         </p>
         <p>
           We chose Mira for that spirit: taking the time to discover and appreciate the{" "}
-          <strong className="font-semibold text-zinc-900">beauty around us</strong>.
+          <strong className="font-semibold text-zinc-900">beauty around us</strong>: the beauty in
+          the details, and the joy of discovering at a slower pace.
         </p>
         <p>
           <strong className="font-semibold text-zinc-900">Linger a little.</strong> Let a detail
