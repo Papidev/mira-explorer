@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.2
+
+### Patch Changes
+
+- Limit map zoom out to a regional view and keep the preview arrow centered in a smaller container.
+
 ## 0.21.1
 
 ### Patch Changes
