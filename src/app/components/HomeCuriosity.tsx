@@ -24,9 +24,12 @@ export const HomeCuriosity = () => (
         >
           <Bird tone="light" />
         </div>
-        <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3 pr-16">
-          <div lang="it" className="space-y-2">
-            <p className="font-serif text-6xl leading-none font-medium tracking-[-0.055em] text-zinc-900 sm:text-7xl">
+        <div className="mb-6 space-y-2">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pr-16">
+            <p
+              lang="it"
+              className="font-serif text-6xl leading-none font-medium tracking-[-0.055em] text-zinc-900 sm:text-7xl"
+            >
               mira
               <sup
                 className="ml-1 align-super font-sans text-sm font-normal tracking-normal"
@@ -35,15 +38,15 @@ export const HomeCuriosity = () => (
                 1
               </sup>
             </p>
-            <p lang="en" className="text-xs/5 tracking-wide text-zinc-500">
-              Italian · from <i lang="it">mirare</i> · literary
-            </p>
-            <p className="font-serif text-base/7 text-zinc-900 italic">
-              «Ammirare; contemplare con ammirazione.»
+            <p className="border-brand max-w-36 translate-y-0.5 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
+              Our name is an invitation.
             </p>
           </div>
-          <p className="border-brand max-w-36 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
-            Our name is an invitation.
+          <p className="text-xs/5 tracking-wide text-zinc-500">
+            Italian · from <i lang="it">mirare</i> · literary
+          </p>
+          <p lang="it" className="font-serif text-base/7 text-zinc-900 italic">
+            «Ammirare; contemplare con ammirazione.»
           </p>
         </div>
         <p>
