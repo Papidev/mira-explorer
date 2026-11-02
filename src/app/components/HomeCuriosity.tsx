@@ -35,7 +35,9 @@ export const HomeCuriosity = () => (
                 1
               </sup>
             </p>
-            <p className="text-xs/5 tracking-wide text-zinc-500">da mirare · uso letterario</p>
+            <p lang="en" className="text-xs/5 tracking-wide text-zinc-500">
+              Italian · from <i lang="it">mirare</i> · literary
+            </p>
             <p className="font-serif text-base/7 text-zinc-900 italic">
               «Ammirare; contemplare con ammirazione.»
             </p>
@@ -45,9 +47,10 @@ export const HomeCuriosity = () => (
           </p>
         </div>
         <p>
-          In several languages around the world, it means to look, to observe.
+          In several languages around the world, “mira” means “look”, “observe”.
           <br />
-          In Italian, it carries a poetic, literary meaning: to admire.
+          In Italian, it means something more: it carries a poetic, literary meaning — to admire, to
+          contemplate with admiration.
         </p>
         <p>
           We chose Mira for that spirit: taking the time to discover and appreciate the{" "}
