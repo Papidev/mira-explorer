@@ -1,5 +1,11 @@
 import { AppVersion } from "@/app/components/ui/AppVersion";
-import { ArrowLongRightIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLongRightIcon,
+  ArrowRightIcon,
+  BuildingLibraryIcon,
+  PaintBrushIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import catalog from "../../data/public/catalog.json";
@@ -54,9 +60,26 @@ const Home = () => {
               </span>
             </h1>
             <p className="mt-6 max-w-md text-base/7 text-zinc-600">
-              Get the essence of a place at a glance. Discover the art, history, and people that
-              make it interesting, then explore further on Wikipedia whenever you want.
+              Discover the places, people, and details that bring a city to life. Get the essence at
+              a glance, then explore further on Wikipedia whenever you want.
             </p>
+            <ul
+              aria-label="Mira's focus"
+              className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xl/8 font-semibold tracking-tight text-zinc-900 sm:text-2xl/8"
+            >
+              {[
+                { label: "Art", Icon: PaintBrushIcon },
+                { label: "History", Icon: BuildingLibraryIcon },
+                { label: "Culture", Icon: SparklesIcon },
+              ].map(({ label, Icon }) => (
+                <li key={label} className="flex items-center gap-2">
+                  <span className="bg-brand flex size-9 shrink-0 items-center justify-center rounded-full">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  {label}
+                </li>
+              ))}
+            </ul>
             <p className="mt-6 max-w-md text-base/7 text-zinc-600">
               <span className="font-semibold text-zinc-900">Mira begins in Rome.</span> More cities
               will follow.
@@ -110,6 +133,40 @@ const Home = () => {
               </div>
             </div>
           ))}
+        </section>
+
+        <section
+          aria-labelledby="closer-look-title"
+          className="border-brand/70 grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
+        >
+          <div>
+            <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+              Follow your curiosity
+            </p>
+            <h2
+              id="closer-look-title"
+              className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
+            >
+              There is more to see when you look closer.
+            </h2>
+            <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
+          </div>
+          <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
+            <p>
+              Discover <strong className="font-semibold text-zinc-900">lesser-known places</strong>{" "}
+              and unexpected finds alongside celebrated landmarks, including places a little further
+              afield that rarely make the sightseeing lists.
+            </p>
+            <p>
+              Notice <strong className="font-semibold text-zinc-900">overlooked details</strong>: a
+              hidden work of art or a surprising story can change how you see even a familiar place,
+              making each visit more rewarding.
+            </p>
+            <p>
+              Mira explores these places in depth, without trying to list everything in a city or
+              provide a directory of shops, restaurants, and hotels.
+            </p>
+          </div>
         </section>
 
         <section
