@@ -33,21 +33,22 @@ export const HomeCuriosity = () => (
           </p>
         </div>
         <p>
-          In several languages around the world, it means to look, to observe.
+          In several languages around the world, it means to{" "}
+          <strong className="font-semibold text-zinc-900">look</strong>, to{" "}
+          <strong className="font-semibold text-zinc-900">observe</strong>.
           <br />
           In Italian, it carries a poetic, literary meaning: to admire.
         </p>
-        <p className="font-serif text-2xl leading-snug text-zinc-900 italic sm:text-3xl">
-          <strong className="font-semibold">to contemplate with admiration.</strong>
+        <p className="font-serif text-xl/8 text-zinc-900 italic">to contemplate with admiration</p>
+        <p>
+          We chose Mira for that spirit: taking the time to discover and appreciate the{" "}
+          <strong className="font-semibold text-zinc-900">beauty around us</strong>.
         </p>
         <p>
-          We chose Mira for that spirit: taking the time to discover and appreciate the beauty
-          around us.
-        </p>
-        <p>
-          Linger a little. Let a detail catch your eye, wonder about its story, and give yourself
-          time to understand it. We want each discovery to enrich your experience and leave you with
-          something to carry into your own life.
+          <strong className="font-semibold text-zinc-900">Linger a little.</strong> Let a detail
+          catch your eye, wonder about its story, and give yourself time to understand it. We want
+          each discovery to enrich your experience and leave you with something to carry into your
+          own life.
         </p>
       </div>
     </div>
