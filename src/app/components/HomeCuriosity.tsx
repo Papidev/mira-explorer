@@ -38,7 +38,7 @@ export const HomeCuriosity = () => (
                 1
               </sup>
             </p>
-            <p className="border-brand max-w-36 translate-y-0.5 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
+            <p className="border-brand max-w-36 translate-y-1 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
               Our name is an invitation.
             </p>
           </div>
