@@ -1,3 +1,5 @@
+import { Bird } from "@/app/components/ui/MiraLogo/Bird";
+
 export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand/70 border-b py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
@@ -15,12 +17,32 @@ export const HomeCuriosity = () => (
           </span>
         </h2>
       </div>
-      <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
+      <div className="bg-brand-soft/50 relative max-w-2xl space-y-4 rounded-2xl p-6 text-base/7 text-zinc-600 sm:p-8">
+        <div
+          className="pointer-events-none absolute -top-10 right-3 -scale-x-100 text-7xl sm:right-6 sm:text-8xl"
+          aria-hidden="true"
+        >
+          <Bird tone="light" />
+        </div>
+        <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3 pr-16">
+          <p className="font-serif text-6xl leading-none font-medium tracking-[-0.055em] text-zinc-900 sm:text-7xl">
+            mira
+          </p>
+          <p className="border-brand max-w-36 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
+            Our name is an invitation.
+          </p>
+        </div>
         <p>
-          <strong className="font-semibold text-zinc-900">Our name is an invitation.</strong> In
-          several languages around the world, “mira” means to look, to observe. In Italian, it
-          carries a poetic, literary meaning: to admire, to contemplate with admiration. We chose
-          Mira for that spirit: taking the time to discover and appreciate the beauty around us.
+          In several languages around the world, it means to look, to observe.
+          <br />
+          In Italian, it carries a poetic, literary meaning: to admire.
+        </p>
+        <p className="font-serif text-2xl leading-snug text-zinc-900 italic sm:text-3xl">
+          <strong className="font-semibold">to contemplate with admiration.</strong>
+        </p>
+        <p>
+          We chose Mira for that spirit: taking the time to discover and appreciate the beauty
+          around us.
         </p>
         <p>
           Linger a little. Let a detail catch your eye, wonder about its story, and give yourself
@@ -31,22 +53,22 @@ export const HomeCuriosity = () => (
     </div>
 
     <div className="mt-10 grid gap-8 text-base/7 text-zinc-600 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
-      <p className="border-t-2 border-amber-300 pt-4">
+      <p className="border-brand/70 border-t pt-4">
         Discover <strong className="font-semibold text-zinc-900">lesser-known places</strong> beyond
         the usual tourist routes, alongside the landmarks you came to see.
       </p>
-      <p className="border-t-2 border-sky-300 pt-4">
+      <p className="border-brand/70 border-t pt-4">
         Discover <strong className="font-semibold text-zinc-900">details and curiosities</strong>,
         and the events and people connected to the places you visit. There is more to each place
         than first meets the eye.
       </p>
-      <p className="border-t-2 border-violet-300 pt-4">
+      <p className="border-brand/70 border-t pt-4">
         Understand{" "}
         <strong className="font-semibold text-zinc-900">the history behind what you see</strong>.
         Explore how the city became what it is today, and get more from its art and cultural
         heritage.
       </p>
-      <p className="border-t-2 border-rose-300 pt-4">
+      <p className="border-brand/70 border-t pt-4">
         You won’t find hotel, restaurant, or shopping listings on Mira. You’ll find{" "}
         <strong className="font-semibold text-zinc-900">places that stay with you</strong>: beauty
         that moves you, stories that teach you something, and discoveries that deepen your love of
