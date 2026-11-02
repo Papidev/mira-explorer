@@ -42,10 +42,10 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
         <div className="pointer-events-none absolute inset-0 ring-1 ring-black/10 ring-inset" />
         <span
           aria-hidden="true"
-          className="bg-brand group-hover:bg-brand-action absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
+          className="bg-brand group-hover:bg-brand-action absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
         >
           <ArrowLongRightIcon
-            className="size-6 -rotate-45 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
+            className="size-6 -rotate-45"
             strokeWidth={1.5}
           />
         </span>
