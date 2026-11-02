@@ -153,6 +153,18 @@ const Home = () => {
           </div>
           <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
             <p>
+              <strong className="font-semibold text-zinc-900">Our name is an invitation.</strong> In
+              several languages around the world, “mira” means to look, to observe. In Italian, it
+              carries a poetic, literary meaning: to admire, to contemplate with admiration. We
+              chose Mira for that spirit: taking the time to discover and appreciate the beauty
+              around us.
+            </p>
+            <p>
+              Linger a little. Let a detail catch your eye, wonder about its story, and give
+              yourself time to understand it. We want each discovery to enrich your experience and
+              leave you with something to carry into your own life.
+            </p>
+            <p>
               Discover <strong className="font-semibold text-zinc-900">lesser-known places</strong>{" "}
               beyond the usual tourist routes, alongside the landmarks you came to see.
             </p>
