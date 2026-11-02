@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.3
+
+### Patch Changes
+
+- Highlight Mira's focus on art, history, and culture, introduce deeper city discovery, and refresh the homepage map screenshot.
+
 ## 0.21.2
 
 ### Patch Changes

@@ -154,17 +154,27 @@ const Home = () => {
           <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
             <p>
               Discover <strong className="font-semibold text-zinc-900">lesser-known places</strong>{" "}
-              and unexpected finds alongside celebrated landmarks, including places a little further
-              afield that rarely make the sightseeing lists.
+              beyond the usual tourist routes, alongside the landmarks you came to see.
             </p>
             <p>
-              Notice <strong className="font-semibold text-zinc-900">overlooked details</strong>: a
-              hidden work of art or a surprising story can change how you see even a familiar place,
-              making each visit more rewarding.
+              Discover{" "}
+              <strong className="font-semibold text-zinc-900">details and curiosities</strong>, and
+              the events and people connected to the places you visit. There is more to each place
+              than first meets the eye.
             </p>
             <p>
-              Mira explores these places in depth, without trying to list everything in a city or
-              provide a directory of shops, restaurants, and hotels.
+              Understand{" "}
+              <strong className="font-semibold text-zinc-900">
+                the history behind what you see
+              </strong>
+              . Explore how the city became what it is today, and get more from its art and cultural
+              heritage.
+            </p>
+            <p>
+              You won’t find hotel, restaurant, or shopping listings on Mira. You’ll find{" "}
+              <strong className="font-semibold text-zinc-900">places that stay with you</strong>:
+              beauty that moves you, stories that teach you something, and discoveries that deepen
+              your love of art, culture, and history.
             </p>
           </div>
         </section>

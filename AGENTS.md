@@ -70,7 +70,7 @@ Read `docs/agents/domain.md` before domain exploration.
 
 ## Feature Implementation Approach
 
-- When the visitor map, markers, POI preview, or detail drawer change significantly, refresh the homepage map screenshot from the running app. Show a balanced spread of markers, one POI preview, and Castel Sant’Angelo’s detail drawer; verify the resulting image in the homepage.
+- When refreshing the homepage map screenshot, follow [Homepage map screenshot](docs/agents/homepage-map-screenshot.md) for the approved composition, Retina capture, compression, and verification. Refresh it when the visitor map, markers, POI preview, or detail drawer change significantly.
 - Build every feature in small intermediate steps that can be tested end-to-end.
 - Start with the thinnest vertical slice that works, then iterate.
 - Before starting dense implementations, first check whether a consolidated, widely used, and up-to-date dependency can solve the problem.
