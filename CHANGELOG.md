@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.5
+
+### Patch Changes
+
+- Open the Rome map at the Pantheon with a closer initial zoom to reduce marker crowding, while preserving direct POI links.
+
 ## 0.21.4
 
 ### Patch Changes
