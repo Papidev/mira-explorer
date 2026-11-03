@@ -16,7 +16,7 @@ export const Topic = ({
       >
         <span
           aria-hidden="true"
-          className={`size-5 shrink-0 bg-current mask-contain mask-bottom mask-no-repeat ${title === "Art" ? "text-rose-800 mask-[url(/icons/story/palette.svg)]" : "mask-[url(/icons/categories/architecture.svg)] text-blue-900"}`}
+          className={`size-5 shrink-0 bg-current mask-contain mask-bottom mask-no-repeat ${title === "Art" ? "mask-[url(/icons/story/palette.svg)] text-rose-800" : "mask-[url(/icons/categories/architecture.svg)] text-blue-900"}`}
         />
         {title}
       </h3>
