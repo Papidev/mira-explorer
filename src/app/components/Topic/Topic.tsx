@@ -11,7 +11,9 @@ export const Topic = ({
     <section
       className={`rounded-xl px-4 py-3 ring-1 ${title === "Art" ? "bg-violet-50/60 ring-violet-950/5" : "bg-blue-50/60 ring-blue-950/5"}`}
     >
-      <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
+      <h3
+        className={`flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide uppercase ${title === "Art" ? "text-emphasis" : "text-blue-900"}`}
+      >
         <span
           aria-hidden="true"
           className={`size-5 shrink-0 bg-current mask-contain mask-bottom mask-no-repeat ${title === "Art" ? "text-emphasis mask-[url(/icons/story/palette.svg)]" : "mask-[url(/icons/categories/architecture.svg)] text-blue-900"}`}
