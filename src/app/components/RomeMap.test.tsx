@@ -30,11 +30,11 @@ vi.mock("@/server/publicCatalog", () => ({
 import { RomeMap } from "./RomeMap";
 
 describe("Rome map arrival", () => {
-  it("opens at the Pantheon without selecting the first published POI", async () => {
+  it("opens at the Campidoglio without selecting the first published POI", async () => {
     const map = await RomeMap();
     expect(map.props).toMatchObject({
-      coordinates: [12.4769, 41.8986],
-      initialZoom: 16,
+      coordinates: [12.4823, 41.8933],
+      initialZoom: 15,
       initialSelectedPoiId: null,
     });
   });
@@ -47,7 +47,7 @@ describe("Rome map arrival", () => {
     const map = await RomeMap(query);
     expect(map.props).toMatchObject(
       query.initialPoiSlug === "missing-place"
-        ? { coordinates: [12.4769, 41.8986], initialSelectedPoiId: null }
+        ? { coordinates: [12.4823, 41.8933], initialSelectedPoiId: null }
         : { coordinates: [12.6, 41.8], initialSelectedPoiId: "peripheral-place" },
     );
   });

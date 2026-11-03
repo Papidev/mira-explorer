@@ -52,7 +52,7 @@ export const HomeCuriosity = () => (
         <p>
           In several languages around the world, “mira” means look, observe.
           <br />
-          In Italian, something more: it carries a poetic, literary meaning:
+          In Italian, something more, poetic and literary:
           <br />
           <strong className="font-semibold text-zinc-900">
             to admire, to contemplate with admiration.
