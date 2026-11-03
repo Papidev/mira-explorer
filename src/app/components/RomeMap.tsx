@@ -44,16 +44,14 @@ export const RomeMap = async ({
       : undefined;
   const coordinates: [number, number] = initialSelectedPoi
     ? [initialSelectedPoi.coordinates.lng, initialSelectedPoi.coordinates.lat]
-    : pois[0]
-      ? [pois[0].coordinates.lng, pois[0].coordinates.lat]
-      : [12.4922, 41.8902];
+    : [12.4769, 41.8986]; // Pantheon: default arrival in Rome's historic centre.
 
   return (
     <CityExplorer
       citySlug="rome"
       categoryDefinitions={categoryDefinitions}
       coordinates={coordinates}
-      initialZoom={15}
+      initialZoom={16}
       initialSelectedPoiId={initialSelectedPoi?.id ?? null}
       pois={pois}
       aliases={aliases}
