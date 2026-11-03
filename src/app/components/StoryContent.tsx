@@ -88,7 +88,7 @@ export const StoryContent = ({
       ) : null}
       {history.length > 0 ? (
         <section className="bg-brand-soft/40 rounded-xl px-4 py-3 ring-1 ring-yellow-950/5">
-          <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
+          <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-yellow-800 uppercase">
             <span
               aria-hidden="true"
               className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-yellow-800"

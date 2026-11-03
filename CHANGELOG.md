@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.6
+
+### Patch Changes
+
+- Open Rome at the Campidoglio with zoom 15, reduce empty homepage space, and use amber text emphasis with coordinated Story section colors.
+
 ## 0.21.5
 
 ### Patch Changes

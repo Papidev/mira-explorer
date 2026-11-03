@@ -34,7 +34,7 @@ export const StoryText = ({
     if (start < cursor) continue;
     parts.push(text.slice(cursor, start));
     parts.push(
-      <strong key={start} className="text-emphasis font-semibold">
+      <strong key={start} className="text-story-emphasis font-semibold">
         {phrase}
       </strong>,
     );
