@@ -82,7 +82,7 @@ const Home = () => {
               ))}
             </ul>
             <p className="mt-6 max-w-md text-base/7 text-zinc-600">
-              <strong className="font-semibold text-zinc-900">Mira begins in Rome.</strong> More
+              <strong className="text-story-emphasis font-semibold">Mira begins in Rome.</strong> More
               cities will follow.
             </p>
             <Link
