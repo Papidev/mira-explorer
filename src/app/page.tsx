@@ -13,6 +13,7 @@ import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
 import { HomeHeroStory } from "@/app/components/HomeHeroStory";
 import { MapShowcase } from "@/app/components/MapShowcase";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
+import { HomeCuriosity } from "@/app/components/HomeCuriosity";
 
 const Home = () => {
   const cover =
@@ -81,8 +82,8 @@ const Home = () => {
               ))}
             </ul>
             <p className="mt-6 max-w-md text-base/7 text-zinc-600">
-              <span className="font-semibold text-zinc-900">Mira begins in Rome.</span> More cities
-              will follow.
+              <strong className="font-semibold text-zinc-900">Mira begins in Rome.</strong> More
+              cities will follow.
             </p>
             <Link
               href="/rome"
@@ -135,49 +136,7 @@ const Home = () => {
           ))}
         </section>
 
-        <section
-          aria-labelledby="closer-look-title"
-          className="border-brand/70 grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
-        >
-          <div>
-            <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
-              Follow your curiosity
-            </p>
-            <h2
-              id="closer-look-title"
-              className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
-            >
-              There is more to see when you look closer.
-            </h2>
-            <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
-          </div>
-          <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
-            <p>
-              Discover <strong className="font-semibold text-zinc-900">lesser-known places</strong>{" "}
-              beyond the usual tourist routes, alongside the landmarks you came to see.
-            </p>
-            <p>
-              Discover{" "}
-              <strong className="font-semibold text-zinc-900">details and curiosities</strong>, and
-              the events and people connected to the places you visit. There is more to each place
-              than first meets the eye.
-            </p>
-            <p>
-              Understand{" "}
-              <strong className="font-semibold text-zinc-900">
-                the history behind what you see
-              </strong>
-              . Explore how the city became what it is today, and get more from its art and cultural
-              heritage.
-            </p>
-            <p>
-              You won’t find hotel, restaurant, or shopping listings on Mira. You’ll find{" "}
-              <strong className="font-semibold text-zinc-900">places that stay with you</strong>:
-              beauty that moves you, stories that teach you something, and discoveries that deepen
-              your love of art, culture, and history.
-            </p>
-          </div>
-        </section>
+        <HomeCuriosity />
 
         <section
           aria-labelledby="shared-knowledge-title"

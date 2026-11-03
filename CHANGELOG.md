@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.4
+
+### Patch Changes
+
+- Explain the meaning of Mira on the homepage and refresh the curiosity section with a dictionary-style introduction and a lighter detail layout.
+
 ## 0.21.3
 
 ### Patch Changes
