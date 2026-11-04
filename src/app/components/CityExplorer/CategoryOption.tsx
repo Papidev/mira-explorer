@@ -80,7 +80,7 @@ export const CategoryOption = ({
         className="pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 text-blue-900 peer-indeterminate:block forced-colors:hidden"
       />
 
-      {disclosure && (
+      {!definition?.parent && (
         <span aria-hidden="true" className="relative size-8 shrink-0">
           <MapPinIcon
             className={`size-8 drop-shadow-sm ${markerColor?.pinClass ?? "text-[#3FB1CE]"}`}

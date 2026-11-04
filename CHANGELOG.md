@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.21.7
+
+### Patch Changes
+
+- Add Sport and Nature category icons and colors, and show filter pins for categories without subcategories.
+
 ## 0.21.6
 
 ### Patch Changes
