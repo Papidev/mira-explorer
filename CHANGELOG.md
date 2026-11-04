@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.1
+
+### Patch Changes
+
+- Credit OpenStreetMap alongside Wikimedia sources with local logos, and limit map zoom to 21.
+
 ## 0.22.0
 
 ### Minor Changes
