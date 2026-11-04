@@ -158,6 +158,76 @@ afterAll(() => {
 });
 
 describe("visitor category filtering", () => {
+  it("isolates a parent and its children on double-click, then restores all categories", async () => {
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    expect(screen.getByText("Double-click a category to show only that one.")).toBeVisible();
+    await user.dblClick(screen.getByRole("checkbox", { name: "Religion" }));
+    expect(screen.getByRole("checkbox", { name: "Religion" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Arts & Culture" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "All categories" })).toBePartiallyChecked();
+    await user.click(screen.getByRole("button", { name: "Show subcategories for Religion" }));
+    expect(screen.getByRole("checkbox", { name: "Churches" })).toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("2 places");
+    expect(screen.queryByRole("button", { name: "A Museum" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "A Church Museum" })).toBeVisible();
+
+    await user.click(screen.getByRole("checkbox", { name: "All categories" }));
+    expect(screen.getByRole("status")).toHaveTextContent("4 places");
+  });
+
+  it("isolates a subcategory from mixed or empty selections and allows single-click additions", async () => {
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
+    await user.click(screen.getByRole("checkbox", { name: "Museums" }));
+    await user.dblClick(screen.getByRole("checkbox", { name: "Museums" }));
+    expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Religion" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Arts & Culture" })).toBePartiallyChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("2 places");
+    expect(screen.queryByRole("button", { name: "A Church" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox", { name: "Religion" }));
+    expect(screen.getByRole("status")).toHaveTextContent("3 places");
+    await user.click(screen.getByRole("checkbox", { name: "All categories" }));
+    await user.click(screen.getByRole("checkbox", { name: "All categories" }));
+    expect(screen.getByRole("status")).toHaveTextContent("0 places");
+    await user.dblClick(screen.getByRole("checkbox", { name: "Museums" }));
+    expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("2 places");
+  });
+
+  it("isolates categories by double-clicking their names, counts, or disclosure arrows", async () => {
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    await user.dblClick(screen.getByText("Religion", { exact: true }));
+    expect(screen.getByRole("checkbox", { name: "Religion" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Arts & Culture" })).not.toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("2 places");
+
+    await user.dblClick(
+      screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }),
+    );
+    expect(screen.getByRole("checkbox", { name: "Religion" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Arts & Culture" })).toBeChecked();
+    await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
+    await user.dblClick(screen.getByText("Museums", { exact: true }));
+    expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Arts & Culture" })).toBePartiallyChecked();
+
+    await user.dblClick(
+      within(screen.getByRole("button", { name: "Show subcategories for Religion" })).getByText(
+        "2",
+      ),
+    );
+    expect(screen.getByRole("checkbox", { name: "Religion" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Museums" })).not.toBeChecked();
+  });
+
   it("groups architectural, public, memorial, and remaining places", async () => {
     const user = userEvent.setup();
     render(

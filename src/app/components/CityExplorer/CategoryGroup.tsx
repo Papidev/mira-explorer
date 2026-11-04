@@ -14,12 +14,14 @@ export const CategoryGroup = ({
   pois,
   selectedCategories,
   onToggleCategory,
+  onSelectOnlyCategory,
 }: {
   category: PoiCategory;
   definitions?: PoiCategoryDefinition[];
   pois: Poi[];
   selectedCategories: PoiCategory[];
   onToggleCategory: (category: PoiCategory) => void;
+  onSelectOnlyCategory: (category: PoiCategory) => void;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const subcategoriesId = useId();
@@ -48,6 +50,7 @@ export const CategoryGroup = ({
             children.some(({ name }) => selectedCategories.includes(name))
           }
           onToggle={() => onToggleCategory(category)}
+          onSelectOnly={() => onSelectOnlyCategory(category)}
           disclosure={
             children.length
               ? {
@@ -75,6 +78,7 @@ export const CategoryGroup = ({
               count={count}
               checked={selectedCategories.includes(name)}
               onToggle={() => onToggleCategory(name)}
+              onSelectOnly={() => onSelectOnlyCategory(name)}
             />
           ))}
         </div>

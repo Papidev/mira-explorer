@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.0
+
+### Minor Changes
+
+- Add double-click filtering to show only one category and its subcategories on the map.
+
 ## 0.21.7
 
 ### Patch Changes

@@ -12,6 +12,7 @@ it("shows Sport's icon and blue pin when the top-level category has no subcatego
       count={1}
       checked
       onToggle={() => {}}
+      onSelectOnly={() => {}}
     />,
   );
 

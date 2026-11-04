@@ -158,6 +158,14 @@ export const CityExplorer = ({
             }
             updateCategories(next);
           }}
+          onSelectOnlyCategory={(category) =>
+            updateCategories([
+              category,
+              ...categoryDefinitions
+                .filter(({ parent }) => parent === category)
+                .map(({ id }) => id),
+            ])
+          }
           onToggleAll={() => updateCategories(allCategoriesSelected ? [] : availableCategories)}
           onOpenPoi={openPoi}
           onSearchPoi={(poi) => {
