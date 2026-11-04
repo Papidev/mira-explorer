@@ -24,6 +24,7 @@ export const Sidebar = ({
   allCategoriesSelected,
   selectedPoiId,
   onToggleCategory,
+  onSelectOnlyCategory,
   onToggleAll,
   onOpenPoi,
   onSearchPoi,
@@ -37,6 +38,7 @@ export const Sidebar = ({
   allCategoriesSelected: boolean;
   selectedPoiId: string | null;
   onToggleCategory: (category: PoiCategory) => void;
+  onSelectOnlyCategory: (category: PoiCategory) => void;
   onToggleAll: () => void;
   onOpenPoi: (poiId: string) => void;
   onSearchPoi: (poi: Poi) => void;
@@ -131,6 +133,9 @@ export const Sidebar = ({
             hidden={!expanded}
             className="ml-5 space-y-2 border-l border-zinc-200 pl-3"
           >
+            <p className="py-1 text-xs text-zinc-500">
+              Double-click a category to show only that one.
+            </p>
             {categoryDefinitions
               .filter((category) => !category.parent)
               .sort(
@@ -146,6 +151,7 @@ export const Sidebar = ({
                   pois={pois}
                   selectedCategories={selectedCategories}
                   onToggleCategory={onToggleCategory}
+                  onSelectOnlyCategory={onSelectOnlyCategory}
                 />
               ))}
           </div>

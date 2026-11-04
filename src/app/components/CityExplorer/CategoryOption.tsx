@@ -15,6 +15,7 @@ export const CategoryOption = ({
   checked,
   indeterminate = false,
   onToggle,
+  onSelectOnly,
   disclosure,
 }: {
   category: PoiCategory;
@@ -23,6 +24,7 @@ export const CategoryOption = ({
   checked: boolean;
   indeterminate?: boolean;
   onToggle: () => void;
+  onSelectOnly: () => void;
   disclosure?: {
     expanded: boolean;
     controls: string;
@@ -55,6 +57,7 @@ export const CategoryOption = ({
   );
   return (
     <div
+      onDoubleClick={onSelectOnly}
       className={`relative flex flex-1 items-center gap-2 ${definition?.parent ? "text-[15px]" : "text-sm"}`}
     >
       <input
