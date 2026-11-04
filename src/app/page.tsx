@@ -156,34 +156,64 @@ const Home = () => {
           </div>
           <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
             <p>
-              Mira draws on the remarkable work behind{" "}
+              Mira draws on the remarkable work of open knowledge communities: articles, structured
+              knowledge, images, and geographic data that help us discover and understand each
+              place.
+            </p>
+            <ul className="grid gap-x-6 gap-y-4 py-2 sm:grid-cols-2" aria-label="Data sources">
+              {[
+                {
+                  name: "Wikipedia",
+                  href: "https://www.wikipedia.org/",
+                  logo: "/icons/wikipedia-w.svg",
+                },
+                {
+                  name: "Wikidata",
+                  href: "https://www.wikidata.org/",
+                  logo: "/icons/wikidata.svg",
+                },
+                {
+                  name: "Wikimedia Commons",
+                  href: "https://commons.wikimedia.org/",
+                  logo: "/icons/wikimedia-commons.svg",
+                },
+                {
+                  name: "OpenStreetMap",
+                  href: "https://www.openstreetmap.org/copyright",
+                  logo: "/icons/openstreetmap.png",
+                },
+              ].map(({ name, href, logo }) => (
+                <li key={name}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-sm text-sm font-medium text-zinc-800 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                  >
+                    <Image
+                      src={logo}
+                      alt=""
+                      width={36}
+                      height={36}
+                      className="size-9 shrink-0 object-contain"
+                    />
+                    {name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs/5 text-zinc-500">
+              Map and place data © OpenStreetMap contributors. OpenStreetMap and Wikimedia Commons
+              logos: Ken Vermette and Wikimedia Foundation, respectively, under{" "}
               <a
-                href="https://www.wikipedia.org/"
+                href="https://creativecommons.org/licenses/by-sa/3.0/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-sm text-zinc-800 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                className="rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
               >
-                Wikipedia
+                CC BY-SA 3.0
               </a>
-              ,{" "}
-              <a
-                href="https://www.wikidata.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-sm text-zinc-800 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
-              >
-                Wikidata
-              </a>
-              , and{" "}
-              <a
-                href="https://commons.wikimedia.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-sm text-zinc-800 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
-              >
-                Wikimedia Commons
-              </a>
-              : articles, structured knowledge, and images that help us understand each place.
+              .
             </p>
             <p>
               We use AI as an assistant to prepare Story drafts and suggest possible connections

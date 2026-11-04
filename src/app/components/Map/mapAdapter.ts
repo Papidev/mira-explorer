@@ -282,6 +282,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         center: initialView.center,
         zoom: initialView.zoom,
         minZoom: 7,
+        maxZoom: 21,
       });
 
       const navigationControl = new maplibregl.NavigationControl();
