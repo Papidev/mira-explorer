@@ -31,6 +31,18 @@ export const categoryMarkerColors = [
     pinClass: "text-rose-600",
   },
   {
+    category: "sport",
+    icon: "/icons/categories/sport.svg",
+    marker: "#2563eb",
+    pinClass: "text-blue-600",
+  },
+  {
+    category: "Nature",
+    icon: "/icons/categories/nature.svg",
+    marker: "#65a30d",
+    pinClass: "text-lime-600",
+  },
+  {
     category: "Other places",
     icon: "/icons/categories/other.svg",
     marker: "#3FB1CE",
