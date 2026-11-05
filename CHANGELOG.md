@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Keep Wikipedia language links visible in Story and Person details with an upward-opening menu, and link to the OpenStreetMap homepage from the data sources section.
+- Keep Wikipedia language links visible in Story and Person details with an upward-opening menu, link to the OpenStreetMap homepage from the data sources section, and tighten the spacing above the homepage map preview.
 
 ## 0.22.1
 

@@ -44,7 +44,7 @@ const Home = () => {
       <main id="main-content" className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <section
           aria-labelledby="hero-title"
-          className="grid items-start gap-10 pt-2 pb-10 sm:pt-4 sm:pb-14 lg:grid-cols-2 lg:gap-16 lg:pt-6 lg:pb-20"
+          className="grid items-start gap-10 pt-2 pb-9 sm:pt-4 sm:pb-12 lg:grid-cols-2 lg:gap-16 lg:pt-6 lg:pb-16"
         >
           <div>
             <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
