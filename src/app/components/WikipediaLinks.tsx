@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import type { WikipediaSource } from "@/server/wikipediaSources";
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
-import { Fragment } from "react";
-import { ArrowTopRightOnSquareIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ChevronUpIcon } from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export const WikipediaLinks = ({ sources }: { sources?: WikipediaSource[] }) => {
   if (!sources?.length) return null;
@@ -30,37 +30,40 @@ export const WikipediaLinks = ({ sources }: { sources?: WikipediaSource[] }) => 
         <ArrowTopRightOnSquareIcon className="ml-1.5 size-3.5" aria-hidden="true" />
       </a>
       {sources.length > 1 ? (
-        <Disclosure as={Fragment}>
-          <DisclosureButton className="group inline-flex min-h-8 cursor-pointer items-center gap-1 rounded-sm text-zinc-500 hover:text-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-4 pointer-coarse:min-h-11">
+        <Menu as="div">
+          <MenuButton className="inline-flex min-h-8 cursor-pointer items-center justify-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-xs inset-ring-1 inset-ring-zinc-300 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 pointer-coarse:min-h-11">
             Other languages
-            <ChevronDownIcon className="size-3.5 group-data-open:rotate-180" aria-hidden="true" />
-          </DisclosureButton>
-          <DisclosurePanel className="basis-full">
-            <ul className="flex flex-wrap justify-end gap-x-4">
-              {sources
-                .filter(({ url }) => url !== primary.url)
-                .map(({ title, url }) => (
-                  <li key={url}>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${title} on Wikipedia (opens in a new tab)`}
-                      className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-zinc-500 underline underline-offset-4 hover:text-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 pointer-coarse:min-h-11"
-                    >
-                      {new Intl.DisplayNames(["en"], { type: "language" }).of(
-                        new URL(url).hostname.split(".")[0],
-                      )}
-                      <ArrowTopRightOnSquareIcon
-                        className="size-3.5 text-zinc-400"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </li>
-                ))}
-            </ul>
-          </DisclosurePanel>
-        </Disclosure>
+            <ChevronUpIcon className="size-5 text-zinc-500" aria-hidden="true" />
+          </MenuButton>
+          <MenuItems
+            anchor="top"
+            modal={false}
+            transition
+            className="z-50 w-(--button-width) origin-bottom overflow-y-auto rounded-md bg-white py-1 shadow-lg outline-1 outline-black/5 transition [--anchor-gap:0.5rem] focus:outline-none data-closed:scale-95 data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in motion-reduce:transition-none"
+          >
+            {sources
+              .filter(({ url }) => url !== primary.url)
+              .map(({ title, url }) => (
+                <MenuItem key={url}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${title} on Wikipedia (opens in a new tab)`}
+                    className="flex items-center justify-between gap-2 px-4 py-2 text-sm text-zinc-700 data-focus:bg-zinc-100 data-focus:text-zinc-900 data-focus:outline-hidden pointer-coarse:min-h-11"
+                  >
+                    {new Intl.DisplayNames(["en"], { type: "language" }).of(
+                      new URL(url).hostname.split(".")[0],
+                    )}
+                    <ArrowTopRightOnSquareIcon
+                      className="size-3.5 shrink-0 text-zinc-400"
+                      aria-hidden="true"
+                    />
+                  </a>
+                </MenuItem>
+              ))}
+          </MenuItems>
+        </Menu>
       ) : null}
     </footer>
   );
