@@ -28,7 +28,7 @@ const sharp = createRequire(require.resolve('next/package.json'))('sharp');
 
 sharp('/tmp/mira-map-retina.png')
   .webp({ quality: 80, effort: 6, smartSubsample: true })
-  .toFile('public/rome-map-showcase-ara-pacis.webp')
+  .toFile('/tmp/mira-map-retina.webp')
   .then(({ width, height, size }) => console.log({ width, height, bytes: size }));
 NODE
 ```

@@ -5,7 +5,7 @@ import Link from "next/link";
 export const MapShowcase = () => (
   <section
     aria-labelledby="map-showcase-title"
-    className="border-brand/70 border-t pt-10 pb-12 sm:pt-12 sm:pb-16"
+    className="border-brand/70 border-t pt-6 pb-12 sm:pt-8 sm:pb-16"
   >
     <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
       <div>
@@ -35,7 +35,7 @@ export const MapShowcase = () => (
         className="block cursor-pointer overflow-x-auto rounded-2xl border border-zinc-900/10 bg-white shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
       >
         <Image
-          src="/rome-map-showcase-ara-pacis.webp"
+          src="/rome-map-showcase-live-ara-pacis.webp"
           alt="Mira map of Rome with place markers, an Ara Pacis preview, and the Castel Sant’Angelo detail panel open"
           width={3456}
           height={1596}
