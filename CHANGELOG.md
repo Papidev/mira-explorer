@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.3
+
+### Patch Changes
+
+- Enlarge and align the homepage logo, tighten the spacing above the map showcase, and refresh the Rome map screenshot from the live site.
+
 ## 0.22.2
 
 ### Patch Changes
