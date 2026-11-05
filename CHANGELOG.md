@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.2
+
+### Patch Changes
+
+- Keep Wikipedia language links visible in Story and Person details with an upward-opening menu, and link to the OpenStreetMap homepage from the data sources section.
+
 ## 0.22.1
 
 ### Patch Changes

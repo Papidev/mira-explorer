@@ -179,7 +179,7 @@ const Home = () => {
                 },
                 {
                   name: "OpenStreetMap",
-                  href: "https://www.openstreetmap.org/copyright",
+                  href: "https://www.openstreetmap.org/",
                   logo: "/icons/openstreetmap.png",
                 },
               ].map(({ name, href, logo }) => (
