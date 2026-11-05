@@ -2,20 +2,25 @@
 
 Read this procedure before replacing the homepage map screenshot. Use the committed image referenced by `MapShowcase` as the visual baseline; it records the approved framing more precisely than a sequence of mouse drags.
 
+## Setup
+
+1. Use the requested visitor URL. If it is already open in Chrome, use that tab. Otherwise, open it in Chrome.
+2. Undock Chrome DevTools and set the device toolbar to **1728 × 798 CSS pixels** with **device pixel ratio 2** before moving the map. The native PNG should be **3456 × 1596 pixels**.
+3. Use the visible map and panels to compose the shot. If you need a locator, query the individual control or marker by name. Skip full-page DOM and accessibility snapshots, which list the entire catalog.
+
 ## Composition
 
 - Use the running visitor app with its actual published POIs and all categories enabled.
 - Keep the filters visible on the left, scrolled to the category controls, and Castel Sant’Angelo’s detail drawer open on the right, scrolled to its main image and introduction.
 - Keep **Ara Pacis** in preview while Castel Sant’Angelo remains selected. The preview must be fully visible, including its image, title, description, and yellow arrow.
 - Start at map zoom **14.15**, with the center shifted south toward the historic center. Match the reference image’s framing and marker distribution. The intended result is visibly rich, with markers across the map and more places toward the south, while streets and separate markers remain readable. Catalog changes may require a small framing adjustment.
-- Match the approved viewport: **1728 × 798 CSS pixels**, with **device pixel ratio 2**, producing **3456 × 1596 pixels**. Set the viewport before composing the map: opening docked DevTools changes the map size and can disturb its center and panels.
 
 ## Capture
 
 1. Wait until map tiles, fonts, Story image, and preview image have finished rendering. Compare the composition to the reference before exporting.
 2. Place the pointer over a neutral area outside markers and controls. For a stable preview, focus the Ara Pacis marker using the browser's supported keyboard interaction. If it is already focused but another hover has replaced its preview, focus a harmless control first and then return to Ara Pacis. Verify the visible preview name immediately before capture.
-3. Export a **native browser PNG at Retina resolution**. The successful Chrome workflow was undocked DevTools → Command Menu → **Capture screenshot**. Keep DevTools separate from the page and verify the exported dimensions. This export avoids the visibly soft, compressed, CSS-resolution JPEG returned by the browser automation screenshot preview.
-4. Inspect the actual saved file, not only the automation preview. Confirm Ara Pacis is still open: activating a tab or moving the pointer during capture can replace or dismiss the preview. Preserve real interface content and attribution.
+3. In the undocked DevTools Command Menu, run **Capture screenshot** to export the native PNG.
+4. Inspect the saved PNG before closing DevTools. Confirm **3456 × 1596 pixels**, zoom **14.15**, all categories enabled, the full Ara Pacis preview, Castel Sant’Angelo’s image and introduction, and the pointer clear of controls and markers. Preserve the interface content and attribution. If anything is missing, adjust the open view and capture again before compressing.
 
 ## Compress and integrate
 
