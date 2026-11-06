@@ -7,8 +7,8 @@
 }
 
 @theme inline {
-  --color-brand: var(--color-yellow-400);
-  --color-brand-action: var(--color-yellow-300);
+  --color-brand: #ffda1a;
+  --color-brand-action: var(--color-brand);
   --color-brand-soft: var(--color-yellow-100);
   --color-emphasis: color-mix(in oklch, var(--color-violet-700), var(--color-violet-800));
   --color-story-emphasis: var(--color-amber-700);

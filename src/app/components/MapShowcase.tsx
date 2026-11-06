@@ -5,7 +5,7 @@ import Link from "next/link";
 export const MapShowcase = () => (
   <section
     aria-labelledby="map-showcase-title"
-    className="border-brand/70 border-t pt-6 pb-12 sm:pt-8 sm:pb-16"
+    className="border-brand border-t pt-6 pb-12 sm:pt-8 sm:pb-16"
   >
     <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
       <div>

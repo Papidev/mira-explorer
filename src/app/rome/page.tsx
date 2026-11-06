@@ -3,6 +3,7 @@ import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { RomeMap } from "@/app/components/RomeMap";
 import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
+import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
@@ -21,8 +22,8 @@ const RomePage = async ({ searchParams }: Props) => {
     <main className="flex h-dvh flex-col bg-zinc-50 text-zinc-900">
       <WorkInProgressNotice />
       <RefreshPoiCategories city="rome" />
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-zinc-900/15 px-4 py-3 md:gap-6 md:px-6 md:py-4">
-        <div className="flex min-w-0 items-baseline gap-4 md:gap-6">
+      <header className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-zinc-900/15 px-4 py-3 md:gap-x-6 md:px-6 md:py-4">
+        <div className="flex min-w-0 items-center gap-3 md:gap-6">
           <Link
             href="/"
             aria-label="Mira home"
@@ -30,11 +31,24 @@ const RomePage = async ({ searchParams }: Props) => {
           >
             <MiraLogo size="medium" />
           </Link>
-          <div className="min-w-0 border-l border-zinc-900/15 pl-4 md:pl-6">
-            <h1 className="font-serif text-3xl leading-[1.15] tracking-tight sm:text-4xl">Rome</h1>
-            <p className="mt-1 hidden text-sm text-zinc-500 lg:block">
-              Discover the art, history, and people behind the places.
-            </p>
+          <div className="flex min-w-0 items-center gap-2 border-l border-zinc-900/15 pl-3 md:gap-3 md:pl-6">
+            <span className="bg-brand flex size-9 shrink-0 items-center justify-center rounded-lg sm:size-12">
+              <Image
+                src="/icons/cities/rome.svg"
+                alt=""
+                width={48}
+                height={32}
+                className="h-auto w-7 sm:w-9"
+              />
+            </span>
+            <div>
+              <h1 className="font-serif text-3xl/[1.1] font-semibold tracking-tight sm:text-4xl/[1.1] lg:text-5xl/[1.1]">
+                Rome
+              </h1>
+              <p className="mt-1 hidden text-sm text-zinc-500 lg:block">
+                Discover the art, history, and people behind the places.
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 md:gap-3">

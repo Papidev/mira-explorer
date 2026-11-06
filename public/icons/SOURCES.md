@@ -9,3 +9,7 @@ with their respective owners; their display does not imply endorsement.
 - `openstreetmap.png`: [OpenStreetMap logo](https://wiki.openstreetmap.org/wiki/File:Public-images-osm_logo.svg) by Ken Vermette, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Official wiki's 120-pixel PNG rendering, unchanged.
 
 Data attribution links to [OpenStreetMap copyright](https://www.openstreetmap.org/copyright).
+
+## City icons
+
+- `cities/rome.svg` is an original Mira illustration of the Colosseum. It uses open linework to show the curved facade and the break in the upper wall.

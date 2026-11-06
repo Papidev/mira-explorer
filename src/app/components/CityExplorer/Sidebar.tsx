@@ -174,7 +174,7 @@ export const Sidebar = ({
                 aria-label={poi.name}
                 aria-pressed={selectedPoiId === poi.id}
                 onClick={() => onOpenPoi(poi.id)}
-                className={`group flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 ${selectedPoiId === poi.id ? "border-yellow-300 bg-yellow-50" : "border-zinc-200/80 bg-white hover:border-yellow-300"}`}
+                className={`group flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 ${selectedPoiId === poi.id ? "border-brand bg-yellow-50" : "border-zinc-200/80 bg-white hover:border-brand"}`}
               >
                 <span className="min-w-0 flex-1">
                   <span className="block text-lg leading-snug font-medium">{poi.name}</span>
