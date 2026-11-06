@@ -89,7 +89,10 @@ const Home = () => {
               href="/rome"
               className="group bg-brand-action hover:bg-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
             >
-              Explore Rome
+              <span className="inline-flex items-center gap-3">
+                Explore Rome
+                <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
+              </span>
               <ArrowRightIcon
                 className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
                 aria-hidden="true"

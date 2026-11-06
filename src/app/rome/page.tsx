@@ -42,7 +42,7 @@ const RomePage = async ({ searchParams }: Props) => {
           </span>
           <h1 className="font-serif font-medium tracking-tight">Rome</h1>
         </div>
-        <p className="col-start-2 row-start-2 text-center text-sm text-zinc-500">
+        <p className="text-story-emphasis col-start-2 row-start-2 text-center text-sm">
           Ancient ruins, Baroque squares, and the stories between.
         </p>
         <div className="col-start-1 row-start-2 flex items-center gap-2 justify-self-start md:col-start-3 md:row-start-1 md:gap-3 md:justify-self-end">
@@ -62,7 +62,7 @@ const RomePage = async ({ searchParams }: Props) => {
         </div>
       </header>
 
-      <section className="min-h-0 flex-1">
+      <section className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)]">
         <RomeMap
           initialSelectedPoiId={initialSelectedPoiId}
           initialPoiSlug={query.poi}

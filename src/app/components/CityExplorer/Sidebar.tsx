@@ -46,6 +46,7 @@ export const Sidebar = ({
 }) => {
   const [expanded, setExpanded] = useState(true);
   const categoriesId = useId();
+  const placesHeadingId = useId();
   return (
     <aside
       aria-label="Discover places"
@@ -131,7 +132,7 @@ export const Sidebar = ({
           <div
             id={categoriesId}
             hidden={!expanded}
-            className="ml-5 space-y-2 border-l border-zinc-200 pl-3"
+            className="ml-1 space-y-2 border-l border-zinc-200 pl-2.5"
           >
             <p className="py-1 text-xs text-zinc-500">
               Double-click a category to show only that one.
@@ -156,9 +157,9 @@ export const Sidebar = ({
               ))}
           </div>
         </fieldset>
-        <p role="status" className="mt-6 px-1 text-xs font-semibold tracking-wide text-zinc-500">
-          {visiblePois.length} {visiblePois.length === 1 ? "place" : "places"} to explore
-        </p>
+        <h3 id={placesHeadingId} className="mt-5 px-1 text-sm font-semibold text-zinc-700">
+          Places matching your filters
+        </h3>
         {!visiblePois.length && (
           <p className="mt-2 text-sm text-zinc-500">
             {selectedCategories.length
@@ -166,7 +167,7 @@ export const Sidebar = ({
               : "Select a category to explore places."}
           </p>
         )}
-        <ul className="mt-3 space-y-2">
+        <ul aria-labelledby={placesHeadingId} className="mt-3 space-y-2">
           {visiblePois.map((poi) => (
             <li key={poi.id}>
               <button
