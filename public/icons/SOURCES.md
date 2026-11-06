@@ -12,4 +12,14 @@ Data attribution links to [OpenStreetMap copyright](https://www.openstreetmap.or
 
 ## City icons
 
-- `cities/rome.svg` is an original Mira illustration of the Colosseum. It uses open linework to show the curved facade and the break in the upper wall.
+Use [Rome’s Colosseum](cities/rome.svg) as the style reference when adding a city icon.
+
+- Choose one recognizable landmark. Start from a view that shows its distinctive silhouette and preserve the details that identify it. Use perspective where it helps, as with the Colosseum’s curved facade and receding arcades.
+- Draw a simplified architectural illustration with a thin warm-brown outline, light stone fills, and a darker warm tone for recesses. Use a few lines for structural details such as cornices and columns.
+- Save a transparent SVG as `cities/<city-slug>.svg`. Fit the canvas to the landmark. The surrounding UI applies the shared Mira yellow with `bg-brand` and sets the display size.
+- Use two display sizes: 28 px wide for the small icon and 36 px wide for the large icon. Preview both on Mira yellow and check that the silhouette and main identifying feature are recognizable.
+- Use references whose license allows the intended reuse. Record the creator, source, and license below, and distinguish visual inspiration from an adapted asset.
+
+### Sources and references
+
+- `cities/rome.svg` is an original Mira illustration of the Colosseum. Its three-quarter view takes inspiration from [Johnny Automatic's Roman Colosseum icon](https://commons.wikimedia.org/wiki/File:Roman_Colosseum_icon.svg), released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).

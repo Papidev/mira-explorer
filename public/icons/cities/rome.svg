@@ -1,7 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" fill="none" stroke="#27272a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Outline of the surviving outer wall and the lower arcade. -->
-  <path d="M3 24V10C10 5.5 19 3.5 29 4.5l-1.5 4 2 2.5-2.5 2 2 3c6 .1 11 1.2 16 3.5V24c-4.5 3.3-12.5 5-22 5S7 27.3 3 24Z"/>
-  <path d="M3 18c6-3 15-3.7 26-2M8 10.5l.1 1M15 8.6l.1 1.2M22 8v1.2"/>
-  <path d="M8.5 15.7v-.8a2 2 0 0 1 4-.6v.6m5.5-.7v-1.3a2 2 0 0 1 4 0v1.3"/>
-  <path d="M8 24v-1.2a2.3 2.3 0 0 1 4.6 0v2.6m5-1v-3a2.5 2.5 0 0 1 5 0v3.4m5.2-.2v-2.9a2.5 2.5 0 0 1 5 0v2.5m5-1.1v-1a1.7 1.7 0 0 1 3.4 0v.3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32">
+  <defs>
+    <path id="arch" d="M0 4V1.2a1.2 1.2 0 0 1 2.4 0V4Z"/>
+  </defs>
+
+  <!-- The curve of the facade opens into the exposed inner ring on the right. -->
+  <path fill="#d4a365" stroke="#5d452d" stroke-width=".8" stroke-linejoin="round"
+    d="M34 15.4c5.8-1.3 10.6.4 12.5 3.7l.5 7.9-3.1 2.1-9.9.5Z"/>
+  <path fill="#fff0c6" stroke="#5d452d" stroke-width=".85" stroke-linejoin="round"
+    d="M1.7 28.9V11c2-3.1 4.9-5.4 7.9-6.5l.8.5 1.5-.7.4-1.6C18.9.9 26.5.6 33.3 1.5l1.8 5.1 1 .8 1.5 7.2 4.3.7 1.6 3.1-.2 10.5c-11.7 1.8-30 2.4-41.6 0Z"/>
+
+  <!-- The attic and cornices follow the curve of the masonry. -->
+  <path fill="none" stroke="#8b653e" stroke-width=".65" stroke-linecap="round"
+    d="M2 13.8C10 8.5 24 7.2 36.3 8.2M2 19.4c10-3.8 25-4.9 39.6-3.6M2 24.2c11.7-2 26-2.7 41.5-1.6
+    M5.5 11.5v-3m4 1.6V6.8m4 2.2V4.5m5.2 3.4V3.4m5.7 4V2.9m5.9 4.7V3"/>
+
+  <g fill="#674b2f">
+    <use href="#arch" transform="translate(4 13.5) scale(.6 .92)"/>
+    <use href="#arch" transform="translate(7.4 12.4) scale(.74 1)"/>
+    <use href="#arch" transform="translate(11.1 11.3) scale(.82 1.1)"/>
+    <use href="#arch" transform="translate(15.4 10.4) scale(.94 1.16)"/>
+    <use href="#arch" transform="translate(20.1 9.9) scale(1 1.2)"/>
+    <use href="#arch" transform="translate(25 9.6) scale(1.04 1.23)"/>
+    <use href="#arch" transform="translate(30.1 9.7) scale(1.07 1.24)"/>
+
+    <use href="#arch" transform="translate(4 19.1) scale(.64 .89)"/>
+    <use href="#arch" transform="translate(7.4 18.3) scale(.74 .97)"/>
+    <use href="#arch" transform="translate(11.1 17.7) scale(.84 1.04)"/>
+    <use href="#arch" transform="translate(15.4 17) scale(.94 1.15)"/>
+    <use href="#arch" transform="translate(20.1 16.8) scale(1 1.14)"/>
+    <use href="#arch" transform="translate(25 16.6) scale(1.04 1.15)"/>
+    <use href="#arch" transform="translate(30.1 16.6) scale(1.07 1.14)"/>
+    <use href="#arch" transform="translate(35.3 16.8) scale(1.02 1.13)"/>
+    <use href="#arch" transform="translate(39.9 17.7) scale(.8 .95)"/>
+    <use href="#arch" transform="translate(44.1 18.9) scale(.65 .83)"/>
+
+    <use href="#arch" transform="translate(4 24.9) scale(.65 .89)"/>
+    <use href="#arch" transform="translate(7.4 24.5) scale(.76 1.05)"/>
+    <use href="#arch" transform="translate(11.1 24.1) scale(.85 1.2)"/>
+    <use href="#arch" transform="translate(15.4 23.8) scale(.94 1.27)"/>
+    <use href="#arch" transform="translate(20.1 23.5) scale(1 1.37)"/>
+    <use href="#arch" transform="translate(25 23.4) scale(1.04 1.37)"/>
+    <use href="#arch" transform="translate(30.1 23.4) scale(1.07 1.32)"/>
+    <use href="#arch" transform="translate(35.3 23.5) scale(1.02 1.2)"/>
+    <use href="#arch" transform="translate(39.9 23.8) scale(.82 1.05)"/>
+    <use href="#arch" transform="translate(44.1 23.3) scale(.68 .87)"/>
+  </g>
 </svg>
