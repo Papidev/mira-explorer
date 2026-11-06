@@ -68,11 +68,6 @@ export const CityExplorer = ({
   const [previousSelectedPoiId, setPreviousSelectedPoiId] = useState(selectedPoiId);
   const [openRequestId, setOpenRequestId] = useState(0);
   const [searchPoiId, setSearchPoiId] = useState<string | null>(null);
-  const [focusRequest, setFocusRequest] = useState<{
-    poi: Poi;
-    leftInset: number;
-    rightInset: number;
-  }>();
   const visiblePois = pois.filter(
     (poi) =>
       selectedCategories.length > 0 &&
@@ -171,11 +166,6 @@ export const CityExplorer = ({
           onSearchPoi={(poi) => {
             setSearchPoiId(poi.id);
             openPoi(poi.id);
-            setFocusRequest({
-              poi,
-              leftInset: sidebarVisible && isDesktop ? (sidebarWidth ?? 352) : 0,
-              rightInset: detailsWidth ?? 448,
-            });
           }}
           onClose={() => setSidebarOpen(false)}
         />
@@ -197,7 +187,16 @@ export const CityExplorer = ({
           coordinates={coordinates}
           zoom={zoom}
           pois={searchExcluded && selectedPoi ? [...visiblePois, selectedPoi] : visiblePois}
-          focusRequest={focusRequest}
+          focusRequest={
+            selectedPoi
+              ? {
+                  poi: selectedPoi,
+                  requestId: openRequestId,
+                  leftInset: sidebarVisible && isDesktop ? (sidebarWidth ?? 352) : 0,
+                  rightInset: detailsWidth ?? 448,
+                }
+              : undefined
+          }
           selectedPoiId={selectedPoiId}
           categoryDefinitions={categoryDefinitions}
           selectedCategories={selectedCategories}
