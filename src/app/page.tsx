@@ -44,7 +44,7 @@ const Home = () => {
       <main id="main-content" className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <section
           aria-labelledby="hero-title"
-          className="grid items-start gap-10 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:gap-16 lg:pt-6"
+          className="grid items-start gap-y-6 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:pt-6"
         >
           <div>
             <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
@@ -60,7 +60,12 @@ const Home = () => {
                 story.
               </span>
             </h1>
-            <p className="mt-6 max-w-md text-base/7 text-zinc-600">
+          </div>
+
+          {cover && <HomeHeroStory cover={cover} />}
+
+          <div className="lg:col-start-1">
+            <p className="max-w-md text-base/7 text-zinc-600">
               Discover the places, people, and details that bring a city to life. Get the essence at
               a glance, then explore further on Wikipedia whenever you want.
             </p>
@@ -100,8 +105,6 @@ const Home = () => {
             </Link>
             <p className="mt-4 text-sm text-zinc-500">From your doorstep, or from anywhere.</p>
           </div>
-
-          {cover && <HomeHeroStory cover={cover} />}
         </section>
 
         <MapShowcase />

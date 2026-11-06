@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.5
+
+### Patch Changes
+
+- Bring the Castel Sant’Angelo photo into view sooner on the homepage and limit how far visitors can zoom out on the Rome map.
+
 ## 0.22.4
 
 ### Patch Changes
