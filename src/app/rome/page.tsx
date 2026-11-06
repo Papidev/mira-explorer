@@ -22,36 +22,30 @@ const RomePage = async ({ searchParams }: Props) => {
     <main className="flex h-dvh flex-col bg-zinc-50 text-zinc-900">
       <WorkInProgressNotice />
       <RefreshPoiCategories city="rome" />
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-zinc-900/15 px-4 py-3 md:gap-x-6 md:px-6 md:py-4">
-        <div className="flex min-w-0 items-center gap-3 md:gap-6">
-          <Link
-            href="/"
-            aria-label="Mira home"
-            className="flex shrink-0 items-baseline gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
-          >
-            <MiraLogo size="medium" />
-          </Link>
-          <div className="flex min-w-0 items-center gap-2 border-l border-zinc-900/15 pl-3 md:gap-3 md:pl-6">
-            <span className="bg-brand flex size-9 shrink-0 items-center justify-center rounded-lg sm:size-12">
-              <Image
-                src="/icons/cities/rome.svg"
-                alt=""
-                width={48}
-                height={32}
-                className="h-auto w-7 sm:w-9"
-              />
-            </span>
-            <div>
-              <h1 className="font-serif text-3xl/[1.1] font-semibold tracking-tight sm:text-4xl/[1.1] lg:text-5xl/[1.1]">
-                Rome
-              </h1>
-              <p className="mt-1 hidden text-sm text-zinc-500 lg:block">
-                Discover the art, history, and people behind the places.
-              </p>
-            </div>
-          </div>
+      <header className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 border-b border-zinc-900/15 px-4 py-3 text-4xl/none sm:text-[2.75rem]/none md:grid-cols-[1fr_auto_1fr] md:px-6">
+        <Link
+          href="/"
+          aria-label="Mira home"
+          className="col-start-1 row-start-1 flex justify-self-start rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+        >
+          <MiraLogo size="city" />
+        </Link>
+        <div className="col-start-2 row-start-1 flex items-center gap-2 justify-self-center">
+          <span className="bg-brand flex size-11 shrink-0 items-center justify-center rounded-lg sm:size-14">
+            <Image
+              src="/icons/cities/rome.svg"
+              alt=""
+              width={48}
+              height={32}
+              className="h-auto w-8.5 sm:w-10.5"
+            />
+          </span>
+          <h1 className="font-serif font-medium tracking-tight">Rome</h1>
         </div>
-        <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        <p className="col-start-2 row-start-2 text-center text-sm text-zinc-500">
+          Ancient ruins, Baroque squares, and the stories between.
+        </p>
+        <div className="col-start-1 row-start-2 flex items-center gap-2 justify-self-start md:col-start-3 md:row-start-1 md:gap-3 md:justify-self-end">
           <span className="hidden sm:inline-flex">
             <AppVersion />
           </span>
