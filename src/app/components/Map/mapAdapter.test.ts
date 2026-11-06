@@ -11,6 +11,7 @@ const mapLibreFakes = vi.hoisted(() => ({
   maps: [] as Array<{ container: HTMLDivElement; removed: boolean }>,
   markers: [] as Array<{ element: HTMLDivElement; removed: boolean; color?: string }>,
   popups: [] as Array<{
+    container: HTMLDivElement;
     element?: HTMLElement;
     isOpen: boolean;
     positions: string[];
@@ -351,7 +352,7 @@ describe("Map and its MapLibre adapter", () => {
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
 
     dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerleave", "mouse");
-    dispatchPointerEvent(mapLibreFakes.popups[0].element as HTMLElement, "pointerenter", "mouse");
+    dispatchPointerEvent(mapLibreFakes.popups[0].container, "pointerenter", "mouse");
     await new Promise((resolve) => setTimeout(resolve, 220));
 
     await user.click(
@@ -363,6 +364,23 @@ describe("Map and its MapLibre adapter", () => {
     expect(onOpenPoiDetails).toHaveBeenCalledWith("forum-boarium");
     expect(onMapClick).not.toHaveBeenCalled();
     expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+  });
+
+  it("keeps the preview open over its pointer and closes it after leaving the popup", async () => {
+    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    const marker = mapLibreFakes.markers[0].element;
+
+    dispatchPointerEvent(marker, "pointerenter", "mouse");
+    const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
+    const popup = mapLibreFakes.popups[0].container;
+
+    dispatchPointerEvent(marker, "pointerleave", "mouse");
+    dispatchPointerEvent(popup, "pointerenter", "mouse");
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    expect(heading).toBeInTheDocument();
+
+    dispatchPointerEvent(popup, "pointerleave", "mouse");
+    await waitFor(() => expect(heading).not.toBeInTheDocument());
   });
 
   it("opens details directly on click, touch, Enter, and Space", async () => {

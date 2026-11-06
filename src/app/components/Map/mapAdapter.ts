@@ -95,6 +95,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     }
 
     cancelPreviewClose();
+    const popupElement = previewPopup?.getElement();
+    popupElement?.removeEventListener("pointerenter", handlePreviewPointerEnter);
+    popupElement?.removeEventListener("pointerleave", handlePreviewPointerLeave);
     previewPopup?.remove();
     if (activePreviewPoiId !== null) {
       onPreviewChange?.(null);
@@ -139,6 +142,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     previewPopup.setLngLat([poi.coordinates.lng, poi.coordinates.lat]);
     if (!isPreviewOpen) previewPopup.addTo(map);
     const popupElement = previewPopup.getElement();
+    // The MapLibre tip is outside the React card but still receives pointer events.
+    popupElement.addEventListener("pointerenter", handlePreviewPointerEnter);
+    popupElement.addEventListener("pointerleave", handlePreviewPointerLeave);
     const popupContent = popupElement.querySelector<HTMLElement>(".maplibregl-popup-content");
     popupElement.style.pointerEvents = "auto";
     if (popupContent) {
@@ -309,8 +315,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         "top-right",
       );
       previewContainer = document.createElement("div");
-      previewContainer.addEventListener("pointerenter", handlePreviewPointerEnter);
-      previewContainer.addEventListener("pointerleave", handlePreviewPointerLeave);
       previewContainer.addEventListener("focusin", handlePreviewFocusIn);
       previewContainer.addEventListener("focusout", handlePreviewFocusOut);
       previewPopup = new maplibregl.Popup({
@@ -423,7 +427,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y);
       map.easeTo({
         center,
-        duration: Math.min(4500, Math.max(1800, distance * 4)),
+        duration: Math.min(1150, Math.max(600, distance * 1.1)),
         easing: (progress) => progress * progress * (3 - 2 * progress),
         offset: [offsetX, 0],
       });
@@ -446,8 +450,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     destroy() {
       map?.getContainer().removeEventListener("click", handleMapClick);
       removeMarkers();
-      previewContainer?.removeEventListener("pointerenter", handlePreviewPointerEnter);
-      previewContainer?.removeEventListener("pointerleave", handlePreviewPointerLeave);
       previewContainer?.removeEventListener("focusin", handlePreviewFocusIn);
       previewContainer?.removeEventListener("focusout", handlePreviewFocusOut);
       previewContainer = null;
