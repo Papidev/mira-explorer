@@ -44,7 +44,7 @@ const Home = () => {
       <main id="main-content" className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <section
           aria-labelledby="hero-title"
-          className="grid items-start gap-10 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:gap-16 lg:pt-6"
+          className="grid items-start gap-y-6 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:pt-6"
         >
           <div>
             <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
@@ -60,7 +60,12 @@ const Home = () => {
                 story.
               </span>
             </h1>
-            <p className="mt-6 max-w-md text-base/7 text-zinc-600">
+          </div>
+
+          {cover && <HomeHeroStory cover={cover} />}
+
+          <div className="lg:col-start-1">
+            <p className="max-w-md text-base/7 text-zinc-600">
               Discover the places, people, and details that bring a city to life. Get the essence at
               a glance, then explore further on Wikipedia whenever you want.
             </p>
@@ -89,7 +94,10 @@ const Home = () => {
               href="/rome"
               className="group bg-brand-action hover:bg-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
             >
-              Explore Rome
+              <span className="inline-flex items-center gap-3">
+                Explore Rome
+                <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
+              </span>
               <ArrowRightIcon
                 className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
                 aria-hidden="true"
@@ -97,15 +105,13 @@ const Home = () => {
             </Link>
             <p className="mt-4 text-sm text-zinc-500">From your doorstep, or from anywhere.</p>
           </div>
-
-          {cover && <HomeHeroStory cover={cover} />}
         </section>
 
         <MapShowcase />
 
         <section
           aria-label="How to explore"
-          className="border-brand/70 grid gap-7 border-y py-8 sm:grid-cols-3 sm:gap-8"
+          className="border-brand grid gap-7 border-y py-8 sm:grid-cols-3 sm:gap-8"
         >
           {[
             {
@@ -140,7 +146,7 @@ const Home = () => {
 
         <section
           aria-labelledby="shared-knowledge-title"
-          className="border-brand/70 grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
+          className="border-brand grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
         >
           <div>
             <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
@@ -298,7 +304,7 @@ const Home = () => {
         )}
       </main>
 
-      <footer className="border-brand/70 mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t px-5 py-6 text-xs text-zinc-500 sm:px-8 lg:px-12">
+      <footer className="border-brand mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t px-5 py-6 text-xs text-zinc-500 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-baseline gap-3">
           <Link
             href="/"

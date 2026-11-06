@@ -1354,6 +1354,10 @@ export const createPostgresContent = (pool: Pool) => ({
       FROM content.visitor_pois p JOIN content.visitor_stories s ON s.id = p.id
       JOIN content.pois identity ON identity.id = p.id
       WHERE p.city = $1), '[]'::jsonb) AS pois,
+      (SELECT count(DISTINCT person->>'personId')::integer
+        FROM content.visitor_stories s
+        CROSS JOIN LATERAL jsonb_array_elements(s.response #> '{story,relatedPeople}') person
+        WHERE s.city = $1) AS "peopleCount",
       COALESCE((SELECT jsonb_agg(response ORDER BY id) FROM content.visitor_categories), '[]'::jsonb) AS categories,
       COALESCE((SELECT jsonb_agg(jsonb_build_object('id', id, 'wikidataId', wikidata_id) ORDER BY id)
         FROM content.pois WHERE city = $1 AND removed_at IS NOT NULL), '[]'::jsonb) AS removed`,
@@ -1362,6 +1366,7 @@ export const createPostgresContent = (pool: Pool) => ({
     return publishedCityPreviewSchema.parse({
       city,
       pois: result.pois,
+      peopleCount: result.peopleCount,
       categoryDefinitions: result.categories,
       removedPois: result.removed,
     });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from "react";
 import { createPortal, flushSync } from "react-dom";
 import type { Poi } from "@/types/Poi";
 import {
@@ -25,7 +25,7 @@ type Props = {
   onMapClick?: () => void;
   controlsRightInset?: number;
   hideControlsOnMobile?: boolean;
-  focusRequest?: { poi: Poi; leftInset: number; rightInset: number };
+  focusRequest?: { poi: Poi; requestId: number; leftInset: number; rightInset: number };
 };
 
 type MapHandlers = {
@@ -136,9 +136,14 @@ export const Map = ({
     adapterRef.current?.updateSelectedPoi(selectedPoiId);
   }, [selectedPoiId]);
 
-  useEffect(() => {
+  const focusSelectedPoi = useEffectEvent(() => {
     if (focusRequest) adapterRef.current?.focusPoi(focusRequest);
-  }, [focusRequest]);
+  });
+  const focusPoiId = focusRequest?.poi.id;
+  const focusRequestId = focusRequest?.requestId;
+  useEffect(() => {
+    focusSelectedPoi();
+  }, [focusPoiId, focusRequestId]);
 
   return (
     <>

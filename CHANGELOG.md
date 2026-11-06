@@ -1,5 +1,23 @@
 # mira-explorer
 
+## 0.22.6
+
+### Patch Changes
+
+- Refresh the Rome header and city icon, show published place and people totals above the map, and make the category panel easier to scan.
+
+## 0.22.5
+
+### Patch Changes
+
+- Bring the Castel Sant’Angelo photo into view sooner on the homepage and limit how far visitors can zoom out on the Rome map.
+
+## 0.22.4
+
+### Patch Changes
+
+- Highlight the selected place on the Rome map and center it with a smooth pan that takes longer for distant places.
+
 ## 0.22.3
 
 ### Patch Changes

@@ -1897,8 +1897,9 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
     it("loads published previews with the selected image and hides removed POIs", async () => {
       const write = example();
       const catalog = await prepare([write]);
-      expect((await repository.getCityPreviews("rome")).pois).toEqual([]);
+      expect(await repository.getCityPreviews("rome")).toMatchObject({ pois: [], peopleCount: 0 });
       await repository.saveStory(write);
+      expect((await repository.getCityPreviews("rome")).peopleCount).toBe(1);
       expect((await repository.getCityPreviews("rome")).pois).toEqual([
         {
           id: write.detail.id,
@@ -1932,12 +1933,25 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         revision: randomUUID(),
         pois: [],
       });
-      expect((await repository.getCityPreviews("rome")).pois).toEqual([]);
+      expect(await repository.getCityPreviews("rome")).toMatchObject({ pois: [], peopleCount: 0 });
       expect((await repository.getCityPreviews("rome")).removedPois).toEqual([
         { id: write.detail.id, wikidataId: "Q10285" },
       ]);
       expect(await repository.getStory(write.detail.id)).toBeUndefined();
       expect(await repository.getPerson("vespasian")).toBeUndefined();
+    });
+
+    it("counts a published Person once across Stories in the same city", async () => {
+      const first = example();
+      const second = example();
+      await prepare([first, second]);
+      await repository.saveStory(first);
+      await repository.saveStory(second);
+
+      const rome = await repository.getCityPreviews("rome");
+      expect(rome.pois).toHaveLength(2);
+      expect(rome.peopleCount).toBe(1);
+      expect((await repository.getCityPreviews("athens")).peopleCount).toBe(0);
     });
 
     it("permits no Related People and rejects invalid data before persistence", async () => {
