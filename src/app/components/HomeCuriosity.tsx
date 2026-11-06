@@ -1,7 +1,7 @@
 import { Bird } from "@/app/components/ui/MiraLogo/Bird";
 
 export const HomeCuriosity = () => (
-  <section aria-labelledby="closer-look-title" className="border-brand/70 border-b py-10 sm:py-14">
+  <section aria-labelledby="closer-look-title" className="border-brand border-b py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
       <div>
         <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
@@ -73,17 +73,17 @@ export const HomeCuriosity = () => (
     </div>
 
     <div className="mt-10 grid gap-8 text-base/7 text-zinc-600 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
-      <p className="border-brand/70 border-t pt-4">
+      <p className="border-brand border-t pt-4">
         Discover <strong className="text-story-emphasis font-semibold">lesser-known places</strong>{" "}
         beyond the usual tourist routes, alongside the landmarks you came to see.
       </p>
-      <p className="border-brand/70 border-t pt-4">
+      <p className="border-brand border-t pt-4">
         Discover{" "}
         <strong className="text-story-emphasis font-semibold">details and curiosities</strong>, and
         the events and people connected to the places you visit. There is more to each place than
         first meets the eye.
       </p>
-      <p className="border-brand/70 border-t pt-4">
+      <p className="border-brand border-t pt-4">
         Understand{" "}
         <strong className="text-story-emphasis font-semibold">
           the history behind what you see
@@ -91,7 +91,7 @@ export const HomeCuriosity = () => (
         . Explore how the city became what it is today, and get more from its art and cultural
         heritage.
       </p>
-      <p className="border-brand/70 border-t pt-4">
+      <p className="border-brand border-t pt-4">
         You won’t find hotel, restaurant, or shopping listings on Mira. You’ll find{" "}
         <strong className="text-story-emphasis font-semibold">places that stay with you</strong>:
         beauty that moves you, stories that teach you something, and discoveries that deepen your

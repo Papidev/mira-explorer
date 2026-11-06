@@ -94,7 +94,10 @@ const Home = () => {
               href="/rome"
               className="group bg-brand-action hover:bg-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
             >
-              Explore Rome
+              <span className="inline-flex items-center gap-3">
+                Explore Rome
+                <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
+              </span>
               <ArrowRightIcon
                 className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
                 aria-hidden="true"
@@ -108,7 +111,7 @@ const Home = () => {
 
         <section
           aria-label="How to explore"
-          className="border-brand/70 grid gap-7 border-y py-8 sm:grid-cols-3 sm:gap-8"
+          className="border-brand grid gap-7 border-y py-8 sm:grid-cols-3 sm:gap-8"
         >
           {[
             {
@@ -143,7 +146,7 @@ const Home = () => {
 
         <section
           aria-labelledby="shared-knowledge-title"
-          className="border-brand/70 grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
+          className="border-brand grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
         >
           <div>
             <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
@@ -301,7 +304,7 @@ const Home = () => {
         )}
       </main>
 
-      <footer className="border-brand/70 mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t px-5 py-6 text-xs text-zinc-500 sm:px-8 lg:px-12">
+      <footer className="border-brand mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t px-5 py-6 text-xs text-zinc-500 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-baseline gap-3">
           <Link
             href="/"

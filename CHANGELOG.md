@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.6
+
+### Patch Changes
+
+- Refresh the Rome header and city icon, show published place and people totals above the map, and make the category panel easier to scan.
+
 ## 0.22.5
 
 ### Patch Changes

@@ -221,6 +221,7 @@ export type PublishedSource = z.infer<typeof publishedSourceSchema>;
 
 // Lightweight display fields for the existing visitor preview, without loading Stories.
 export const publishedCityPreviewSchema = publishedCityMapSchema.safeExtend({
+  peopleCount: z.number().int().nonnegative().optional(),
   pois: z.array(
     publishedPoiSummarySchema.extend({
       slug: z
