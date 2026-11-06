@@ -18,7 +18,7 @@ export const MiraLogo = ({
         small: "text-2xl",
         medium: "text-[2.5rem] sm:text-[2.75rem]",
         large: "-ms-[0.18em] text-[3.5rem]/none sm:text-[4.25rem]/none",
-        city: "items-center gap-2",
+        city: "items-center gap-1.25 sm:gap-1",
       }[size],
       tone === "dark" ? "text-zinc-50" : "text-zinc-900",
     )}
