@@ -8,9 +8,9 @@ type Props = {
 };
 
 export const HomeHeroStory = ({ cover }: Props) => (
-  <figure className="relative">
-    <div className="relative pb-20 sm:pb-14">
-      <div className="relative aspect-4/5 overflow-hidden rounded-t-[10rem] rounded-b-2xl bg-zinc-200 sm:aspect-5/4 lg:aspect-4/5">
+  <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-16">
+    <div className="relative lg:pb-14">
+      <div className="relative aspect-4/5 max-h-[max(8rem,calc(100svh-26rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl bg-zinc-200 sm:aspect-5/4 lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
         <Image
           src={cover.mainImage.thumbnailUrl}
           alt={cover.poi.name}
@@ -34,7 +34,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
 
       <Link
         href={`/rome?poi=${encodeURIComponent(cover.poi.id)}`}
-        className="group absolute right-0 bottom-0 left-6 rounded-2xl border border-zinc-900/10 bg-white p-5 shadow-xl transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800 sm:left-auto sm:w-80"
+        className="group mt-4 block rounded-2xl border border-zinc-900/10 bg-white p-5 shadow-xl transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800 sm:ml-auto sm:w-80 lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
       >
         <span className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-600 uppercase">
           A story behind the place
