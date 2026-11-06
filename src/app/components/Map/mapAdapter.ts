@@ -415,10 +415,17 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     focusPoi({ poi, leftInset, rightInset }) {
       if (!map) return;
       closePreview();
+      const center: [number, number] = [poi.coordinates.lng, poi.coordinates.lat];
+      // Mobile Stories cover the map; keep the place centered for the return to it.
+      const offsetX = window.innerWidth >= 768 ? (leftInset - rightInset) / 2 : 0;
+      const target = map.project(center);
+      const current = map.project(map.getCenter());
+      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y);
       map.easeTo({
-        center: [poi.coordinates.lng, poi.coordinates.lat],
-        // Mobile Stories cover the map; keep the place centered for the return to it.
-        offset: window.innerWidth >= 768 ? [(leftInset - rightInset) / 2, 0] : [0, 0],
+        center,
+        duration: Math.min(4500, Math.max(1800, distance * 4)),
+        easing: (progress) => progress * progress * (3 - 2 * progress),
+        offset: [offsetX, 0],
       });
     },
     getZoom() {

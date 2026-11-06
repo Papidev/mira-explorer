@@ -6,21 +6,30 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { Poi } from "@/types/Poi";
-const cameraUpdates = vi.hoisted(
-  () => [] as Array<{ center?: [number, number]; offset?: [number, number] }>,
-);
+import type { EaseToOptions } from "maplibre-gl";
+
+const cameraUpdates = vi.hoisted(() => [] as EaseToOptions[]);
 vi.mock("maplibre-gl", () => {
   class Map {
     container: HTMLDivElement;
+    center: EaseToOptions["center"];
     removed = false;
 
-    constructor({ container }: { container: HTMLDivElement }) {
+    constructor({ container, center }: { container: HTMLDivElement; center: [number, number] }) {
       this.container = container;
+      this.center = center;
     }
 
     addControl() {}
-    easeTo(view: { center?: [number, number]; offset?: [number, number] }) {
+    easeTo(view: EaseToOptions) {
       cameraUpdates.push(view);
+      if (view.center) this.center = view.center;
+    }
+    getCenter() {
+      return this.center;
+    }
+    project([lng, lat]: [number, number]) {
+      return { x: lng * 20000, y: -lat * 20000 };
     }
     getZoom() {
       return 15;
@@ -1017,6 +1026,47 @@ describe("category filter tree", () => {
   });
 });
 
+it("centers the selected marker in the visible map from both the map and the list", async () => {
+  const user = userEvent.setup();
+  render(
+    <CityExplorer
+      citySlug="rome"
+      coordinates={[12.44, 41.9]}
+      initialZoom={15}
+      pois={[
+        { ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } },
+        { ...pois[1], coordinates: { lng: 12.5, lat: 41.89 } },
+      ]}
+    />,
+  );
+  await user.click(screen.getByRole("button", { name: "Open details for A Church" }));
+  expect(cameraUpdates.at(-1)).toMatchObject({
+    center: [12.45, 41.9],
+    offset: [-48, 0],
+    duration: 1800,
+  });
+  expect(
+    screen.getByRole("button", { name: "Open details for A Church", pressed: true }),
+  ).toBeVisible();
+
+  cameraUpdates.length = 0;
+  await user.click(screen.getByRole("button", { name: "A Museum" }));
+  expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.89], offset: [-48, 0] }]);
+  expect(cameraUpdates[0].duration).toBeGreaterThan(1800);
+  expect(
+    screen.getByRole("button", { name: "Open details for A Museum", pressed: true }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "Open details for A Church", pressed: false }),
+  ).toBeVisible();
+  expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
+
+  await user.click(screen.getByRole("button", { name: "Close filters" }));
+  expect(cameraUpdates).toHaveLength(1);
+  await user.click(screen.getByRole("button", { name: "Open details for A Museum" }));
+  expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.89], offset: [-224, 0] });
+});
+
 describe("visitor place search", () => {
   it("matches names regardless of case or accents, updates suggestions and supports keyboard selection", async () => {
     const user = userEvent.setup();
@@ -1049,7 +1099,7 @@ describe("visitor place search", () => {
     expect(
       screen.getByRole("button", { name: "Open details for Café Museum", pressed: true }),
     ).toHaveClass("selected-poi-marker");
-    expect(cameraUpdates.at(-1)).toEqual({ center: [12.5, 41.8], offset: [-48, 0] });
+    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.8], offset: [-48, 0] });
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("cafe");
     expect(search).toHaveValue("");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
@@ -1059,7 +1109,7 @@ describe("visitor place search", () => {
     cameraUpdates.length = 0;
     await user.type(search, "cafe");
     await user.click(await screen.findByRole("option", { name: /Café Museum.*Via Ostiense/ }));
-    expect(cameraUpdates).toEqual([{ center: [12.5, 41.8], offset: [-48, 0] }]);
+    expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.8], offset: [-48, 0] }]);
     expect(window.history.length).toBe(historyLength);
   });
 
@@ -1145,7 +1195,7 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
-    expect(cameraUpdates.at(-1)).toEqual({ center: [12, 41], offset: [0, 0] });
+    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41], offset: [0, 0] });
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });

@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.4
+
+### Patch Changes
+
+- Highlight the selected place on the Rome map and center it with a smooth pan that takes longer for distant places.
+
 ## 0.22.3
 
 ### Patch Changes
