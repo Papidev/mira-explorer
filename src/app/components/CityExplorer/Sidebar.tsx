@@ -56,7 +56,7 @@ export const Sidebar = ({
         <div>
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Big city, huh? Filter the map to see just what you want.
+            Big city, huh? But you can filter what you want.
           </p>
           <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
         </div>

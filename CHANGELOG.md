@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Show the Rome screen and a yellow spinner while the map loads, center the city header, and restore the filter tip in the sidebar.
+- Show the Rome screen and a yellow spinner while the map loads, center the city header, and restore the filter tip above a more compact search field.
 
 ## 0.22.8
 

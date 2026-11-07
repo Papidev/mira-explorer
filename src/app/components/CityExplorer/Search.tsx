@@ -29,14 +29,14 @@ export const Search = ({ pois, onSelect }: { pois: Poi[]; onSelect: (poi: Poi) =
       <div className="relative mt-2">
         <MagnifyingGlassIcon
           aria-hidden="true"
-          className="pointer-events-none absolute top-3 left-3 size-5 text-zinc-400"
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400"
         />
         <ComboboxInput
           autoComplete="off"
           placeholder="Search by name"
           displayValue={() => ""}
           onChange={(event) => setQuery(event.target.value)}
-          className="block min-h-11 w-full rounded-lg bg-white py-2.5 pr-3 pl-10 text-base text-zinc-900 outline-1 -outline-offset-1 outline-zinc-300 placeholder:text-zinc-400 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-700 sm:text-sm"
+          className="block min-h-11 w-full rounded-lg bg-white py-2.5 pr-3 pl-9 text-base text-zinc-900 outline-1 -outline-offset-1 outline-zinc-300 placeholder:text-zinc-400 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-700 sm:text-sm md:min-h-9 md:py-2"
         />
       </div>
       <ComboboxOptions
