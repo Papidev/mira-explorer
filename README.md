@@ -4,6 +4,8 @@ Next.js 16 + React 19 visit companion for history, art, and culture. The map hel
 
 ## Brand assets
 
+City landmark icons follow the approved Rome architectural line style. See [City logos](docs/city-logos.md) for drawing, color, and verification guidance.
+
 The shared `MiraLogo` component supplies the bird and local Fraunces wordmark in the home and map headers and the home footer. Set `tone="light"` for a light surface (black bird, yellow wing) or `tone="dark"` for a dark surface (yellow bird, black wing); choose the tone from the actual surface rather than the operating system preference. The SVG browser icon adapts its palette to the browser color scheme.
 
 Frozen logo alternatives A and the original C are preserved in `artifacts/logo-studies/`. The complete comparison prototype and the palette decision are archived on [`feat/mira-logo-prototype-archive`](https://github.com/Papidev/mira-explorer/tree/feat/mira-logo-prototype-archive) at `eb34c6f`; prototype controls are excluded from the application.

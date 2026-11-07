@@ -3,27 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const MapShowcase = () => (
-  <section
-    aria-labelledby="map-showcase-title"
-    className="border-brand border-t pt-6 pb-12 sm:pt-8 sm:pb-16"
-  >
-    <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
+  <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
+    <div className="mb-7 flex flex-wrap items-end justify-between gap-5 text-white">
       <div>
-        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+        <p className="text-xs/5 font-semibold tracking-[0.2em] text-white/80 uppercase">
           Find a place. Follow its story.
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
           Explore Rome on the map
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
-        <p className="mt-3 max-w-xl text-sm/6 text-zinc-600">
+        <p className="mt-3 max-w-xl text-sm/6 text-white/85">
           Open a place&apos;s Story for a quick sense of what makes it interesting. Each Story links
           to Wikipedia if you want to explore further.
         </p>
       </div>
       <Link
         href="/rome"
-        className="text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+        className="focus-visible:outline-brand inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         Open the map <ArrowRightIcon className="size-4" aria-hidden="true" />
       </Link>
