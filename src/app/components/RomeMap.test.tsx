@@ -69,7 +69,8 @@ describe("Rome map arrival", () => {
     const map = await RomeMap();
     render(map.props.children[0]);
 
-    expect(screen.getByText(/1 place/).textContent).toBe("1 place · 2 people");
+    expect(screen.getByText("place").parentElement?.textContent?.trim()).toBe("1 place");
+    expect(screen.getByText("people").parentElement?.textContent?.trim()).toBe("2 people");
     expect(map.props.children[1].props.pois).toHaveLength(2);
   });
 });

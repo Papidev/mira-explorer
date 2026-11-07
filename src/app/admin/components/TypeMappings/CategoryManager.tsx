@@ -30,7 +30,7 @@ export const CategoryManager = ({ model }: { model: ReturnType<typeof useTypeMap
           if (!model.saving && model.draggedCategoryId)
             model.moveCategory(model.draggedCategoryId, null);
         }}
-        className={`mt-3 rounded-md border border-dashed p-3 text-sm ${model.draggedCategoryId ? "border-blue-900 bg-blue-50 text-blue-900" : "border-gray-300 text-gray-500"}`}
+        className={`mt-3 rounded-md border border-dashed p-3 text-sm ${model.draggedCategoryId ? "border-atlas bg-atlas/5 text-atlas" : "border-gray-300 text-gray-500"}`}
       >
         Top level · drop here to remove a parent
       </div>

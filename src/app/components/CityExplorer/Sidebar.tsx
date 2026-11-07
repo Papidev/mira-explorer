@@ -79,17 +79,17 @@ export const Sidebar = ({
                 if (allCategoriesSelected) setExpanded(true);
                 onToggleAll();
               }}
-              className="peer size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border border-zinc-500 bg-white checked:border-blue-900 indeterminate:border-blue-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 forced-colors:appearance-auto"
+              className="peer checked:border-atlas indeterminate:border-atlas focus-visible:outline-atlas size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border border-zinc-500 bg-white focus-visible:outline-2 focus-visible:outline-offset-2 forced-colors:appearance-auto"
             />
             <CheckIcon
               aria-hidden="true"
               strokeWidth={3}
-              className="pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 text-blue-900 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
+              className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
             />
             <MinusIcon
               aria-hidden="true"
               strokeWidth={3}
-              className="pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 text-blue-900 peer-indeterminate:block forced-colors:hidden"
+              className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-indeterminate:block forced-colors:hidden"
             />
 
             <button
@@ -175,7 +175,7 @@ export const Sidebar = ({
                 aria-label={poi.name}
                 aria-pressed={selectedPoiId === poi.id}
                 onClick={() => onOpenPoi(poi.id)}
-                className={`group flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 ${selectedPoiId === poi.id ? "border-brand bg-yellow-50" : "border-zinc-200/80 bg-white hover:border-brand"}`}
+                className={`group flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 ${selectedPoiId === poi.id ? "border-brand bg-yellow-50" : "hover:border-brand border-zinc-200/80 bg-white"}`}
               >
                 <span className="min-w-0 flex-1">
                   <span className="block text-lg leading-snug font-medium">{poi.name}</span>

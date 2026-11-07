@@ -70,17 +70,17 @@ export const CategoryOption = ({
           if (input) input.indeterminate = indeterminate;
         }}
         onChange={onToggle}
-        className="peer size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border border-zinc-500 bg-white checked:border-blue-900 indeterminate:border-blue-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 forced-colors:appearance-auto"
+        className="peer checked:border-atlas indeterminate:border-atlas focus-visible:outline-atlas size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border border-zinc-500 bg-white focus-visible:outline-2 focus-visible:outline-offset-2 forced-colors:appearance-auto"
       />
       <CheckIcon
         aria-hidden="true"
         strokeWidth={3}
-        className="pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 text-blue-900 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
+        className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
       />
       <MinusIcon
         aria-hidden="true"
         strokeWidth={3}
-        className="pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 text-blue-900 peer-indeterminate:block forced-colors:hidden"
+        className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-indeterminate:block forced-colors:hidden"
       />
 
       {!definition?.parent && (

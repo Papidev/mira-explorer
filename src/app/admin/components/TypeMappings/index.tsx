@@ -90,7 +90,7 @@ export const TypeMappings = ({
             type="checkbox"
             checked={model.showIgnored}
             onChange={(event) => model.setShowIgnored(event.target.checked)}
-            className="size-4 cursor-pointer accent-blue-900"
+            className="accent-atlas size-4 cursor-pointer"
           />
           Show ignored types
         </label>
@@ -108,7 +108,7 @@ export const TypeMappings = ({
                   disabled={model.saving}
                   aria-pressed={model.selected?.id === type.id}
                   onClick={() => model.setSelectedId(type.id)}
-                  className="flex w-full cursor-pointer items-start justify-between gap-3 border-b border-gray-100 p-4 text-left hover:bg-gray-50 disabled:cursor-not-allowed aria-pressed:border-l-4 aria-pressed:border-l-blue-900 aria-pressed:bg-blue-50"
+                  className="aria-pressed:border-l-atlas aria-pressed:bg-atlas/5 flex w-full cursor-pointer items-start justify-between gap-3 border-b border-gray-100 p-4 text-left hover:bg-gray-50 disabled:cursor-not-allowed aria-pressed:border-l-4"
                 >
                   <span>
                     <span className="block text-sm font-medium text-gray-900">{type.label}</span>

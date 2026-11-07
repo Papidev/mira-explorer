@@ -26,7 +26,7 @@ Markdown in Stories and biographies uses Tailwind Typography (`prose prose-zinc`
 
 Mira's primary brand color is yellow, supported by white and zinc neutrals. The theme in `src/app/globals.css` defines `brand` (`yellow-400`) for signature strokes and accents, `brand-action` (`yellow-300`) for primary action backgrounds, and `brand-soft` (`yellow-100`) for subtle backgrounds. Use zinc-dark text and icons on these backgrounds; primary actions use `brand` on hover. These roles share the same yellow family without requiring the same intensity everywhere.
 
-Dark blue (`blue-900`) is the current secondary accent alongside the yellow palette. Category checkboxes use it for checkmarks, partial-selection minus signs, and selected borders on white, including “All categories”. Use this shade for control selection, focus, active tabs, and panel resize feedback. Primary actions use yellow with dark text; navigation links retain sky blue. Yellow remains the primary brand and action color.
+Atlas Blue (`atlas`, `#345568`) is Mira's secondary color. Use it for city-map headers with white text and yellow accents, and on light surfaces for control selection, keyboard focus, active tabs, and panel resize feedback. Navigation links use sky blue, and primary actions use Mira yellow with dark text.
 
 Violet (an equal mix of `violet-700` and `violet-800` in OKLCH) is the palette's text-emphasis color, exposed as `emphasis` in the theme (`text-emphasis`). Use it for non-interactive highlighted terms in Stories and biographies, with semibold weight and no underline, and for Art section icons and bullets, plus Person curiosity bullets. Links remain sky blue (`sky-800`) and underlined, so emphasis and navigation are visually distinct.
 

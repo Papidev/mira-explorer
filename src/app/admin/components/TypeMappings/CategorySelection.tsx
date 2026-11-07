@@ -11,9 +11,9 @@ export const CategorySelection = ({
   definitions: PoiCategoryDefinition[];
   onChange: (categories: string[]) => void;
 }) => (
-  <label className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 p-2 text-sm text-gray-700 has-checked:border-blue-900 has-checked:bg-blue-50 has-disabled:cursor-not-allowed has-disabled:opacity-60">
+  <label className="has-checked:border-atlas has-checked:bg-atlas/5 flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 p-2 text-sm text-gray-700 has-disabled:cursor-not-allowed has-disabled:opacity-60">
     <input
-      className="size-4 cursor-pointer accent-blue-900 disabled:cursor-not-allowed"
+      className="accent-atlas size-4 cursor-pointer disabled:cursor-not-allowed"
       type="checkbox"
       checked={draft.includes(category.id)}
       onChange={(event) => {
