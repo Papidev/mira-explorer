@@ -56,7 +56,7 @@ const Home = () => {
               className="mt-6 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl"
             >
               Every place has a{" "}
-              <span className="decoration-brand text-zinc-800 italic underline decoration-4 underline-offset-8">
+              <span className="text-atlas decoration-brand italic underline decoration-4 underline-offset-8">
                 story.
               </span>
             </h1>
