@@ -12,9 +12,9 @@ Use the approved Rome Colosseum in `public/icons/cities/rome.svg` and its blue v
 
 ## Color and placement
 
-| Surface | City logo color |
-| --- | --- |
-| Blue city header | Brand yellow (`#ffda1a`) |
+| Surface             | City logo color                                         |
+| ------------------- | ------------------------------------------------------- |
+| Blue city header    | Brand yellow (`#ffda1a`)                                |
 | Yellow homepage CTA | Atlas blue (`#345568`), matching the CTA text and arrow |
 
 Keep geometry consistent between color variants. Use the saturated brand colors rather than lighter approximations.
