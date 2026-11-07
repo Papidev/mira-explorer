@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.10
+
+### Patch Changes
+
+- Unify the homepage and Rome visual identity with a continuous blue background, clearer yellow accents, and architectural city icons.
+
 ## 0.22.9
 
 ### Patch Changes
