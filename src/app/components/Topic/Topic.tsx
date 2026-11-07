@@ -9,19 +9,19 @@ export const Topic = ({
 }) =>
   insights.length > 0 ? (
     <section
-      className={`rounded-xl px-4 py-3 ring-1 ${title === "Art" ? "bg-rose-50/60 ring-rose-950/5" : "bg-blue-50/60 ring-blue-950/5"}`}
+      className={`rounded-xl px-4 py-3 ring-1 ${title === "Art" ? "bg-rose-50/60 ring-rose-950/5" : "bg-sky-100/60 ring-atlas/5"}`}
     >
       <h3
-        className={`flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide uppercase ${title === "Art" ? "text-rose-800" : "text-blue-900"}`}
+        className={`flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide uppercase ${title === "Art" ? "text-rose-800" : "text-atlas"}`}
       >
         <span
           aria-hidden="true"
-          className={`size-5 shrink-0 bg-current mask-contain mask-bottom mask-no-repeat ${title === "Art" ? "mask-[url(/icons/story/palette.svg)] text-rose-800" : "mask-[url(/icons/categories/architecture.svg)] text-blue-900"}`}
+          className={`size-5 shrink-0 bg-current mask-contain mask-bottom mask-no-repeat ${title === "Art" ? "mask-[url(/icons/story/palette.svg)] text-rose-800" : "mask-[url(/icons/categories/architecture.svg)] text-atlas"}`}
         />
         {title}
       </h3>
       <ul
-        className={`mt-4 list-disc space-y-6 pl-5 marker:text-2xl marker:font-semibold ${title === "Art" ? "marker:text-rose-800" : "marker:text-blue-900"}`}
+        className={`mt-4 list-disc space-y-6 pl-5 marker:text-2xl marker:font-semibold ${title === "Art" ? "marker:text-rose-800" : "marker:text-atlas"}`}
       >
         {insights.map((description, index) => (
           <li key={`${title}-${index}`} className="pl-1">

@@ -9,7 +9,7 @@ export const MapShowcase = () => (
   >
     <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
       <div>
-        <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Find a place. Follow its story.
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
@@ -23,7 +23,7 @@ export const MapShowcase = () => (
       </div>
       <Link
         href="/rome"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+        className="text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         Open the map <ArrowRightIcon className="size-4" aria-hidden="true" />
       </Link>

@@ -4,7 +4,7 @@ export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand border-b py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
       <div>
-        <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Follow your curiosity
         </p>
         <h2
@@ -45,7 +45,7 @@ export const HomeCuriosity = () => (
           <p className="text-xs/5 tracking-wide text-zinc-500">
             Italian · from <i lang="it">mirare</i> · literary
           </p>
-          <p lang="it" className="font-serif text-base/7 text-zinc-900 italic">
+          <p lang="it" className="text-atlas font-serif text-lg/7 font-medium italic sm:text-xl/8">
             «Ammirare; contemplare con ammirazione.»
           </p>
         </div>

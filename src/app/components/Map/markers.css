@@ -12,6 +12,12 @@
     z-index: 1;
   }
 
+  .poi-marker::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--spacing) * -2);
+  }
+
   .poi-marker > svg {
     overflow: visible;
     /* Scale around the tip so it keeps pointing at the same location. */

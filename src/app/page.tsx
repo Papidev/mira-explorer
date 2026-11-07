@@ -47,7 +47,7 @@ const Home = () => {
           className="grid items-start gap-y-6 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:pt-6"
         >
           <div>
-            <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+            <p className="text-atlas flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] uppercase">
               <span className="bg-brand h-1 w-10 shrink-0 rounded-full" aria-hidden="true" />A
               closer look at places
             </p>
@@ -56,7 +56,7 @@ const Home = () => {
               className="mt-6 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl"
             >
               Every place has a{" "}
-              <span className="decoration-brand text-zinc-800 italic underline decoration-4 underline-offset-8">
+              <span className="text-atlas decoration-brand italic underline decoration-4 underline-offset-8">
                 story.
               </span>
             </h1>
@@ -92,14 +92,15 @@ const Home = () => {
             </p>
             <Link
               href="/rome"
-              className="group bg-brand-action hover:bg-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+              className="group bg-atlas hover:bg-atlas/90 focus-visible:outline-atlas mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <span className="inline-flex items-center gap-3">
                 Explore Rome
                 <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
               </span>
               <ArrowRightIcon
-                className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+                className="text-brand size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+                strokeWidth={2}
                 aria-hidden="true"
               />
             </Link>
@@ -131,7 +132,10 @@ const Home = () => {
             },
           ].map(({ number, title, description }) => (
             <div key={number} className="flex gap-4">
-              <span className="pt-0.5 font-serif text-xl text-zinc-800" aria-hidden="true">
+              <span
+                className="text-atlas font-serif text-3xl/none sm:text-4xl/none"
+                aria-hidden="true"
+              >
                 {number}
               </span>
               <div>
@@ -149,7 +153,7 @@ const Home = () => {
           className="border-brand grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
         >
           <div>
-            <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+            <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
               Behind the Stories
             </p>
             <h2
@@ -232,7 +236,7 @@ const Home = () => {
           <section aria-labelledby="discoveries-title" className="py-12 sm:py-16">
             <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+                <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
                   Start with a little curiosity
                 </p>
                 <h2
@@ -245,7 +249,7 @@ const Home = () => {
               </div>
               <Link
                 href="/rome"
-                className="group inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold text-zinc-800 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+                className="group text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
               >
                 See the map{" "}
                 <ArrowRightIcon

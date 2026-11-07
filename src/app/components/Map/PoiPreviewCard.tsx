@@ -21,7 +21,7 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
         event.stopPropagation();
         onOpenDetails();
       }}
-      className="group block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl bg-white text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-900"
+      className="group focus-visible:ring-atlas block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl bg-white text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2"
     >
       <div className="relative aspect-2/1 w-full bg-zinc-100">
         {poi.mainImageUrl && !hasImageError ? (
@@ -44,10 +44,7 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
           aria-hidden="true"
           className="bg-brand group-hover:bg-brand-action absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
         >
-          <ArrowLongRightIcon
-            className="size-6 -rotate-45"
-            strokeWidth={1.5}
-          />
+          <ArrowLongRightIcon className="size-6 -rotate-45" strokeWidth={1.5} />
         </span>
       </div>
       <div className="p-4">

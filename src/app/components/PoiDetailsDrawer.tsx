@@ -37,6 +37,7 @@ export const PoiDetailsDrawer = ({
   const [poi, setPoi] = useState(selectedPoi);
   if (selectedPoi && selectedPoi !== poi) setPoi(selectedPoi);
   const [failedMainImageUrl, setFailedMainImageUrl] = useState<string | null>(null);
+  const [loadedWideImageUrl, setLoadedWideImageUrl] = useState<string | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<{
     id: string;
     openRequestId: number;
@@ -52,6 +53,8 @@ export const PoiDetailsDrawer = ({
   });
   const mainImage = detail?.gallery.find(({ id }) => id === detail.mainImageId);
   const mainImageUrl = detail ? mainImage?.thumbnailUrl : content ? poi?.mainImageUrl : undefined;
+  const isWideImage =
+    mainImage?.width && mainImage.height ? mainImage.width >= mainImage.height : null;
   const { person, isLoading: isPersonLoading } = usePerson(
     selectedPersonId,
     citySlug,
@@ -108,7 +111,16 @@ export const PoiDetailsDrawer = ({
                     alt={`Main image of ${detail?.name ?? poi?.name}`}
                     fill
                     sizes={`(min-width: 768px) ${width ?? 448}px, 100vw`}
-                    className="object-cover"
+                    className={
+                      (isWideImage ?? mainImageUrl === loadedWideImageUrl)
+                        ? "object-cover"
+                        : "object-contain"
+                    }
+                    onLoad={({ currentTarget: { naturalWidth, naturalHeight } }) => {
+                      if (isWideImage === null && naturalWidth >= naturalHeight) {
+                        setLoadedWideImageUrl(mainImageUrl);
+                      }
+                    }}
                     onError={() => setFailedMainImageUrl(mainImageUrl)}
                   />
                   {selectedPoi && detail && (
