@@ -27,15 +27,16 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
         Ancient ruins, Baroque squares, and the stories between.
       </p>
       {counts && (
-        <div className="flex flex-wrap justify-end gap-1.5 text-xs tabular-nums sm:gap-2 sm:text-sm">
-          <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 sm:px-3">
+        <div className="flex shrink-0 items-center gap-2 rounded-md bg-white/10 px-2.5 py-1.5 text-xs tabular-nums sm:gap-3 sm:px-3 sm:text-sm">
+          <span className="flex items-center gap-1.5">
             <MapPinIcon className="text-brand size-4" aria-hidden="true" />{" "}
             {counts.places.toLocaleString("en")}{" "}
             <span className="sr-only text-white/90 sm:not-sr-only">
               {counts.places === 1 ? "place" : "places"}
             </span>
           </span>
-          <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 sm:px-3">
+          <span aria-hidden="true" className="h-3.5 w-px bg-white/25" />
+          <span className="flex items-center gap-1.5">
             <UsersIcon className="text-brand size-4" aria-hidden="true" />{" "}
             {counts.people.toLocaleString("en")}{" "}
             <span className="sr-only text-white/90 sm:not-sr-only">
