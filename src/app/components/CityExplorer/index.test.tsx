@@ -1046,7 +1046,7 @@ it("centers the selected marker in the visible map from both the map and the lis
   expect(cameraUpdates.at(-1)).toMatchObject({
     center: [12.45, 41.9],
     offset: [-48, 0],
-    duration: 1800,
+    duration: 600,
   });
   expect(
     screen.getByRole("button", { name: "Open details for A Church", pressed: true }),
@@ -1055,7 +1055,7 @@ it("centers the selected marker in the visible map from both the map and the lis
   cameraUpdates.length = 0;
   await user.click(screen.getByRole("button", { name: "A Museum" }));
   expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.89], offset: [-48, 0] }]);
-  expect(cameraUpdates[0].duration).toBeGreaterThan(1800);
+  expect(cameraUpdates[0].duration).toBeGreaterThan(600);
   expect(
     screen.getByRole("button", { name: "Open details for A Museum", pressed: true }),
   ).toBeVisible();
