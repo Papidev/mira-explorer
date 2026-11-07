@@ -1,5 +1,7 @@
 # Person Architecture
 
+Explorer reads published People from Supabase and keeps the versioned Person format below for the legacy catalog. The generation and resolution sections describe the legacy workflow. Current editorial behavior is documented in [Mira Admin](https://github.com/Papidev/mira-admin).
+
 ## Identity and storage
 
 Story generation selects at most ten significant Related People in order. It discards AI-supplied IDs; only the resolver assigns canonical app-owned Person IDs and retains Wikidata IDs as external identity.

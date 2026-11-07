@@ -163,7 +163,7 @@ _Avoid_: Production output, AI output
 - Related People must be explicitly named in the Story Introduction or a Visitor Insight. Generated Stories mention each retained person's full display name at least once; people mentioned only in Sources are excluded. The public catalog also excludes people whose full display name is absent from the Story text.
 - Wikipedia, Wikidata, and Wikimedia Commons provide the initial source material; story text currently starts from Wikipedia. MDX and configurable React renderers remain future decisions.
 - Allowed Wikipedia editions are English, Italian, French, German, and Spanish. Acquire Wikipedia in English and the official languages of the POI's country that are in the allowed edition list. Related People also include the official languages of their countries of citizenship; retain the POI country context when regenerating a Person. Match editions through Wikidata identity, deduplicate languages, and write visitor content in English. Missing editions or country/language metadata produce warnings; usable Sources still support generation. Apply the same country-context principle when adding other linked entities.
-- Generation order, persistence, retries, and failure behavior are defined in [Story Workflow Architecture](docs/story-workflow-architecture.md).
+- Generation order, persistence, retries, and failure behavior belong to [Mira Admin](https://github.com/Papidev/mira-admin). The [legacy Story workflow](docs/story-workflow-architecture.md) documents the original versioned artifacts.
 
 ### People
 

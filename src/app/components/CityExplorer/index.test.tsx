@@ -667,10 +667,8 @@ it("changes the visitor category-filter results after a Curator saves a shared t
   const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");
   const { default: path } = await import("node:path");
-  const { useState } = await import("react");
   const { createPoiTypeMappings } = await import("@/server/poiTypeMappings");
   const { createPoiCategoriesForCity } = await import("@/server/poiCategories");
-  const { TypeMappings } = await import("@/app/admin/components/TypeMappings");
   const directory = mkdtempSync(path.join(tmpdir(), "mapping-visitor-flow-"));
   try {
     writeFileSync(
@@ -714,24 +712,7 @@ it("changes the visitor category-filter results after a Curator saves a shared t
       screen.queryByRole("button", { name: "Open details for A Church" }),
     ).not.toBeInTheDocument();
     visitor.unmount();
-    const EditingCatalog = () => {
-      const [catalog, setCatalog] = useState(repository.getCatalog());
-      return (
-        <TypeMappings
-          catalog={catalog}
-          saveRule={async (id, next) => {
-            const result = repository.save(id, next);
-            setCatalog(repository.getCatalog());
-            return result;
-          }}
-        />
-      );
-    };
-    const curator = render(<EditingCatalog />);
-    await user.click(screen.getByRole("checkbox", { name: "Museum" }));
-    await user.click(screen.getByRole("button", { name: "Save categories" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("Rule saved");
-    curator.unmount();
+    repository.save("Q16970", ["Church", "Museum"]);
     render(
       <CityExplorer
         citySlug="rome"

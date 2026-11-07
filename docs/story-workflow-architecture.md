@@ -1,6 +1,6 @@
 # Story Workflow Module Architecture
 
-Status: implemented.
+Historical reference for the retired Explorer Admin. For current editorial workflows, see [Mira Admin](https://github.com/Papidev/mira-admin). Explorer still uses the saved Story and image formats to build the legacy catalog.
 
 The server-side Story Workflow hides sequencing, persistence, partial failures, and external integrations behind an artifact-oriented interface. It starts from an existing POI. The Draft Story Generation coordination module owns POI creation, Type acquisition, classification, and run-log outcomes outside Story Workflow; the Next server-action Adapter owns input parsing, progress transport, and revalidation.
 

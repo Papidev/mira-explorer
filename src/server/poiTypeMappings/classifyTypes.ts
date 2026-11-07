@@ -1,6 +1,6 @@
 import { fetchWithGenerationCancellation } from "@/server/generationCancellation";
 import { z } from "zod";
-import type { AiSelection } from "@/app/admin/lib/aiModels";
+import type { AiSelection } from "./aiSelection";
 import type { PoiCategoryDefinition } from "@/types/PoiCategory";
 import type { PoiTypeMapping } from "@/types/PoiTypeMapping";
 

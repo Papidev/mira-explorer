@@ -49,16 +49,6 @@ const RomePage = async ({ searchParams }: Props) => {
           <span className="hidden sm:inline-flex">
             <AppVersion />
           </span>
-          {process.env.NODE_ENV === "development" && (
-            <Link
-              href="/admin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 rounded-full border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-white hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
-            >
-              Admin
-            </Link>
-          )}
         </div>
       </header>
 
