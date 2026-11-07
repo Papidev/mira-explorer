@@ -1,6 +1,6 @@
 # POI Categories
 
-Status: direct-type mapping, visitor sidebar (#59), and shared Curator edits (#60) are implemented. Per-POI exceptions (#61) remain planned.
+Mira Admin manages shared categories and type rules. Explorer provides the authenticated [category and type rule API](admin-content-api.md) and applies saved categories in the visitor map. Per-POI exceptions (#61) remain planned.
 
 ## Domain and hierarchy
 
@@ -63,11 +63,7 @@ Each parent has a distinct marker color: Religion yellow, Arts & Culture green, 
 
 ## Curator workflow
 
-Type mappings lists acquired direct types across cities, with IDs, labels, assignments, and affected POIs. Search by label/ID and filter Mapped/Unmapped. **Show ignored types** reveals ignored rules and enables the Ignored filter.
-
-Select a type to edit it: **Save categories** assigns existing categories, **Ignore type** saves an empty list, and **Clear rule** removes its rule. **Manage categories** controls the shared hierarchy.
-
-Saving a rule immediately recalculates affected POIs from local type snapshots across cities, preserving unrelated records and Story artifacts. Revalidate admin/visitor routes and notify an open map in the same browser to refresh. Shared versioned rules survive type refresh and POI regeneration; neither Story regeneration nor per-POI approval is needed.
+Use the Categories workspace in [Mira Admin](https://github.com/Papidev/mira-admin) to edit shared type rules and category definitions. Saving an online rule recalculates affected POI categories without regenerating Stories. New visitor requests see the result after the online cache expires.
 
 ## Planned per-POI exceptions
 
@@ -77,7 +73,7 @@ Final categories are `(mapped union + additions) - exclusions`; exclusions win. 
 
 Use exceptions for source types describing an encompassing complex rather than the specific place, without altering generally correct shared rules.
 
-## Persistence
+## Legacy catalog files
 
 | Artifact                       | Location                           |
 | ------------------------------ | ---------------------------------- |
@@ -88,6 +84,6 @@ Use exceptions for source types describing an encompassing complex rather than t
 
 Definitions contain stable `id`, singular `name`, optional visitor `label`, top-level `parent`, and `supersedes`. Shared configuration drives grouping, counts, and filtering without Basilica-specific browser logic.
 
-Type acquisition/refresh and POI generation recompute categories. Run `pnpm categories:rebuild` to apply current rules across local city snapshots. The server/public snapshot combines definitions, categories, and POI catalog; the browser filters persisted values.
+Run `pnpm categories:rebuild` to recalculate legacy categories from versioned rules and local type snapshots. The build combines the saved categories, category definitions, and POI catalog. The browser filters the published values.
 
 See #38, the [glossary](../CONTEXT.md), and GitHub issue #104 for category/Story consistency review.

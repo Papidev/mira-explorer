@@ -159,9 +159,9 @@ Deploy through Vercel's GitHub integration with production branch `main`. Branch
 
 ## Data layout
 
-Versioned Stories, People, POIs, and category metadata live under `data/` in each checkout. Local Sources, acquired Types, checkpoints, AI progress, and diagnostic logs are read and written directly under `~/.local/share/historical-explorer`, shared by the main checkout and every worktree. No migration or setup command is needed for new worktrees. `data/public/` stays in each checkout because its build snapshot depends on that branch’s versioned content.
+Versioned Stories, People, POIs, and categories live under `data/`. The build generates a snapshot in `data/public/` for the homepage and the Rome map. The map merges that snapshot with online publications. Builds use the versioned files and run without database or AI credentials.
 
-`<local-data>` below means that shared external directory. Set `HISTORICAL_EXPLORER_LOCAL_DATA_DIR` in `.env.local` or the shell to override it; use the same absolute path in every checkout. Changing it selects another store without moving files. Legacy environment variables, storage paths, database roles, and saved queue identifiers retain their existing names for compatibility; they are not product or repository names. Edits and deletions of shared Sources and checkpoints affect all checkouts. Map requests merge online publications with the build-generated catalog; the homepage uses the generated catalog. Builds do not require database connectivity, local Sources or AI credentials.
+The shared legacy workspace defaults to `~/.local/share/historical-explorer`. Set `HISTORICAL_EXPLORER_LOCAL_DATA_DIR` to point legacy tools such as `pnpm categories:rebuild` at another existing workspace. Source snapshots, acquired Types, checkpoints, and logs from the retired Explorer Admin can still be found there. Current generation and its diagnostics are documented in [Mira Admin](https://github.com/Papidev/mira-admin).
 
 | Artifact                           | Location                                                 |
 | ---------------------------------- | -------------------------------------------------------- |
@@ -177,12 +177,6 @@ Versioned Stories, People, POIs, and category metadata live under `data/` in eac
 POI IDs are stable and app-owned; external IDs such as `wikidataId` are optional. `geoPlaceId` preserves the original feature identity, enabling regeneration without Wikidata. Legacy records recover it only from a unique exact name/geometry match.
 
 Person records and Main Image Candidate artifacts are validated with Zod when read. Invalid files report their path and validation errors; empty candidate lists and missing image selections remain valid workflow states. Selected images must reference an available candidate, and Person IDs must match their directory names.
-
-Person records, Story Content, and Main Image Candidate artifacts are also validated before saving. Story saves check only their referenced Person records; unresolved references remain valid drafts. Validation failures preserve previous content and checkpoints. Unreferenced People and images awaiting Story Content are retained for reuse and retry.
-
-The allowed Wikipedia editions are English (`en`), Italian (`it`), French (`fr`), German (`de`), and Spanish (`es`), configured in `src/server/wikiPipeline/acquireWikipediaSources.ts`. Wikipedia acquisition combines English with the official languages of the POI's country that are in the allowed edition list, using Wikidata country (P17), official language (P37), Wikimedia language code (P424), and sitelinks. People also include the official languages of their countries of citizenship (P27) and retain the originating POI's Wikidata context for regeneration. Story and Person content remains English. Missing country/language metadata or unavailable editions produce warnings; generation continues with usable Sources and stops only when none is available. Local editions complement English; conflicting claims retain attribution or are omitted.
-
-The primary Wikipedia Source retains its text snapshot and metadata with ID `wikipedia`, title, and URL. Additional editions use IDs such as `wikipedia-it` and are saved in `<poi-id>.sources.json` beside the primary snapshot. Person additional Sources are stored in `<local-data>/generated/people/<person-id>.sources.json`, with reference metadata in the versioned Person record. Existing single-source records remain readable. Generation validates Source References. Public responses omit them. Existing Stories and People are updated only by their generation/refresh actions; this rule does not regenerate saved content automatically.
 
 New Story Content uses `textFormat: "markdown"`. Write Markdown inside
 `introduction.text` and topic `description` strings: blank lines separate
