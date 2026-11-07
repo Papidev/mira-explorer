@@ -49,6 +49,7 @@ Read `docs/agents/domain.md` before domain exploration.
 
 ## Tailwind Plus / Catalyst
 
+- Before creating or changing a city logo, read [City logos](docs/city-logos.md) and follow the approved Rome drawing style and surface colors.
 - `.tailwind-plus/` contains paid Tailwind Plus source when present locally and is intentionally gitignored. Treat it only as a reference catalog and never import it from production code.
 - `src/app/components/ui/` contains committed, app-owned base components built from or inspired by Tailwind Plus examples.
 - Do not commit the local Tailwind Plus catalog. Commit only app-specific components needed by this product, and keep paid source material available only on licensed development machines.
