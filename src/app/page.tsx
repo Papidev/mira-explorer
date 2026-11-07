@@ -122,11 +122,11 @@ const Home = () => {
               </p>
               <Link
                 href="/rome"
-                className="group bg-brand focus-visible:outline-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4"
+                className="group bg-brand text-atlas focus-visible:outline-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4"
               >
                 <span className="inline-flex items-center gap-3">
                   Explore Rome
-                  <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
+                  <Image src="/icons/cities/rome-blue.svg" alt="" width={36} height={24} />
                 </span>
                 <ArrowRightIcon
                   className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
