@@ -64,8 +64,24 @@ const Home = () => {
         <div className="to-atlas relative isolate bg-linear-to-b from-[#203e50] text-white">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,#7898a6_0%,transparent_65%),radial-gradient(circle_at_center,#ffffff18_1px,transparent_1px)] mask-[linear-gradient(to_bottom,transparent,black_20%,transparent_100%)] bg-size-[auto,20px_20px]"
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,#ffffff18_1px,transparent_1px)] mask-[linear-gradient(to_bottom,transparent,black_20%,transparent_100%)] bg-size-[20px_20px]"
           />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden lg:block"
+          >
+            <div className="relative mx-auto h-full max-w-7xl">
+              <svg
+                viewBox="0 0 640 880"
+                fill="none"
+                className="text-brand/20 absolute -top-6 -right-6 w-[55%] mask-[linear-gradient(to_bottom,black,transparent_90%)]"
+              >
+                <path d="M24 880V320a296 296 0 0 1 592 0v560" stroke="currentColor" />
+                <path d="M48 880V320a272 272 0 0 1 544 0v560" stroke="currentColor" />
+                <path d="M72 880V320a248 248 0 0 1 496 0v560" stroke="currentColor" />
+              </svg>
+            </div>
+          </div>
           <section
             aria-labelledby="hero-title"
             className="mx-auto grid max-w-7xl items-start gap-y-6 px-5 pt-6 pb-10 sm:px-8 sm:pt-8 sm:pb-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:px-12 lg:pt-10"
