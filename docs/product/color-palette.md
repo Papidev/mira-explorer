@@ -8,8 +8,8 @@ These counts describe design roles. Some roles share a color family. Tints, opac
 
 | Color | Value | Use |
 | --- | --- | --- |
-| Mira Yellow | `#FFDA1A` · `brand`, `brand-action` | Logo accent, title strokes, and primary actions with dark text. `brand-soft` uses Tailwind `yellow-100` for quieter surfaces such as Story period and Person life dates. |
-| Atlas Blue | `#345568` · `atlas` | City-map headers with white text and yellow accents. On light surfaces, use it for checkmarks, selected borders, active tabs, keyboard focus, and panel resize feedback. Use a yellow focus outline on the blue header. |
+| Mira Yellow | `#FFDA1A` · `brand`, `brand-action` | Logo accent, title strokes, and yellow action surfaces with dark text. `brand-soft` uses Tailwind `yellow-100` for quieter surfaces such as Story period and Person life dates. |
+| Atlas Blue | `#345568` · `atlas` | City-map headers and the homepage “Explore Rome” action use white text and yellow accents on this surface. Homepage section labels and map links use Atlas Blue text. On light surfaces, use it for checkmarks, selected borders, active tabs, keyboard focus, and panel resize feedback. Use a yellow focus outline on the blue header. |
 
 The [Tailwind theme](../../src/app/globals.css) defines the shared tokens. Atlas Blue has 7.9:1 contrast against white.
 

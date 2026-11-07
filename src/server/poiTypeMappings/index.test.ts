@@ -7,7 +7,7 @@ import { setupServer } from "msw/node";
 import { createPoiTypeMappings } from ".";
 import { createPoiCategoriesForCity } from "@/server/poiCategories";
 import { readPoiCategoryCatalog } from "@/server/poiCategoryCatalog";
-import type { AiSelection } from "@/app/admin/lib/aiModels";
+import type { AiSelection } from "./aiSelection";
 
 const server = setupServer();
 let directory: string;

@@ -9,7 +9,7 @@ export const MapShowcase = () => (
   >
     <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
       <div>
-        <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Find a place. Follow its story.
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">

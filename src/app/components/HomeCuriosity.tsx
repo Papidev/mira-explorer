@@ -4,7 +4,7 @@ export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand border-b py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
       <div>
-        <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Follow your curiosity
         </p>
         <h2

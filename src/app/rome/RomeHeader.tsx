@@ -55,21 +55,9 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           </span>
         </div>
       )}
-      <div className="hidden items-baseline gap-2 has-[a]:flex lg:flex">
-        <span className="hidden lg:inline-flex [&>span]:text-white/80">
-          <AppVersion />
-        </span>
-        {process.env.NODE_ENV === "development" && (
-          <Link
-            href="/admin"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-visible:outline-brand rounded-full border border-white/20 px-2.5 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2"
-          >
-            Admin
-          </Link>
-        )}
-      </div>
+      <span className="hidden lg:inline-flex [&>span]:text-white/80">
+        <AppVersion />
+      </span>
     </div>
   </header>
 );

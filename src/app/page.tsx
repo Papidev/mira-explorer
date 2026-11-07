@@ -47,7 +47,7 @@ const Home = () => {
           className="grid items-start gap-y-6 pt-2 pb-6 sm:pt-4 sm:pb-8 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:pt-6"
         >
           <div>
-            <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+            <p className="text-atlas flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] uppercase">
               <span className="bg-brand h-1 w-10 shrink-0 rounded-full" aria-hidden="true" />A
               closer look at places
             </p>
@@ -153,7 +153,7 @@ const Home = () => {
           className="border-brand grid gap-5 border-b py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
         >
           <div>
-            <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+            <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
               Behind the Stories
             </p>
             <h2
@@ -236,7 +236,7 @@ const Home = () => {
           <section aria-labelledby="discoveries-title" className="py-12 sm:py-16">
             <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-800 uppercase">
+                <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
                   Start with a little curiosity
                 </p>
                 <h2

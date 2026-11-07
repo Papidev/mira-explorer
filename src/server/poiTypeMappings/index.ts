@@ -15,7 +15,7 @@ import { derivePoiCategories } from "@/server/poiCategories";
 import { readPoiCategoryCatalog, type PoiCategoryCatalog } from "@/server/poiCategoryCatalog";
 import { sanitizePoiIdForFile } from "@/server/wikiPipeline/normalize";
 import type { GeoJson } from "@/server/wikiPipeline/types";
-import type { AiSelection } from "@/app/admin/lib/aiModels";
+import type { AiSelection } from "./aiSelection";
 import { classifyTypes } from "./classifyTypes";
 
 type MappingFile = {
