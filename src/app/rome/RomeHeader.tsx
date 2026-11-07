@@ -10,24 +10,24 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
       aria-hidden="true"
       className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_72%_100%,#426678,transparent_65%),radial-gradient(circle_at_center,#ffffff28_1px,transparent_1px)] bg-size-[auto,16px_16px]"
     />
-    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-3 px-4 py-3 sm:gap-x-6 sm:px-7 sm:py-5">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:gap-x-6 sm:px-7 sm:py-5">
       <Link
         href="/"
         aria-label="Mira home"
-        className="focus-visible:outline-brand flex -translate-y-0.5 items-baseline rounded-sm border-r border-white/20 pr-4 focus-visible:outline-2 focus-visible:outline-offset-2 sm:pr-6 [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
+        className="focus-visible:outline-brand flex rounded-sm border-r border-white/20 pr-4 focus-visible:outline-2 focus-visible:outline-offset-2 sm:pr-6 [&>[role=img]]:items-center [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
       >
         <MiraLogo size="small" tone="dark" />
       </Link>
-      <div className="flex flex-1 items-baseline gap-2 sm:gap-3">
+      <div className="flex flex-1 items-center gap-2 sm:gap-3">
         <Image
           src="/icons/cities/rome.svg"
           alt=""
           width={48}
           height={32}
-          className="h-auto w-12 shrink-0 translate-y-0.5 sm:w-16"
+          className="h-auto w-12 shrink-0 sm:w-16"
         />
-        <div className="relative pt-4">
-          <p className="text-brand absolute top-0 text-[9px]/3 font-bold tracking-[0.24em] uppercase">
+        <div className="relative">
+          <p className="text-brand absolute bottom-full text-[9px]/3 font-bold tracking-[0.24em] uppercase">
             Italy
           </p>
           <h1 className="font-serif text-4xl/none tracking-tight sm:text-5xl/none">Rome</h1>

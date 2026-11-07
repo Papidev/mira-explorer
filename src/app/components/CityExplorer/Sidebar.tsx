@@ -52,12 +52,13 @@ export const Sidebar = ({
       aria-label="Discover places"
       className="flex h-full w-full shrink-0 flex-col overflow-hidden border-r border-zinc-900/10 bg-zinc-50 text-zinc-900"
     >
-      <div className="flex shrink-0 items-start justify-between gap-2 border-b border-zinc-900/10 px-4 py-3">
-        <div>
+      <div className="shrink-0 border-b border-zinc-900/10 px-4 py-3">
+        <div className="flex items-center justify-between gap-2">
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
-          <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
+          <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
         </div>
-        <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
+        <p className="text-xs/5 text-zinc-600">Big city, huh? But you can filter what you want.</p>
+        <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
       <div className="shrink-0 px-4 pt-3 pb-2">
         <Search pois={pois} onSelect={onSearchPoi} />

@@ -13,12 +13,12 @@ export const DrawerCloseButton = ({
     type="button"
     aria-label={label}
     onClick={onClick}
-    className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    className="group text-atlas focus-visible:outline-atlas flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2"
   >
     <span
-      className={`flex size-7 items-center justify-center rounded-md ${transparent ? "" : "bg-white"}`}
+      className={`flex size-7 items-center justify-center rounded-md group-hover:bg-zinc-100 ${transparent ? "" : "bg-white"}`}
     >
-      <XMarkIcon aria-hidden="true" className="size-4" />
+      <XMarkIcon aria-hidden="true" strokeWidth={2} className="size-5" />
     </span>
   </button>
 );
