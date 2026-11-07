@@ -33,30 +33,20 @@ const Home = () => {
       </a>
       <header className="bg-[#203e50] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 pt-6 pb-5 sm:px-8 sm:pt-8 lg:px-12">
-          <div className="flex items-center gap-7">
+          <div className="flex items-baseline-last gap-7">
             <Link
               href="/"
               aria-label="Mira home"
-              className="focus-visible:outline-brand flex rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="focus-visible:outline-brand flex items-baseline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <MiraLogo size="large" tone="dark" />
             </Link>
-            <p className="hidden border-l border-white/25 py-2 pl-7 text-sm/6 text-white/75 sm:block">
+            <p className="hidden border-l border-white/25 pl-7 text-sm/6 text-white/75 sm:block">
               Art, history, and
               <br />
               the places between.
             </p>
           </div>
-          <Link
-            href="/rome"
-            className="group focus-visible:outline-brand inline-flex items-center gap-3 rounded-sm py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4"
-          >
-            Explore Rome
-            <ArrowRightIcon
-              className="text-brand size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
-              aria-hidden="true"
-            />
-          </Link>
         </div>
       </header>
 
