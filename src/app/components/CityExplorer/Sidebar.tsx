@@ -55,6 +55,9 @@ export const Sidebar = ({
       <div className="flex shrink-0 items-start justify-between gap-2 border-b border-zinc-900/10 px-4 py-3">
         <div>
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
+          <p className="mt-1 text-sm text-zinc-600">
+            Big city, huh? Filter the map to see just what you want.
+          </p>
           <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
         </div>
         <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
