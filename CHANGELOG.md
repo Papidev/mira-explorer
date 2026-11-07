@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.8
+
+### Patch Changes
+
+- Use Atlas Blue for the Rome header, homepage accents, and selection controls. Improve map marker clicks and previews, speed up map centering, and show portrait photos in full in place details.
+
 ## 0.22.7
 
 ### Patch Changes

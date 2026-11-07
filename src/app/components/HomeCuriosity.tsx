@@ -45,7 +45,7 @@ export const HomeCuriosity = () => (
           <p className="text-xs/5 tracking-wide text-zinc-500">
             Italian · from <i lang="it">mirare</i> · literary
           </p>
-          <p lang="it" className="text-atlas font-serif text-base/7 italic">
+          <p lang="it" className="text-atlas font-serif text-lg/7 font-medium italic sm:text-xl/8">
             «Ammirare; contemplare con ammirazione.»
           </p>
         </div>
