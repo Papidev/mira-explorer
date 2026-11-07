@@ -1,8 +1,5 @@
-import { GET as readProgress } from "@/app/api/admin/ai-progress/[runId]/route.dev";
-import { readAiProgress } from "@/server/aiProgress";
-import { POST as stopGeneration } from "@/app/api/admin/ai-progress/[runId]/stop/route.dev";
+import { readAiProgress, requestAiProgressStop, startAiProgress } from "@/server/aiProgress";
 import { withGenerationCancellation } from "@/server/generationCancellation";
-import { startAiProgress } from "@/server/aiProgress";
 import {
   existsSync,
   mkdtempSync,
@@ -178,54 +175,14 @@ describe("Story Content AI adapters", () => {
     },
   );
 
-  it("reports a run from a previous server process as interrupted without altering its log", async () => {
-    const runId = "b1234567-1234-1234-1234-123456789abc";
-    startAiProgress(runId);
-    const progressPath = path.join("data", "rome", "generated", "ai-progress", `${runId}.json`);
-    const saved = JSON.parse(readFileSync(progressPath, "utf-8"));
-    saved.serverInstance = "previous-server-instance";
-    writeFileSync(progressPath, JSON.stringify(saved));
-    const response = await readProgress(
-      new Request(`http://localhost:3000/api/admin/ai-progress/${runId}`),
-      {
-        params: Promise.resolve({ runId }),
-      },
-    );
-    expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({
-      status: "cancelled",
-      entries: [
-        expect.objectContaining({
-          message: "Server restarted. Resume the queue from saved checkpoints.",
-        }),
-      ],
-    });
-    expect(readAiProgress(runId)?.status).toBe("running");
-    expect(JSON.parse(readFileSync(progressPath, "utf-8"))).toEqual(saved);
-  });
-
   it("records a stop before dispatch as cancelled so recovery does not wait for a nonexistent request", async () => {
     const runId = "c1234567-1234-1234-1234-123456789abc";
-    const response = await stopGeneration(
-      new Request(`http://localhost:3000/api/admin/ai-progress/${runId}/stop`, {
-        method: "POST",
-        headers: { Origin: "http://localhost:3000" },
-      }),
-      { params: Promise.resolve({ runId }) },
-    );
-    expect(response.status).toBe(200);
+    expect(requestAiProgressStop(runId)).toBe(true);
     expect(readAiProgress(runId)).toMatchObject({
       status: "cancelled",
       stopRequested: true,
       serverInstance: expect.any(String),
     });
-    const progress = await readProgress(
-      new Request(`http://localhost:3000/api/admin/ai-progress/${runId}`),
-      {
-        params: Promise.resolve({ runId }),
-      },
-    );
-    expect(await progress.json()).toMatchObject({ status: "cancelled" });
     // If the original action eventually starts, its cancellation flag is retained.
     startAiProgress(runId);
     await expect(withGenerationCancellation(runId, async () => generated)).rejects.toThrow(
@@ -261,15 +218,7 @@ describe("Story Content AI adapters", () => {
     // Attach the rejection handler before sending the stop command.
     const outcome = expect(result).rejects.toMatchObject({ name: "AbortError" });
     await started;
-    const stopResponse = await stopGeneration(
-      new Request(`http://localhost:3000/api/admin/ai-progress/${runId}/stop`, {
-        method: "POST",
-        headers: { origin: "http://localhost:3000" },
-      }),
-      { params: Promise.resolve({ runId }) },
-    );
-    expect(stopResponse.status).toBe(200);
-    expect(await stopResponse.json()).toEqual({ requested: true });
+    expect(requestAiProgressStop(runId)).toBe(true);
     await outcome;
     expect(requests).toBe(1);
     expect(existsSync(path.join("data", "generated", "ai-response-failures"))).toBe(false);

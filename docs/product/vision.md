@@ -40,7 +40,7 @@ AI drafts source-grounded content, proposes an image, and may suggest suitable m
 
 The first pipeline uses Wikipedia, Wikidata, and Wikimedia Commons. Allowed Wikipedia editions are English, Italian, French, German, and Spanish. Wikipedia Sources combine English with the official languages of the POI's country that are in the allowed edition list. Related People also use the official languages of their own countries; future linked entities should follow the same principle using their relevant country context. Content remains English. Unavailable editions are reported without blocking generation from usable Sources. It acquires Sources, discovers up to three Commons recognizer images, preserves an eligible current selection or chooses the first licensed and attributed candidate, then generates Story Content. Image discovery is independently retryable. See [Story Workflow Architecture](../story-workflow-architecture.md).
 
-The admin session selects Local or Cloud AI, with provider, model, and cost information. Story and Person generation use the selected model without a separate local model requirement. Configuration belongs in the [README](../../README.md#ai-configuration).
+The [Mira Admin](https://github.com/Papidev/mira-admin) session selects the provider and model for Story and Person generation. See Mira Admin for configuration.
 
 ## Discovery through connections
 

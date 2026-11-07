@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.7
+
+### Patch Changes
+
+- Retire the development-only editorial Admin. Keep the legacy visitor catalog and the authenticated content API used by Mira Admin.
+
 ## 0.22.6
 
 ### Patch Changes

@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import { execFileSync } from "node:child_process";
 import { version } from "./package.json";
 
@@ -14,15 +13,11 @@ const getCommit = () => {
   }
 };
 
-const nextConfig = (phase: string): NextConfig => ({
+const nextConfig: NextConfig = {
   env: {
     APP_VERSION: version,
     APP_COMMIT: getCommit(),
   },
-  pageExtensions:
-    phase === PHASE_DEVELOPMENT_SERVER
-      ? ["dev.tsx", "dev.ts", "tsx", "ts", "jsx", "js"]
-      : ["tsx", "ts", "jsx", "js"],
   reactCompiler: true,
   images: {
     remotePatterns: [
@@ -40,6 +35,6 @@ const nextConfig = (phase: string): NextConfig => ({
       },
     ],
   },
-});
+};
 
 export default nextConfig;

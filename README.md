@@ -4,7 +4,7 @@ Next.js 16 + React 19 visit companion for history, art, and culture. The map hel
 
 ## Brand assets
 
-The shared `MiraLogo` component supplies the bird and local Fraunces wordmark in the home, map, and admin headers and the home footer. Set `tone="light"` for a light surface (black bird, yellow wing) or `tone="dark"` for a dark surface (yellow bird, black wing); choose the tone from the actual surface rather than the operating system preference. The SVG browser icon adapts its palette to the browser color scheme.
+The shared `MiraLogo` component supplies the bird and local Fraunces wordmark in the home and map headers and the home footer. Set `tone="light"` for a light surface (black bird, yellow wing) or `tone="dark"` for a dark surface (yellow bird, black wing); choose the tone from the actual surface rather than the operating system preference. The SVG browser icon adapts its palette to the browser color scheme.
 
 Frozen logo alternatives A and the original C are preserved in `artifacts/logo-studies/`. The complete comparison prototype and the palette decision are archived on [`feat/mira-logo-prototype-archive`](https://github.com/Papidev/mira-explorer/tree/feat/mira-logo-prototype-archive) at `eb34c6f`; prototype controls are excluded from the application.
 
@@ -20,7 +20,7 @@ Typography uses two bundled families: Inter (`font-sans`) for body text and cont
 | Caption | `text-xs/5` |
 | Section label | `text-xs/5 font-semibold tracking-[0.2em] uppercase` |
 
-The home hero and wordmark keep their larger display sizes. Controls retain Inter and their compact sizing. System monospace is reserved for technical identifiers and logs in the admin.
+The home hero and wordmark keep their larger display sizes. Controls retain Inter and their compact sizing.
 
 Markdown in Stories and biographies uses Tailwind Typography (`prose prose-zinc`) in `StoryText/Markdown.tsx`. The plugin owns paragraph, list, quote, and link spacing; local modifiers retain Mira's fonts and accent colors. Keep `prose` scoped to rendered Markdown so it does not restyle the surrounding cards, metadata, or controls.
 
@@ -48,7 +48,6 @@ Open [http://localhost:3000](http://localhost:3000). Installation activates Husk
 | `/`                | Project home.                        |
 | `/rome`            | Visitor map.                         |
 | `/rome?poiId=<id>` | Map with POI detail open.            |
-| `/admin`           | Development-only editorial workflow. |
 
 | Script                    | Purpose                                            |
 | ------------------------- | -------------------------------------------------- |
@@ -113,7 +112,7 @@ release merges first, regenerate your increment from the new version while
 preserving the merged changelog history. CI checks the bump and changelog before
 merge and creates a `v<version>` Git tag after CI passes on `main`.
 
-The application version is visible in the home footer and the Rome map and content admin headers.
+The application version is visible in the home footer and the Rome map header.
 
 `GET /api/version` returns the version and full commit SHA embedded in the build.
 The SHA comes from `VERCEL_GIT_COMMIT_SHA`, then `GITHUB_SHA`, then the local Git
@@ -175,7 +174,7 @@ Versioned Stories, People, POIs, and category metadata live under `data/` in eac
 | Pipeline checkpoints/timings       | `<local-data>/<city>/generated/generation-metadata.json` |
 | Canonical People                   | `data/people/<person-id>/person.json`                    |
 
-POI IDs are stable and app-owned; external IDs such as `wikidataId` are optional. `geoPlaceId` preserves the original feature identity, enabling regeneration without Wikidata. Legacy records recover it only from a unique exact name/geometry match. Admin shows one row per linked source and preserves existing duplicates.
+POI IDs are stable and app-owned; external IDs such as `wikidataId` are optional. `geoPlaceId` preserves the original feature identity, enabling regeneration without Wikidata. Legacy records recover it only from a unique exact name/geometry match.
 
 Person records and Main Image Candidate artifacts are validated with Zod when read. Invalid files report their path and validation errors; empty candidate lists and missing image selections remain valid workflow states. Selected images must reference an available candidate, and Person IDs must match their directory names.
 
@@ -183,7 +182,7 @@ Person records, Story Content, and Main Image Candidate artifacts are also valid
 
 The allowed Wikipedia editions are English (`en`), Italian (`it`), French (`fr`), German (`de`), and Spanish (`es`), configured in `src/server/wikiPipeline/acquireWikipediaSources.ts`. Wikipedia acquisition combines English with the official languages of the POI's country that are in the allowed edition list, using Wikidata country (P17), official language (P37), Wikimedia language code (P424), and sitelinks. People also include the official languages of their countries of citizenship (P27) and retain the originating POI's Wikidata context for regeneration. Story and Person content remains English. Missing country/language metadata or unavailable editions produce warnings; generation continues with usable Sources and stops only when none is available. Local editions complement English; conflicting claims retain attribution or are omitted.
 
-The primary Wikipedia Source retains its text snapshot and metadata with ID `wikipedia`, title, and URL. Additional editions use IDs such as `wikipedia-it` and are saved in `<poi-id>.sources.json` beside the primary snapshot. Person additional Sources are stored in `<local-data>/generated/people/<person-id>.sources.json`, with reference metadata in the versioned Person record. Existing single-source records remain readable. Generation validates Source References; admin displays them when local Sources exist, while public responses omit them. Existing Stories and People are updated only by their generation/refresh actions; this rule does not regenerate saved content automatically.
+The primary Wikipedia Source retains its text snapshot and metadata with ID `wikipedia`, title, and URL. Additional editions use IDs such as `wikipedia-it` and are saved in `<poi-id>.sources.json` beside the primary snapshot. Person additional Sources are stored in `<local-data>/generated/people/<person-id>.sources.json`, with reference metadata in the versioned Person record. Existing single-source records remain readable. Generation validates Source References. Public responses omit them. Existing Stories and People are updated only by their generation/refresh actions; this rule does not regenerate saved content automatically.
 
 New Story Content uses `textFormat: "markdown"`. Write Markdown inside
 `introduction.text` and topic `description` strings: blank lines separate
@@ -226,86 +225,7 @@ People descriptions remain plain text. See the
 
 ## Editorial workflow
 
-Admin has **POIs**, **People**, and **Type mappings** tabs. POIs and People have 50 rows per page, selected on the server after search, filters, and sorting. Search, POI status/sort controls, and independent page numbers are stored in the URL; changing search or filters resets that table to its first page. POI name search is case-insensitive across original and generated names; People search matches display names and retains alphabetical order. Only the requested pages reach the browser, alongside a lightweight ID/name list for automatic generation across all POIs without Story Content. The server still reads the local catalog to compute global filters, counts, and Person links.
-
-**Sort POIs** keeps the default status/name order or sorts by newest/oldest generation activity across all POI steps, including failed attempts. Sorting applies before pagination and keeps POIs without a recorded generation date last. Dates use local checkpoints and the recent run log.
-
-Empty rows are **To do**. Attempted/generated rows with outstanding work/errors are **Needs attention**. **Needs source** keeps generated POIs and acquired Types visible, with missing-source/error details that persist after the toast closes and neutral placeholders without generation controls for unavailable artifacts.
-
-**Generate** (empty row) and **Refresh** (existing row) recreate POI metadata, acquire Wikipedia, retain discovered Wikidata identity, refresh Types when available, generate image candidates, and generate structured Story Content/Related People. Preview, Refresh, and Delete are available for Story Content; commit reviewed artifacts.
-
-Imported Wikipedia and Wikidata links are checked for lists, categories, and disambiguation pages before use. Source acquisition resolves the current POI references again; resuming generation rechecks Sources, and a changed Source identity requires new Story Content before retrying Related People.
-
-Temporary refresh errors preserve existing artifacts. If no unambiguous English/Italian Wikipedia page resolves, remove the POI's Source, Story, and image candidates and mark it waiting for a Source; shared People and logs remain. See [Story Workflow Architecture](docs/story-workflow-architecture.md).
-
-People supports alphabetical browsing, thumbnails, name search, and Linked POIs details derived from saved Story references. **Regenerate** uses the saved Source and selected model, preserving identity, image, and links. See [Person Architecture](docs/person-architecture.md).
-
-Type mappings supports shared rules, automatic classification, and editable two-level categories. Saving updates affected city POIs without Story regeneration. Per-POI exceptions remain planned in #61. See [POI Categories](docs/poi-categories.md) for mapping, hierarchy, deletion, and filter rules.
-
-### Source resolution
-
-Prefer explicit English/Italian Wikipedia or Wikidata links over name searches. Wikipedia acquisition prefers linked English, then English name search; next use Italian links/search and prefer their English language link. Italian-only Sources still generate English content; URLs, images, and Person links retain the actual source language.
-
-Name matches must be unique titles/redirects, never disambiguation pages, with a primary Earth coordinate within 1 km and a supported physical-place type. Missing/distant/secondary coordinates or broad entities leave the POI waiting. The tolerance accommodates centroids; it does not prove identity.
-
-If both language name searches fail, examine up to 50 nearby articles per edition using the same checks. Accept one entity matching the name through title, English translation, Wikidata label, or alias; proximity alone is insufficient. Two editions of the same Wikidata entity count once.
-
-Historical dates may be approximate or omitted. A century can be stored without an end year and is displayed as a century, not an exact year; supplied ranges must remain chronological and year zero is invalid.
-
-### Automatic Story generation
-
-Generate an individual POI from its row, or press **Start automatic generation** to process all Geo Places without Story Content, one at a time, across all pages and filters. There is no numeric limit. Generation uses the AI mode and model selected when it starts and continues until all candidates have been attempted or **Pause** is pressed. Pause lets the current POI finish before stopping; starting again continues with the remaining candidates. Individual row actions remain available while paused.
-
-The compact toolbar shows the current POI and processed count. **Show generation logs** opens the current session's outcomes and each POI's detailed log without pausing generation. Ordinary POI errors do not stop subsequent candidates or trigger automatic retries. Ollama usage/request limits and an uncertain connection or generation outcome pause further submissions so the log can be checked.
-
-Queue state and session history are held only in memory. Closing or reloading the page stops new submissions; an already submitted POI may still finish while the local server remains running. Nothing runs while the computer is off. On reopening, press **Start automatic generation** to select POIs still missing Story Content. Generated artifacts and diagnostic logs remain on disk. On browsers supporting Web Locks, only one tab at a time runs automatic generation.
-
-Automatic generation uses a dedicated development-only HTTP endpoint so long generations do not hold up category edits in the page’s Server Action queue. The active POI stays pinned above other rows. Generation logs automatically scroll to new content, and progress badges and expanded logs share each run's progress state. Missing Wikipedia Sources are reported as **Waiting for a source**.
-
-Guards support one local server process: three POI operations, one mutation per POI, and one pending Person generation per Wikidata ID. Allocate Person IDs immediately before saving; shared catalog/metadata writes are synchronous. Multiple processes or machines require shared coordination.
-
-## AI Configuration
-
-Admin AI actions use Local/Cloud configuration variables. Put them in `.env.local` when needed:
-
-```bash
-AI_MODE=cloud
-LOCAL_AI_PROVIDER=ollama
-LOCAL_AI_MODEL=qwen3:8b
-OLLAMA_BASE_URL=http://localhost:11434
-CLOUD_AI_PROVIDER=gemini
-CLOUD_AI_MODEL=gemini-2.5-flash
-GEMINI_API_KEY=your-gemini-api-key
-```
-
-`AI_MODE` controls the initial admin selector value. Local generation expects Ollama to be running with the configured model available. Cloud generation supports Gemini or an Ollama Cloud model routed through the local Ollama service. Gemini requires `GEMINI_API_KEY`.
-
-To use an Ollama Cloud model after signing in to Ollama and pulling its cloud reference, configure:
-
-```bash
-AI_MODE=cloud
-CLOUD_AI_PROVIDER=ollama
-CLOUD_AI_MODEL=gpt-oss:20b-cloud
-OLLAMA_BASE_URL=http://localhost:11434
-```
-
-The Ollama Cloud dropdown includes `gpt-oss:20b-cloud` and `gpt-oss:120b-cloud`, plus any other model configured in `CLOUD_AI_MODEL`. That setting remains the default selection. Prepare each cloud reference with `ollama run <model>` before using it; reload the admin page to see updated model options.
-
-Ollama Cloud does not support schema-constrained output. Story Content and new People include their schemas in the prompt and retry once when a response fails JSON or domain validation. Both use the selected Cloud model.
-
-Ollama Story and Person requests retry HTTP 502, 503, and 504 up to twice, with short delays. HTTP 429 and 402 still stop generation through the existing quota handling. Cancellation prevents further retry requests.
-
-## Diagnostics
-
-Local `<local-data>/rome/generated/generation-logs/day-*.jsonl` records start/completion/failure with shared run IDs. Seven daily slots rotate, overwriting data when reused after seven days. Admin shows latest-run errors beside artifacts and Related People errors in the People drawer. Known credentials are redacted; stack traces stay in the console. Logs stay outside the repository and are not a durable cross-machine/deployment audit.
-
-Admin shows current errors: newer successful checkpoints or successful operations supersede them. A failed refresh remains visible if its saved artifact is older; historical logs stay on disk. Completion uses current artifacts/errors, not obsolete failed runs.
-
-Single and batch Draft Story Generation share coordination and outcome reporting. Type acquisition, category classification, Main Image Candidates, and Related People issues are recorded as partial results and shown in progress and final warnings; classification failures can be retried from Type mappings.
-
-Rejected AI output is saved in `<local-data>/generated/ai-response-failures/`: exact `rawResponse`, generation kind, subject identity, provider/model/mode, attempt, time, and validation error. Invalid provider JSON and content are captured even before a successful retry. Console output links the file; requests, keys, and headers are not stored. Diagnostic write failure preserves the original error.
-
-Story generation uses `jsonrepair` for malformed JSON, including stray quotes before topic objects. Repaired output must pass Story schema and Source-ID validation; otherwise preserve normal error/retry behavior.
+Use [Mira Admin](https://github.com/Papidev/mira-admin) to generate, review, and save content through the authenticated [Admin content API](#admin-content-api). The Rome map continues to merge online publications with the build-generated catalog from versioned Stories, People, POIs, and categories.
 
 ## Visitor map
 
@@ -330,16 +250,6 @@ Published POI Stories open a centered, light-background image gallery with the m
 Public homepage, POI preview, Story, and Person images use `next/image` with responsive sizes and reserved layout space. Next.js resizes and caches images and serves WebP to supported browsers. The image optimizer accepts HTTPS Wikimedia Commons images from `thumb.wikimedia.org` and `upload.wikimedia.org`; query strings are allowed for Wikimedia's thumbnail metadata. Preview and Story image-error fallbacks remain available.
 
 Local transfer samples on October 10, 2026: Piazza Navona's 1,492,910-byte source becomes 37,620 bytes at 384 px in WebP; the Cloisters of Bramante's 177,020-byte source becomes 17,202 bytes. These are image-response measurements, not full-page performance benchmarks.
-
-## Content admin
-
-Use **Expand table** in the POI toolbar to give the table almost the full viewport while keeping search and status filters available. **Restore layout** brings back generation controls. AI settings, shared artifacts, queue instructions, and column metadata expand on demand.
-
-## Security Notes
-
-Admin is temporary, unauthenticated, and available only with `pnpm dev`. Its page and AI-progress API use `.dev.tsx`/`.dev.ts`, excluded from production builds; admin UI is absent from production bundles and missing routes return 404. Server Actions reject production execution before reading inputs or doing work. Dev is not localhost-restricted; use a trusted network.
-
-Never commit real API keys. Cloud generation sends source text to the provider and may incur charges.
 
 ## Tailwind Plus / Catalyst
 
