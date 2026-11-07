@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const HomeHeroStory = ({ cover }: Props) => (
-  <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-16">
+  <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1">
     <div className="relative lg:pb-14">
       <div className="relative aspect-4/5 max-h-[max(8rem,calc(100svh-26rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl bg-zinc-200 sm:aspect-5/4 lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
         <Image
@@ -55,13 +55,13 @@ export const HomeHeroStory = ({ cover }: Props) => (
         </span>
       </Link>
     </div>
-    <figcaption className="mt-3 text-right text-xs/5 text-zinc-500">
+    <figcaption className="mt-3 text-right text-xs/5 text-white/80">
       Photo: {cover.mainImage.attribution} ·{" "}
       <a
         href={cover.mainImage.commonsPageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="underline decoration-zinc-300 underline-offset-2 hover:text-zinc-800"
+        className="underline decoration-white/40 underline-offset-2 hover:text-white"
       >
         {cover.mainImage.license} ↗
       </a>
