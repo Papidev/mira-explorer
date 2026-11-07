@@ -98,6 +98,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     const popupElement = previewPopup?.getElement();
     popupElement?.removeEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement?.removeEventListener("pointerleave", handlePreviewPointerLeave);
+    popupElement?.removeEventListener("click", handlePreviewClick);
     previewPopup?.remove();
     if (activePreviewPoiId !== null) {
       onPreviewChange?.(null);
@@ -115,11 +116,21 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
   const handlePreviewPointerEnter = () => cancelPreviewClose();
   const handlePreviewPointerLeave = () => schedulePreviewClose(activePreviewPoiId ?? undefined);
+  const handlePreviewClick = (event: MouseEvent) => {
+    if (!activePreviewPoiId) return;
+    event.stopPropagation();
+    openPoiDetails(activePreviewPoiId);
+  };
   const handlePreviewFocusIn = () => cancelPreviewClose();
   const handlePreviewFocusOut = (event: FocusEvent) => {
     if (!previewContainer?.contains(event.relatedTarget as Node | null)) {
       schedulePreviewClose(activePreviewPoiId ?? undefined);
     }
+  };
+
+  const openPoiDetails = (poiId: string) => {
+    closePreview();
+    onOpenPoiDetails?.(poiId);
   };
 
   const openPreview = (poi: Poi) => {
@@ -134,10 +145,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     onPreviewChange?.({
       poi,
       container: previewContainer,
-      onOpenDetails: () => {
-        closePreview();
-        onOpenPoiDetails?.(poi.id);
-      },
+      onOpenDetails: () => openPoiDetails(poi.id),
     });
     previewPopup.setLngLat([poi.coordinates.lng, poi.coordinates.lat]);
     if (!isPreviewOpen) previewPopup.addTo(map);
@@ -145,6 +153,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     // The MapLibre tip is outside the React card but still receives pointer events.
     popupElement.addEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement.addEventListener("pointerleave", handlePreviewPointerLeave);
+    popupElement.addEventListener("click", handlePreviewClick);
     const popupContent = popupElement.querySelector<HTMLElement>(".maplibregl-popup-content");
     popupElement.style.pointerEvents = "auto";
     if (popupContent) {
@@ -237,8 +246,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       const handleClick = (event: MouseEvent) => {
         event.stopPropagation();
         isTouchInteraction = false;
-        closePreview();
-        onOpenPoiDetails?.(poi.id);
+        openPoiDetails(poi.id);
       };
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key !== "Enter" && event.key !== " ") {
@@ -247,8 +255,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
         event.preventDefault();
         event.stopPropagation();
-        closePreview();
-        onOpenPoiDetails?.(poi.id);
+        openPoiDetails(poi.id);
       };
 
       element.addEventListener("pointerdown", handlePointerDown);

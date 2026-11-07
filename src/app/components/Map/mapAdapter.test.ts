@@ -12,6 +12,7 @@ const mapLibreFakes = vi.hoisted(() => ({
   markers: [] as Array<{ element: HTMLDivElement; removed: boolean; color?: string }>,
   popups: [] as Array<{
     container: HTMLDivElement;
+    tip: HTMLDivElement;
     element?: HTMLElement;
     isOpen: boolean;
     positions: string[];
@@ -80,6 +81,7 @@ vi.mock("maplibre-gl", () => {
 
   class Popup {
     container = document.createElement("div");
+    tip = document.createElement("div");
     content = document.createElement("div");
     element?: HTMLElement;
     isOpen = false;
@@ -88,7 +90,7 @@ vi.mock("maplibre-gl", () => {
 
     constructor() {
       this.content.className = "maplibregl-popup-content";
-      this.container.append(this.content);
+      this.container.append(this.tip, this.content);
       mapLibreFakes.popups.push(this);
     }
 
@@ -381,6 +383,29 @@ describe("Map and its MapLibre adapter", () => {
 
     dispatchPointerEvent(popup, "pointerleave", "mouse");
     await waitFor(() => expect(heading).not.toBeInTheDocument());
+  });
+
+  it("opens the active place when clicking the preview tip", async () => {
+    const user = userEvent.setup();
+    const onOpenPoiDetails = vi.fn();
+    const onMapClick = vi.fn();
+    render(
+      createElement(Map, {
+        coordinates: [12.481, 41.889],
+        zoom: 15,
+        pois,
+        onOpenPoiDetails,
+        onMapClick,
+      }),
+    );
+
+    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerenter", "mouse");
+    dispatchPointerEvent(mapLibreFakes.markers[1].element, "pointerenter", "mouse");
+    await screen.findByRole("heading", { name: "Cloisters of Bramante" });
+    await user.click(mapLibreFakes.popups[0].tip);
+
+    expect(onOpenPoiDetails).toHaveBeenCalledExactlyOnceWith("cloisters-of-bramante");
+    expect(onMapClick).not.toHaveBeenCalled();
   });
 
   it("opens details directly on click, touch, Enter, and Space", async () => {
