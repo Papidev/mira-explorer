@@ -23,7 +23,7 @@ export const MapShowcase = () => (
       </div>
       <Link
         href="/rome"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+        className="text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         Open the map <ArrowRightIcon className="size-4" aria-hidden="true" />
       </Link>

@@ -92,14 +92,15 @@ const Home = () => {
             </p>
             <Link
               href="/rome"
-              className="group bg-brand-action hover:bg-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-zinc-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+              className="group bg-atlas hover:bg-atlas/90 focus-visible:outline-atlas mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <span className="inline-flex items-center gap-3">
                 Explore Rome
                 <Image src="/icons/cities/rome.svg" alt="" width={36} height={24} />
               </span>
               <ArrowRightIcon
-                className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+                className="text-brand size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+                strokeWidth={2}
                 aria-hidden="true"
               />
             </Link>
@@ -131,7 +132,10 @@ const Home = () => {
             },
           ].map(({ number, title, description }) => (
             <div key={number} className="flex gap-4">
-              <span className="pt-0.5 font-serif text-xl text-zinc-800" aria-hidden="true">
+              <span
+                className="text-atlas font-serif text-3xl/none sm:text-4xl/none"
+                aria-hidden="true"
+              >
                 {number}
               </span>
               <div>
@@ -245,7 +249,7 @@ const Home = () => {
               </div>
               <Link
                 href="/rome"
-                className="group inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold text-zinc-800 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+                className="group text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
               >
                 See the map{" "}
                 <ArrowRightIcon
