@@ -21,7 +21,7 @@ export const HomeNumbers = async () => {
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
           The{" "}
-          <span className="text-atlas italic">
+          <span className="text-story-emphasis italic">
             whole
           </span>{" "}
           city, at your own pace.
