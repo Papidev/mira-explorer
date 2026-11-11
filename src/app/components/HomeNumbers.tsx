@@ -20,11 +20,7 @@ export const HomeNumbers = async () => {
           id="numbers-title"
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
-          The{" "}
-          <span className="text-story-emphasis italic">
-            whole
-          </span>{" "}
-          city, at your own pace.
+          The <span className="text-story-emphasis italic">whole</span> city, at your own pace.
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
@@ -44,7 +40,8 @@ export const HomeNumbers = async () => {
           ))}
         </dl>
         <p className="mt-8 text-base/7 text-zinc-600">
-          Filter the map by what draws you, and let the rest wait.
+          The entire city is there, and you choose what to see. Use the filters to follow your
+          interests, one place at a time.
         </p>
       </div>
     </section>
