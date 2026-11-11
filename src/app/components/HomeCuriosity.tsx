@@ -12,7 +12,7 @@ export const HomeCuriosity = () => (
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
           Some places reveal themselves when you{" "}
-          <span className="decoration-brand italic underline decoration-4 underline-offset-4">
+          <span className="text-story-emphasis italic">
             look closer.
           </span>
         </h2>

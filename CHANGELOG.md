@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.12
+
+### Patch Changes
+
+- Replace the homepage steps with live counts of places and historical figures, frame the hero image with the background arcs, and highlight heading words in the story emphasis color.
+
 ## 0.22.11
 
 ### Patch Changes
