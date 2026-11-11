@@ -79,7 +79,7 @@ const Home = () => {
             <div>
               <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-white/80 uppercase">
                 <span className="bg-brand h-1 w-10 shrink-0 rounded-full" aria-hidden="true" />A
-                closer look at places
+                city waiting to be discovered
               </p>
               <h1
                 id="hero-title"
@@ -95,10 +95,17 @@ const Home = () => {
             {cover && <HomeHeroStory cover={cover} />}
 
             <div className="lg:col-start-1">
-              <p className="max-w-md text-base/7 text-white/85">
-                Discover the places, people, and details that bring a city to life. Get the essence
-                at a glance, then explore further on Wikipedia whenever you want.
-              </p>
+              <div className="space-y-4 text-base/7 text-white/85">
+                <p>
+                  The landmarks draw you in. The unexpected discoveries make a city your own.
+                  Explore the places you came to see and the quiet corners you might have missed.
+                </p>
+                <p>
+                  Discover the history of each place and the people connected to it. Open their
+                  profiles for a quick introduction to their lives, with Wikipedia links to find out
+                  more.
+                </p>
+              </div>
               <ul
                 aria-label="Mira's focus"
                 className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xl/8 font-semibold tracking-tight text-white sm:text-2xl/8"
@@ -150,18 +157,20 @@ const Home = () => {
               {[
                 {
                   number: "01",
-                  title: "Find a place",
-                  description: "Follow your curiosity across the city map.",
+                  title: "Start with a place",
+                  description: "Pick a familiar landmark or let an unfamiliar name catch your eye.",
                 },
                 {
                   number: "02",
-                  title: "Look a little closer",
-                  description: "Notice what makes it interesting in a few short details.",
+                  title: "Find its story",
+                  description:
+                    "Discover what happened here and what makes the place worth noticing.",
                 },
                 {
                   number: "03",
-                  title: "Make a connection",
-                  description: "Meet the people and ideas that helped shape the place.",
+                  title: "Meet the people",
+                  description:
+                    "Select a person mentioned in a place’s story to read about their life.",
                 },
               ].map(({ number, title, description }) => (
                 <div key={number} className="flex gap-4">
@@ -173,7 +182,7 @@ const Home = () => {
                   </span>
                   <div>
                     <h2 className="text-sm font-semibold">{title}</h2>
-                    <p className="mt-2 max-w-xs text-sm/6 text-zinc-600">{description}</p>
+                    <p className="mt-2 text-sm/6 text-zinc-600">{description}</p>
                   </div>
                 </div>
               ))}
@@ -200,8 +209,8 @@ const Home = () => {
               <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
                 <p>
                   Mira draws on the remarkable work of open knowledge communities: articles,
-                  structured knowledge, images, and geographic data that help us discover and
-                  understand each place.
+                  structured knowledge, images, and geographic data that help us understand places
+                  and the lives connected to them.
                 </p>
                 <ul className="grid gap-x-6 gap-y-4 py-2 sm:grid-cols-2" aria-label="Data sources">
                   {[
@@ -259,6 +268,10 @@ const Home = () => {
                   .
                 </p>
                 <p>
+                  Every Story and Person profile keeps Wikipedia within reach. Start with a quick
+                  read on Mira, then follow the link whenever a detail leaves you wanting more.
+                </p>
+                <p>
                   We use AI as an assistant to prepare Story drafts and suggest possible connections
                   between places and people. The sources remain the foundation of what we share.
                 </p>
@@ -276,7 +289,7 @@ const Home = () => {
                       id="discoveries-title"
                       className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl"
                     >
-                      One city. Many stories.
+                      Where will your curiosity take you?
                     </h2>
                     <span
                       aria-hidden="true"
