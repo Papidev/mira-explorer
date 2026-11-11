@@ -14,6 +14,8 @@ import { HomeHeroStory } from "@/app/components/HomeHeroStory";
 import { MapShowcase } from "@/app/components/MapShowcase";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { HomeCuriosity } from "@/app/components/HomeCuriosity";
+import { HomeNumbers } from "@/app/components/HomeNumbers";
+import { Suspense } from "react";
 
 const Home = () => {
   const cover =
@@ -134,43 +136,9 @@ const Home = () => {
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
             <MapShowcase />
 
-            <section
-              aria-label="How to explore"
-              className="border-brand grid gap-7 border-y-2 py-8 sm:grid-cols-3 sm:gap-8"
-            >
-              {[
-                {
-                  number: "01",
-                  title: "Start with a place",
-                  description: "Pick a familiar landmark or let an unfamiliar name catch your eye.",
-                },
-                {
-                  number: "02",
-                  title: "Find its story",
-                  description:
-                    "Discover what happened here and what makes the place worth noticing.",
-                },
-                {
-                  number: "03",
-                  title: "Meet the people",
-                  description:
-                    "Select a person mentioned in a place’s story to read about their life.",
-                },
-              ].map(({ number, title, description }) => (
-                <div key={number} className="flex gap-4">
-                  <span
-                    className="text-atlas font-serif text-3xl/none sm:text-4xl/none"
-                    aria-hidden="true"
-                  >
-                    {number}
-                  </span>
-                  <div>
-                    <h2 className="text-sm font-semibold">{title}</h2>
-                    <p className="mt-2 text-sm/6 text-zinc-600">{description}</p>
-                  </div>
-                </div>
-              ))}
-            </section>
+            <Suspense>
+              <HomeNumbers />
+            </Suspense>
 
             <HomeCuriosity />
 
