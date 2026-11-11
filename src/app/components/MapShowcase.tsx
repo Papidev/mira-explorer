@@ -5,17 +5,18 @@ import Link from "next/link";
 export const MapShowcase = () => (
   <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
     <div className="mb-7 flex flex-wrap items-end justify-between gap-5 text-white">
-      <div>
+      <div className="min-w-0 flex-1 basis-2xl">
         <p className="text-xs/5 font-semibold tracking-[0.2em] text-white/80 uppercase">
-          Find a place. Follow its story.
+          Beyond the familiar
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
-          Explore Rome on the map
+          More of Rome to discover.
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
-        <p className="mt-3 max-w-xl text-sm/6 text-white/85">
-          Open a place&apos;s Story for a quick sense of what makes it interesting. Each Story links
-          to Wikipedia if you want to explore further.
+        <p className="mt-3 text-sm/6 text-white/85">
+          Our map makes room for the Rome beyond the famous sights: outlying neighbourhoods,
+          overlooked places, and corners better known to locals. Open a marker and discover a reason
+          to look closer.
         </p>
       </div>
       <Link

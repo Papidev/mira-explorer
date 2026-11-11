@@ -116,13 +116,15 @@ describe("POI image gallery", () => {
     expect(screen.getByText("Photo 2 of 3")).toBeVisible();
   });
 
-  it("opens a single image with disabled navigation and closes with the button", async () => {
+  it("opens a single image without navigation controls or browse hint and closes with the button", async () => {
     const user = userEvent.setup();
     render(<PoiImageGallery images={images.slice(0, 1)} mainImageId="First" name="Colosseum" />);
     await user.click(screen.getByRole("button", { name: "Open image gallery for Colosseum" }));
     expect(screen.getByText("Photo 1 of 1")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Next photo" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Previous photo" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Next photo" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Previous photo" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Browse photos/)).not.toBeInTheDocument();
+    expect(screen.getByText("Esc Close")).toBeVisible();
     expect(screen.queryByRole("group", { name: "Choose a photo" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Close gallery" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

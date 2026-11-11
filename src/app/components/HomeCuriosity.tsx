@@ -2,7 +2,7 @@ import { Bird } from "@/app/components/ui/MiraLogo/Bird";
 
 export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand border-b-2 py-10 sm:py-14">
-    <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
+    <div className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
       <div>
         <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Follow your curiosity
@@ -11,13 +11,13 @@ export const HomeCuriosity = () => (
           id="closer-look-title"
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
-          There is more to see when you{" "}
+          Some places reveal themselves when you{" "}
           <span className="decoration-brand italic underline decoration-4 underline-offset-4">
             look closer.
           </span>
         </h2>
       </div>
-      <div className="bg-brand-soft relative max-w-2xl space-y-4 rounded-2xl p-6 text-base/7 text-zinc-600 sm:p-8">
+      <div className="bg-brand-soft relative space-y-4 rounded-2xl p-6 text-base/7 text-zinc-600 sm:p-8">
         <div
           className="pointer-events-none absolute -top-10 right-3 -scale-x-100 text-7xl sm:right-6 sm:text-8xl"
           aria-hidden="true"
@@ -50,52 +50,43 @@ export const HomeCuriosity = () => (
           </p>
         </div>
         <p>
-          In several languages around the world, “mira” means look, observe.
-          <br />
-          In Italian, something more, poetic and literary:
-          <br />
+          In several languages around the world, “mira” means look, observe. In Italian, something
+          more, poetic and literary:{" "}
           <strong className="text-story-emphasis font-semibold">
             to admire, to contemplate with admiration.
           </strong>
         </p>
         <p>
-          We chose Mira for that spirit: taking the time to discover and appreciate the{" "}
-          <strong className="text-story-emphasis font-semibold">beauty around us</strong>: the
-          beauty in the details, and the joy of discovering at a slower pace.
+          That is the spirit of Mira: finding something worth your attention in a place, a detail,
+          or a person you had never heard of.
         </p>
         <p>
-          <strong className="text-story-emphasis font-semibold">Linger a little.</strong> Let a
-          detail catch your eye, wonder about its story, and give yourself time to understand it. We
-          want each discovery to enrich your experience and leave you with something to carry into
-          your own life.
+          <strong className="text-story-emphasis font-semibold">Linger a little.</strong> A place
+          can become more interesting once you know what happened there, or whose life it touched.
         </p>
       </div>
     </div>
 
-    <div className="mt-10 grid gap-8 text-base/7 text-zinc-600 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
+    <div className="mt-10 grid gap-8 text-base/7 text-zinc-600 sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
       <p className="border-brand border-t-2 pt-4">
-        Discover <strong className="text-story-emphasis font-semibold">lesser-known places</strong>{" "}
-        beyond the usual tourist routes, alongside the landmarks you came to see.
+        <strong className="text-story-emphasis font-semibold">Take your curiosity further.</strong>{" "}
+        The city continues beyond its celebrated centre. Mira helps you find places across its
+        neighbourhoods, including those that rarely make the usual sightseeing lists.
       </p>
       <p className="border-brand border-t-2 pt-4">
-        Discover{" "}
-        <strong className="text-story-emphasis font-semibold">details and curiosities</strong>, and
-        the events and people connected to the places you visit. There is more to each place than
-        first meets the eye.
+        <strong className="text-story-emphasis font-semibold">There is a reason to stop.</strong> A
+        place may have no famous masterpiece or obvious splendour. Its history, a surprising
+        episode, or an easily missed detail can still change the way you see it.
       </p>
       <p className="border-brand border-t-2 pt-4">
-        Understand{" "}
-        <strong className="text-story-emphasis font-semibold">
-          the history behind what you see
-        </strong>
-        . Explore how the city became what it is today, and get more from its art and cultural
-        heritage.
+        <strong className="text-story-emphasis font-semibold">Put a life to a name.</strong> Follow
+        the people linked to a place into their own profiles. Get a quick sense of who they were,
+        what shaped their lives, and why their names belong here.
       </p>
       <p className="border-brand border-t-2 pt-4">
-        You won’t find hotel, restaurant, or shopping listings on Mira. You’ll find{" "}
-        <strong className="text-story-emphasis font-semibold">places that stay with you</strong>:
-        beauty that moves you, stories that teach you something, and discoveries that deepen your
-        love of art, culture, and history.
+        <strong className="text-story-emphasis font-semibold">A quick read can open a door.</strong>{" "}
+        Stories and profiles are made for an easy first encounter. When something catches your
+        imagination, the Wikipedia link is there to keep exploring.
       </p>
     </div>
   </section>

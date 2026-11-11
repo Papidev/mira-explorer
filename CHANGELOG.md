@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.22.11
+
+### Patch Changes
+
+- Clarify the homepage introduction to lesser-known places and connected People, widen its text layout, and raise the desktop hero image. Sort Related People by birth year only, hide single-photo navigation, and make map controls more compact with centered icons.
+
 ## 0.22.10
 
 ### Patch Changes
