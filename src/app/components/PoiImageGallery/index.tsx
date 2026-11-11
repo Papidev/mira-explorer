@@ -121,21 +121,19 @@ export const PoiImageGallery = ({
                   )}
                 </div>
                 <footer className="flex shrink-0 items-center justify-between gap-3 px-5 py-3">
-                  <IconButton
-                    label="Previous photo"
-                    disabled={images.length === 1}
-                    onClick={() => move(-1)}
-                  >
-                    <ChevronLeftIcon />
-                  </IconButton>
-                  <p className="text-xs text-zinc-500">← → Browse photos · Esc Close</p>
-                  <IconButton
-                    label="Next photo"
-                    disabled={images.length === 1}
-                    onClick={() => move(1)}
-                  >
-                    <ChevronRightIcon />
-                  </IconButton>
+                  {images.length > 1 && (
+                    <IconButton label="Previous photo" onClick={() => move(-1)}>
+                      <ChevronLeftIcon />
+                    </IconButton>
+                  )}
+                  <p className="text-xs text-zinc-500">
+                    {images.length > 1 ? "← → Browse photos · Esc Close" : "Esc Close"}
+                  </p>
+                  {images.length > 1 && (
+                    <IconButton label="Next photo" onClick={() => move(1)}>
+                      <ChevronRightIcon />
+                    </IconButton>
+                  )}
                 </footer>
               </>
             )}

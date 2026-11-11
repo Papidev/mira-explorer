@@ -6,9 +6,5 @@ export const compareBirthDates = (
 ) => {
   if (!left) return right ? -1 : 0;
   if (!right) return 1;
-  return (
-    left.year - right.year ||
-    (left.month ?? 1) - (right.month ?? 1) ||
-    (left.day ?? 1) - (right.day ?? 1)
-  );
+  return left.year - right.year;
 };

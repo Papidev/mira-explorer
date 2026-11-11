@@ -27,7 +27,7 @@ describe("visitor APIs", () => {
   });
 
   it.each([false, true])(
-    "orders People by birth date, unknown dates first (local: %s)",
+    "orders People by birth year only, preserving same-year order and unknown dates first (local: %s)",
     async (isLocal) => {
       const dates = [
         { id: "modern", birthDate: { year: 1600, month: 2, day: 2, precision: "exact" as const } },
@@ -114,9 +114,9 @@ describe("visitor APIs", () => {
         "unknown",
         "also-unknown",
         "ancient",
-        "earlier-month",
-        "earlier-day",
         "modern",
+        "earlier-day",
+        "earlier-month",
         "same-date",
       ]);
       expect(detail).toEqual(original);
