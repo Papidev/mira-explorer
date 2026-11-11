@@ -20,7 +20,11 @@ export const HomeNumbers = async () => {
           id="numbers-title"
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
-          The whole city, never all at once.
+          The{" "}
+          <span className="text-atlas italic">
+            whole
+          </span>{" "}
+          city, at your own pace.
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
@@ -40,7 +44,7 @@ export const HomeNumbers = async () => {
           ))}
         </dl>
         <p className="mt-8 text-base/7 text-zinc-600">
-          Filter the map by what draws you, and explore at your own pace.
+          Filter the map by what draws you, and let the rest wait.
         </p>
       </div>
     </section>
