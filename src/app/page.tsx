@@ -28,7 +28,6 @@ const Home = () => {
 
   return (
     <div className="bg-canvas text-ink min-h-screen">
-      <WorkInProgressNotice />
       <a
         href="#main-content"
         className="bg-surface sr-only rounded-lg p-3 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-20"
@@ -36,7 +35,7 @@ const Home = () => {
         Skip to content
       </a>
       <header className="bg-hero-start text-ink">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 pt-6 pb-5 sm:px-8 sm:pt-8 lg:px-12">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 pt-3 sm:px-8 sm:pt-8 sm:pb-5 lg:px-12">
           <div className="flex items-baseline-last gap-7">
             <Link
               href="/"
@@ -50,9 +49,18 @@ const Home = () => {
               <br />
               the places between.
             </p>
+            {/* Beside the logo on large screens, where the hero photo fills the right corner. */}
+            <div className="hidden self-center lg:flex">
+              <WorkInProgressNotice />
+            </div>
           </div>
-          {/* Sits above the hero photo, which rises into the header on large screens. */}
-          <div className="relative z-10 self-start">
+          {/* Sits above the hero photo, which rises into the header on large screens. Below lg
+              it shares the logo's font size so the em nudge centres it on the "mira" letters
+              rather than on the taller bird. */}
+          <div className="relative z-10 flex items-center gap-3 text-[3.5rem] max-lg:translate-y-[0.22em] sm:text-[4.25rem] lg:self-start">
+            <div className="flex lg:hidden">
+              <WorkInProgressNotice />
+            </div>
             <ThemeSwitch />
           </div>
         </div>
@@ -66,16 +74,19 @@ const Home = () => {
           />
           <section
             aria-labelledby="hero-title"
-            className="mx-auto grid max-w-7xl items-start gap-y-6 px-5 pt-6 pb-10 sm:px-8 sm:pt-8 sm:pb-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:px-12 lg:pt-10"
+            className="mx-auto grid max-w-7xl items-start gap-y-4 px-5 pt-4 pb-10 sm:gap-y-6 sm:px-8 sm:pt-8 sm:pb-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:px-12 lg:pt-10"
           >
             <div>
-              <p className="text-ink-muted flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] uppercase">
-                <span className="bg-brand h-1 w-10 shrink-0 rounded-full" aria-hidden="true" />A
-                city waiting to be discovered
+              <p className="text-ink-muted flex items-center gap-2 text-xs/5 font-semibold tracking-[0.12em] uppercase sm:gap-3 sm:tracking-[0.2em]">
+                <span
+                  className="bg-brand h-1 w-6 shrink-0 rounded-full sm:w-10"
+                  aria-hidden="true"
+                />
+                A city waiting to be discovered
               </p>
               <h1
                 id="hero-title"
-                className="text-ink mt-6 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
+                className="text-ink mt-2 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight sm:mt-6 sm:text-6xl lg:text-7xl"
               >
                 Every place has a{" "}
                 <span className="text-accent decoration-brand italic underline decoration-4 underline-offset-8">
@@ -119,8 +130,12 @@ const Home = () => {
                 <strong className="text-accent font-semibold">Mira begins in Rome.</strong> More
                 cities will follow.
               </p>
-              <RomeCta placement="hero" className="mt-6" />
-              <p className="text-ink-subtle mt-4 text-sm">From your doorstep, or from anywhere.</p>
+              <div className="max-lg:hidden">
+                <RomeCta placement="hero" className="mt-6" />
+                <p className="text-ink-subtle mt-4 text-sm">
+                  From your doorstep, or from anywhere.
+                </p>
+              </div>
             </div>
           </section>
         </div>
@@ -199,19 +214,6 @@ const Home = () => {
                     </li>
                   ))}
                 </ul>
-                <p className="text-ink-subtle text-xs/5">
-                  Map and place data © OpenStreetMap contributors. OpenStreetMap and Wikimedia
-                  Commons logos: Ken Vermette and Wikimedia Foundation, respectively, under{" "}
-                  <a
-                    href="https://creativecommons.org/licenses/by-sa/3.0/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="focus-visible:outline-focus rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
-                  >
-                    CC BY-SA 3.0
-                  </a>
-                  .
-                </p>
                 <p>
                   Every Story and Person profile keeps Wikipedia within reach. Start with a quick
                   read on Mira, then follow the link whenever a detail leaves you wanting more.
@@ -336,6 +338,20 @@ const Home = () => {
           <p>Mira is taking shape. Begin with Rome.</p>
           <AppVersion />
         </div>
+        {/* Licence credits for the source logos in "Behind the Stories". */}
+        <p className="basis-full">
+          Map and place data © OpenStreetMap contributors. OpenStreetMap and Wikimedia Commons
+          logos: Ken Vermette and Wikimedia Foundation, respectively, under{" "}
+          <a
+            href="https://creativecommons.org/licenses/by-sa/3.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-visible:outline-focus rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            CC BY-SA 3.0
+          </a>
+          .
+        </p>
       </footer>
     </div>
   );

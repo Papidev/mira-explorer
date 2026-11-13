@@ -317,6 +317,11 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         minZoom: 9,
         maxZoom: 21,
       });
+      // Without the compass button on touch screens, a rotated map could not be reset to north.
+      if (window.matchMedia?.("(hover: none) and (pointer: coarse)").matches) {
+        map.touchZoomRotate.disableRotation();
+        map.touchPitch.disable();
+      }
       // Markers and the popup are DOM overlays, so they survive a style swap.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {

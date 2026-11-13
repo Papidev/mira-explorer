@@ -1,5 +1,28 @@
 import { Bird } from "@/app/components/ui/MiraLogo/Bird";
 
+const points = [
+  {
+    title: "Take your curiosity further.",
+    summary: "Places beyond the usual sightseeing lists.",
+    body: "The city continues beyond its celebrated centre. Mira helps you find places across its neighbourhoods, including those that rarely make the usual sightseeing lists.",
+  },
+  {
+    title: "There is a reason to stop.",
+    summary: "A small detail can change how you see it.",
+    body: "A place may have no famous masterpiece or obvious splendour. Its history, a surprising episode, or an easily missed detail can still change the way you see it.",
+  },
+  {
+    title: "Put a life to a name.",
+    summary: "Meet the people linked to each place.",
+    body: "Follow the people linked to a place into their own profiles. Get a quick sense of who they were, what shaped their lives, and why their names belong here.",
+  },
+  {
+    title: "A quick read can open a door.",
+    summary: "Short reads, with Wikipedia for more.",
+    body: "Stories and profiles are made for an easy first encounter. When something catches your imagination, the Wikipedia link is there to keep exploring.",
+  },
+];
+
 export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand border-b-2 py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
@@ -65,27 +88,22 @@ export const HomeCuriosity = () => (
       </div>
     </div>
 
-    <div className="text-ink-muted mt-10 grid gap-8 text-base/7 sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
-      <p className="border-brand border-t-2 pt-4">
-        <strong className="text-story-emphasis font-semibold">Take your curiosity further.</strong>{" "}
-        The city continues beyond its celebrated centre. Mira helps you find places across its
-        neighbourhoods, including those that rarely make the usual sightseeing lists.
-      </p>
-      <p className="border-brand border-t-2 pt-4">
-        <strong className="text-story-emphasis font-semibold">There is a reason to stop.</strong> A
-        place may have no famous masterpiece or obvious splendour. Its history, a surprising
-        episode, or an easily missed detail can still change the way you see it.
-      </p>
-      <p className="border-brand border-t-2 pt-4">
-        <strong className="text-story-emphasis font-semibold">Put a life to a name.</strong> Follow
-        the people linked to a place into their own profiles. Get a quick sense of who they were,
-        what shaped their lives, and why their names belong here.
-      </p>
-      <p className="border-brand border-t-2 pt-4">
-        <strong className="text-story-emphasis font-semibold">A quick read can open a door.</strong>{" "}
-        Stories and profiles are made for an easy first encounter. When something catches your
-        imagination, the Wikipedia link is there to keep exploring.
-      </p>
+    {/* Phones get the headlines with one-line summaries; the full paragraphs would fill
+        several screens. */}
+    <ul className="text-ink-muted mt-8 space-y-3 text-sm/6 sm:hidden">
+      {points.map(({ title, summary }) => (
+        <li key={title} className="border-brand border-l-2 pl-3">
+          <strong className="text-story-emphasis block font-semibold">{title}</strong>
+          {summary}
+        </li>
+      ))}
+    </ul>
+    <div className="text-ink-muted mt-10 grid gap-8 text-base/7 max-sm:hidden sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
+      {points.map(({ title, body }) => (
+        <p key={title} className="border-brand border-t-2 pt-4">
+          <strong className="text-story-emphasis font-semibold">{title}</strong> {body}
+        </p>
+      ))}
     </div>
   </section>
 );

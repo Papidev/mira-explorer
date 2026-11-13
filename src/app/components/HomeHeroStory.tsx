@@ -2,6 +2,7 @@ import { ArrowRightIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import catalog from "../../../data/public/catalog.json";
+import { RomeCta } from "@/app/components/ui/RomeCta";
 
 type Props = {
   cover: (typeof catalog.pois)[number];
@@ -34,11 +35,17 @@ export const HomeHeroStory = ({ cover }: Props) => (
           aria-hidden="true"
         />
         <div className="absolute right-6 bottom-7 left-6 text-white">
-          <p className="mt-2 font-serif text-3xl tracking-tight sm:text-4xl">Rome</p>
-          <p className="mt-2 flex items-center gap-2 text-sm text-zinc-100">
+          {/* Below lg the CTA lifts the caption onto the brighter castle: a soft shadow keeps it
+              readable without darkening the photo. */}
+          <p className="mt-2 font-serif text-3xl tracking-tight max-lg:text-shadow-md max-lg:text-shadow-zinc-950/60 sm:text-4xl">
+            Rome
+          </p>
+          <p className="mt-2 flex items-center gap-2 text-sm text-zinc-100 max-lg:text-shadow-sm max-lg:text-shadow-zinc-950/60">
             <MapPinIcon className="size-4" aria-hidden="true" />
             {cover.poi.name}
           </p>
+          {/* Single-column layouts would reach the hero CTA only after all the copy. */}
+          <RomeCta placement="hero-photo" className="mt-5 lg:hidden" />
         </div>
       </div>
 

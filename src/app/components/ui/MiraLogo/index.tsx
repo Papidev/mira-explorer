@@ -4,9 +4,11 @@ import { Bird } from "./Bird";
 export const MiraLogo = ({
   size = "medium",
   tone = "light",
+  birdOnlyOnMobile = false,
 }: {
   size?: "small" | "medium" | "large" | "city";
   tone?: "light" | "dark";
+  birdOnlyOnMobile?: boolean;
 }) => (
   <span
     role="img"
@@ -30,7 +32,7 @@ export const MiraLogo = ({
     ) : (
       <Bird tone={tone} />
     )}
-    <span aria-hidden="true" className="leading-none">
+    <span aria-hidden="true" className={clsx("leading-none", birdOnlyOnMobile && "max-sm:hidden")}>
       mira
     </span>
   </span>

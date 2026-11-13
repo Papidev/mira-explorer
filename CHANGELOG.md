@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.2
+
+### Patch Changes
+
+- Make the map comfortable on phones: open place details as a bottom sheet that starts as a half-height preview and drags up to the full Story; replace the full-width work-in-progress banner with a small "In progress" header label, shown on the map page as a slim one-time note on phones and tablets instead; reduce the Rome map header on phones to the city name and the Mira bird turned towards it, and show its tagline only where it fits on the header row; hide the map zoom buttons on touch screens, keeping the map north-up; make the required map credits smaller; and on phones tighten the homepage hero, place the Explore Rome button on the hero photo, replace the wide map screenshot with a direct map link, show the Mira numbers side by side, condense the curiosity points into short summaries, and move the source logo credits to the footer.
+
 ## 0.25.1
 
 ### Patch Changes
