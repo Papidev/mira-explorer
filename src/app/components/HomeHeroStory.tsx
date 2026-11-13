@@ -2,6 +2,7 @@ import { ArrowRightIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import catalog from "../../../data/public/catalog.json";
+import { ImageAttribution } from "@/app/components/ImageAttribution";
 import { RomeCta } from "@/app/components/ui/RomeCta";
 
 type Props = {
@@ -75,7 +76,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
       </Link>
     </div>
     <figcaption className="text-ink-subtle mt-3 text-right text-xs/5">
-      Photo: {cover.mainImage.attribution} ·{" "}
+      Photo: <ImageAttribution text={cover.mainImage.attribution} /> ·{" "}
       <a
         href={cover.mainImage.commonsPageUrl}
         target="_blank"

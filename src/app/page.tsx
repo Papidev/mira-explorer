@@ -11,6 +11,7 @@ import Link from "next/link";
 import catalog from "../../data/public/catalog.json";
 import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
 import { HomeHeroStory } from "@/app/components/HomeHeroStory";
+import { ImageAttribution } from "@/app/components/ImageAttribution";
 import { MapShowcase } from "@/app/components/MapShowcase";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
@@ -287,7 +288,7 @@ const Home = () => {
                         </p>
                       </Link>
                       <p className="text-ink-subtle mt-3 text-xs/5">
-                        Photo: {mainImage.attribution} ·{" "}
+                        Photo: <ImageAttribution text={mainImage.attribution} /> ·{" "}
                         <a
                           href={mainImage.commonsPageUrl}
                           target="_blank"

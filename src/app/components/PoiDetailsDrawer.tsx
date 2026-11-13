@@ -13,6 +13,7 @@ import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { usePoiStoryContent } from "@/app/components/usePoiStoryContent";
 import { Person } from "@/app/components/Person";
 import { usePerson } from "@/app/components/usePerson";
+import { ImageAttribution } from "@/app/components/ImageAttribution";
 
 export const PoiDetailsDrawer = ({
   citySlug,
@@ -136,7 +137,7 @@ export const PoiDetailsDrawer = ({
               </div>
               {mainImage && (
                 <figcaption className="text-ink-subtle px-5 py-2 text-xs/5">
-                  {mainImage.attribution} ·{" "}
+                  <ImageAttribution text={mainImage.attribution} /> ·{" "}
                   <a
                     href={mainImage.commonsPageUrl}
                     target="_blank"

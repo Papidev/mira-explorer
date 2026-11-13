@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.3
+
+### Patch Changes
+
+- Shorten long photo attributions in image captions, keeping the full text on hover.
+
 ## 0.25.2
 
 ### Patch Changes
