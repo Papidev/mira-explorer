@@ -4,7 +4,6 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { RomeCta } from "@/app/components/ui/RomeCta";
 
 export const MapShowcase = () => (
   <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
@@ -23,7 +22,6 @@ export const MapShowcase = () => (
           to look closer.
         </p>
       </div>
-      <RomeCta placement="map-showcase" label="Open the map" size="small" />
     </div>
     <figure>
       <Link
