@@ -13,6 +13,16 @@ import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
+
+/** Fiord's street and place names are too faint; lift every label to near-white. */
+const brightenDarkLabels = (map: MapLibreMap) => {
+  for (const layer of map.getStyle().layers) {
+    if (layer.type !== "symbol" || !layer.layout?.["text-field"]) continue;
+    map.setPaintProperty(layer.id, "text-color", "hsl(210, 30%, 88%)");
+    map.setPaintProperty(layer.id, "text-halo-color", "hsl(222, 35%, 14%)");
+    map.setPaintProperty(layer.id, "text-halo-width", 1.5);
+  }
+};
 const PREVIEW_CLOSE_DELAY_MS = 180;
 
 export type MapView = {
@@ -302,6 +312,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       });
       // Markers and the popup are DOM overlays, so they survive a style swap.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
+      map.on("style.load", () => {
+        if (map && isDarkTheme()) brightenDarkLabels(map);
+      });
 
       const navigationControl = new maplibregl.NavigationControl();
       const zoomValue = document.createElement("output");
