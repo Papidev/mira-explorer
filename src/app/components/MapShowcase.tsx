@@ -4,16 +4,16 @@ import Link from "next/link";
 
 export const MapShowcase = () => (
   <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
-    <div className="mb-7 flex flex-wrap items-end justify-between gap-5 text-white">
+    <div className="text-ink mb-7 flex flex-wrap items-end justify-between gap-5">
       <div className="min-w-0 flex-1 basis-2xl">
-        <p className="text-xs/5 font-semibold tracking-[0.2em] text-white/80 uppercase">
+        <p className="text-ink-muted text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Beyond the familiar
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
           More of Rome to discover.
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
-        <p className="mt-3 text-sm/6 text-white/85">
+        <p className="text-ink-muted mt-3 text-sm/6">
           Our map makes room for the Rome beyond the famous sights: outlying neighbourhoods,
           overlooked places, and corners better known to locals. Open a marker and discover a reason
           to look closer.
@@ -21,7 +21,7 @@ export const MapShowcase = () => (
       </div>
       <Link
         href="/rome"
-        className="focus-visible:outline-brand inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+        className="focus-visible:outline-accent inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         Open the map <ArrowRightIcon className="size-4" aria-hidden="true" />
       </Link>

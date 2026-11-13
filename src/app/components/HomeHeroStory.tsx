@@ -67,13 +67,13 @@ export const HomeHeroStory = ({ cover }: Props) => (
         </span>
       </Link>
     </div>
-    <figcaption className="mt-3 text-right text-xs/5 text-white/80">
+    <figcaption className="text-ink-subtle mt-3 text-right text-xs/5">
       Photo: {cover.mainImage.attribution} ·{" "}
       <a
         href={cover.mainImage.commonsPageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="underline decoration-white/40 underline-offset-2 hover:text-white"
+        className="decoration-line-strong hover:text-ink underline underline-offset-2"
       >
         {cover.mainImage.license} ↗
       </a>

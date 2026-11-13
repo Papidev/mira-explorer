@@ -34,17 +34,17 @@ const Home = () => {
       >
         Skip to content
       </a>
-      <header className="bg-atlas-deep text-white">
+      <header className="bg-hero-start text-ink">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 pt-6 pb-5 sm:px-8 sm:pt-8 lg:px-12">
           <div className="flex items-baseline-last gap-7">
             <Link
               href="/"
               aria-label="Mira home"
-              className="focus-visible:outline-brand flex items-baseline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="focus-visible:outline-accent flex items-baseline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-              <MiraLogo size="large" tone="dark" />
+              <MiraLogo size="large" />
             </Link>
-            <p className="hidden border-l border-white/25 pl-7 text-sm/6 text-white/75 sm:block">
+            <p className="border-line-strong text-ink-subtle hidden border-l pl-7 text-sm/6 sm:block">
               Art, history, and
               <br />
               the places between.
@@ -58,26 +58,26 @@ const Home = () => {
       </header>
 
       <main id="main-content">
-        <div className="to-atlas from-atlas-deep relative isolate bg-linear-to-b text-white">
+        <div className="from-hero-start to-hero-end text-ink relative isolate bg-linear-to-b">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,#ffffff18_1px,transparent_1px)] mask-[linear-gradient(to_bottom,transparent,black_20%,transparent_100%)] bg-size-[20px_20px]"
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,var(--color-hero-dots)_1px,transparent_1px)] mask-[linear-gradient(to_bottom,transparent,black_20%,transparent_100%)] bg-size-[20px_20px]"
           />
           <section
             aria-labelledby="hero-title"
             className="mx-auto grid max-w-7xl items-start gap-y-6 px-5 pt-6 pb-10 sm:px-8 sm:pt-8 sm:pb-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:px-12 lg:pt-10"
           >
             <div>
-              <p className="flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] text-white/80 uppercase">
+              <p className="text-ink-muted flex items-center gap-3 text-xs/5 font-semibold tracking-[0.2em] uppercase">
                 <span className="bg-brand h-1 w-10 shrink-0 rounded-full" aria-hidden="true" />A
                 city waiting to be discovered
               </p>
               <h1
                 id="hero-title"
-                className="mt-6 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl"
+                className="text-ink mt-6 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
               >
                 Every place has a{" "}
-                <span className="text-brand decoration-brand italic underline decoration-4 underline-offset-8">
+                <span className="text-accent decoration-brand italic underline decoration-4 underline-offset-8">
                   story.
                 </span>
               </h1>
@@ -86,7 +86,7 @@ const Home = () => {
             {cover && <HomeHeroStory cover={cover} />}
 
             <div className="lg:col-start-1">
-              <div className="space-y-4 text-base/7 text-white/85">
+              <div className="text-ink-muted space-y-4 text-base/7">
                 <p>
                   The landmarks draw you in. The unexpected discoveries make a city your own.
                   Explore the places you came to see and the quiet corners you might have missed.
@@ -99,7 +99,7 @@ const Home = () => {
               </div>
               <ul
                 aria-label="Mira's focus"
-                className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xl/8 font-semibold tracking-tight text-white sm:text-2xl/8"
+                className="text-ink mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xl/8 font-semibold tracking-tight sm:text-2xl/8"
               >
                 {[
                   { label: "Art", Icon: PaintBrushIcon },
@@ -107,20 +107,20 @@ const Home = () => {
                   { label: "Culture", Icon: SparklesIcon },
                 ].map(({ label, Icon }) => (
                   <li key={label} className="flex items-center gap-2">
-                    <span className="text-brand flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
+                    <span className="text-accent bg-atlas/5 ring-atlas/15 flex size-9 shrink-0 items-center justify-center rounded-full ring-1 dark:bg-white/10 dark:ring-white/20">
                       <Icon className="size-5" aria-hidden="true" />
                     </span>
                     {label}
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 max-w-md text-base/7 text-white/85">
-                <strong className="text-brand font-semibold">Mira begins in Rome.</strong> More
+              <p className="text-ink-muted mt-6 max-w-md text-base/7">
+                <strong className="text-accent font-semibold">Mira begins in Rome.</strong> More
                 cities will follow.
               </p>
               <Link
                 href="/rome"
-                className="group bg-brand text-atlas focus-visible:outline-brand mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4"
+                className="group bg-brand text-atlas focus-visible:outline-accent mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4"
               >
                 <span className="inline-flex items-center gap-3">
                   Explore Rome
@@ -132,12 +132,12 @@ const Home = () => {
                   aria-hidden="true"
                 />
               </Link>
-              <p className="mt-4 text-sm text-white/75">From your doorstep, or from anywhere.</p>
+              <p className="text-ink-subtle mt-4 text-sm">From your doorstep, or from anywhere.</p>
             </div>
           </section>
         </div>
 
-        <div className="bg-[linear-gradient(to_bottom,var(--color-atlas)_8rem,var(--color-atlas-mist)_40rem,var(--color-canvas)_100%)]">
+        <div className="bg-[linear-gradient(to_bottom,var(--color-hero-end)_8rem,var(--color-atlas-mist)_40rem,var(--color-canvas)_100%)]">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
             <MapShowcase />
 
