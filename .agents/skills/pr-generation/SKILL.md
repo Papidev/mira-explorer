@@ -43,7 +43,7 @@ before running the required checks and publishing the PR:
 
 ## GitHub Access
 
-Create and manage pull requests through the GitHub connector, including assignment and other PR metadata. Use Git only for local commits and publishing the branch; do not use the `gh` CLI for pull request operations in this repository.
+Create and manage pull requests, including assignment and other PR metadata, as `Papidev` with `gh` and the token from the [Mira GitHub account](../../../AGENTS.md#mira-github-account) rules, for example `GH_TOKEN="$papidev_token" gh pr create --repo Papidev/mira-explorer --assignee Papidev --body-file -`. A GitHub connector works as well once its identity is verified as `Papidev`.
 
 ## Title
 
