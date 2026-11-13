@@ -125,6 +125,7 @@ describe("POI details person navigation", () => {
     finishStory!();
     await user.click(await screen.findByRole("button", { name: "Hercules" }));
     expect(screen.getByRole("status")).toHaveTextContent("Loading person...");
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Hercules");
     await waitFor(() => expect(finishPerson).toBeDefined());
     finishPerson!();
 
