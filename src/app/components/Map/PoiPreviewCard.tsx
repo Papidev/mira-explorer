@@ -21,9 +21,9 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
         event.stopPropagation();
         onOpenDetails();
       }}
-      className="group focus-visible:ring-atlas block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl bg-white text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2"
+      className="group focus-visible:ring-accent bg-surface block w-72 max-w-full cursor-pointer overflow-hidden rounded-xl text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2"
     >
-      <div className="relative aspect-2/1 w-full bg-zinc-100">
+      <div className="bg-surface-muted relative aspect-2/1 w-full">
         {poi.mainImageUrl && !hasImageError ? (
           <Image
             src={poi.mainImageUrl}
@@ -34,7 +34,7 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
             onError={() => setHasImageError(true)}
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-2 text-zinc-500">
+          <div className="text-ink-subtle flex size-full flex-col items-center justify-center gap-2">
             <PhotoIcon className="size-8" aria-hidden="true" />
             <span className="text-xs font-medium">Image unavailable</span>
           </div>
@@ -42,15 +42,15 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
         <div className="pointer-events-none absolute inset-0 ring-1 ring-black/10 ring-inset" />
         <span
           aria-hidden="true"
-          className="bg-brand group-hover:bg-brand-action absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
+          className="bg-brand absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
         >
           <ArrowLongRightIcon className="size-6 -rotate-45" strokeWidth={1.5} />
         </span>
       </div>
       <div className="p-4">
-        <h3 className="font-serif text-xl/6 tracking-tight text-zinc-900">{poi.name}</h3>
+        <h3 className="text-ink font-serif text-xl/6 tracking-tight">{poi.name}</h3>
         {description ? (
-          <p className="mt-1 line-clamp-3 text-sm/6 text-zinc-600">{description}</p>
+          <p className="text-ink-muted mt-1 line-clamp-3 text-sm/6">{description}</p>
         ) : null}
       </div>
     </button>

@@ -3,12 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { AppVersion } from "@/app/components/ui/AppVersion";
+import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
 
 export const RomeHeader = ({ counts }: { counts?: { places: number; people: number } }) => (
   <header className="bg-atlas relative isolate overflow-hidden border-b border-white/15 text-white">
     <div
       aria-hidden="true"
-      className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_72%_100%,#426678,transparent_65%),radial-gradient(circle_at_center,#ffffff28_1px,transparent_1px)] bg-size-[auto,16px_16px]"
+      className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_72%_100%,var(--color-atlas-glow),transparent_65%),radial-gradient(circle_at_center,#ffffff28_1px,transparent_1px)] bg-size-[auto,16px_16px]"
     />
     <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:gap-x-6 sm:px-7 sm:py-5">
       <Link
@@ -55,9 +56,12 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           </span>
         </div>
       )}
-      <span className="hidden lg:inline-flex [&>span]:text-white/80">
-        <AppVersion />
-      </span>
+      <div className="flex items-center gap-1.5">
+        <span className="hidden lg:inline-flex [&>span]:text-white/80">
+          <AppVersion />
+        </span>
+        <ThemeSwitch tone="dark" />
+      </div>
     </div>
   </header>
 );

@@ -50,21 +50,21 @@ export const Sidebar = ({
   return (
     <aside
       aria-label="Discover places"
-      className="flex h-full w-full shrink-0 flex-col overflow-hidden border-r border-zinc-900/10 bg-zinc-50 text-zinc-900"
+      className="border-line bg-canvas text-ink flex h-full w-full shrink-0 flex-col overflow-hidden border-r"
     >
-      <div className="shrink-0 border-b border-zinc-900/10 px-4 py-3">
+      <div className="border-line shrink-0 border-b px-4 py-3">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
           <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
         </div>
-        <p className="text-xs/5 text-zinc-600">Big city, huh? But you can filter what you want.</p>
+        <p className="text-ink-muted text-xs/5">Big city, huh? But you can filter what you want.</p>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
       <div className="shrink-0 px-4 pt-3 pb-2">
         <Search pois={pois} onSelect={onSearchPoi} />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-4">
-        <fieldset className="space-y-2 rounded-xl border border-zinc-200 bg-white px-3 py-1">
+        <fieldset className="border-line bg-surface space-y-2 rounded-xl border px-3 py-1">
           <legend className="sr-only">Category filters</legend>
           <div className="relative flex items-center gap-2">
             <input
@@ -80,17 +80,17 @@ export const Sidebar = ({
                 if (allCategoriesSelected) setExpanded(true);
                 onToggleAll();
               }}
-              className="peer checked:border-atlas indeterminate:border-atlas focus-visible:outline-atlas size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border border-zinc-500 bg-white focus-visible:outline-2 focus-visible:outline-offset-2 forced-colors:appearance-auto"
+              className="peer checked:border-accent indeterminate:border-accent focus-visible:outline-accent border-ink-subtle bg-surface size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border focus-visible:outline-2 focus-visible:outline-offset-2 forced-colors:appearance-auto"
             />
             <CheckIcon
               aria-hidden="true"
               strokeWidth={3}
-              className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
+              className="text-accent pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-checked:block peer-indeterminate:hidden forced-colors:hidden"
             />
             <MinusIcon
               aria-hidden="true"
               strokeWidth={3}
-              className="text-atlas pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-indeterminate:block forced-colors:hidden"
+              className="text-accent pointer-events-none absolute top-1/2 left-0.5 hidden size-3.5 -translate-y-1/2 peer-indeterminate:block forced-colors:hidden"
             />
 
             <button
@@ -99,12 +99,12 @@ export const Sidebar = ({
               aria-expanded={expanded}
               aria-controls={categoriesId}
               onClick={() => setExpanded(!expanded)}
-              className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded text-left text-sm font-semibold transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+              className="hover:bg-canvas focus-visible:outline-focus flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded text-left text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               <span className="flex-1">All categories</span>
               <span
                 id={`${categoriesId}-selection`}
-                className="shrink-0 text-xs font-normal text-zinc-500 tabular-nums"
+                className="text-ink-subtle shrink-0 text-xs font-normal tabular-nums"
               >
                 {allCategoriesSelected
                   ? "All"
@@ -122,7 +122,7 @@ export const Sidebar = ({
                         ).length
                       } selected`}
               </span>
-              <span className="flex size-7 shrink-0 items-center justify-center text-zinc-400">
+              <span className="text-ink-subtle flex size-7 shrink-0 items-center justify-center">
                 <ChevronDownIcon
                   aria-hidden="true"
                   className={`size-4 transition-transform ${expanded ? "rotate-180" : ""}`}
@@ -133,9 +133,9 @@ export const Sidebar = ({
           <div
             id={categoriesId}
             hidden={!expanded}
-            className="ml-1 space-y-2 border-l border-zinc-200 pl-2.5"
+            className="border-line ml-1 space-y-2 border-l pl-2.5"
           >
-            <p className="py-1 text-xs text-zinc-500">
+            <p className="text-ink-subtle py-1 text-xs">
               Double-click a category to show only that one.
             </p>
             {categoryDefinitions
@@ -158,11 +158,11 @@ export const Sidebar = ({
               ))}
           </div>
         </fieldset>
-        <h3 id={placesHeadingId} className="mt-5 px-1 text-sm font-semibold text-zinc-700">
+        <h3 id={placesHeadingId} className="text-ink-muted mt-5 px-1 text-sm font-semibold">
           Places matching your filters
         </h3>
         {!visiblePois.length && (
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="text-ink-subtle mt-2 text-sm">
             {selectedCategories.length
               ? "No places match these categories. Try another category."
               : "Select a category to explore places."}
@@ -176,11 +176,11 @@ export const Sidebar = ({
                 aria-label={poi.name}
                 aria-pressed={selectedPoiId === poi.id}
                 onClick={() => onOpenPoi(poi.id)}
-                className={`group flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800 ${selectedPoiId === poi.id ? "border-brand bg-yellow-50" : "hover:border-brand border-zinc-200/80 bg-white"}`}
+                className={`group focus-visible:outline-focus flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${selectedPoiId === poi.id ? "border-brand bg-brand-soft/50" : "hover:border-brand border-line bg-surface"}`}
               >
                 <span className="min-w-0 flex-1">
                   <span className="block text-lg leading-snug font-medium">{poi.name}</span>
-                  <span className="mt-1.5 block text-xs/5 text-zinc-500">
+                  <span className="text-ink-subtle mt-1.5 block text-xs/5">
                     {poi.categories
                       ?.map(
                         (id) =>
@@ -192,7 +192,7 @@ export const Sidebar = ({
                 </span>
                 <ChevronRightIcon
                   aria-hidden="true"
-                  className="size-5 shrink-0 text-zinc-500 transition-colors group-hover:text-zinc-900"
+                  className="text-ink-subtle group-hover:text-ink size-5 shrink-0 transition-colors"
                 />
               </button>
             </li>

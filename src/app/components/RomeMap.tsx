@@ -22,7 +22,7 @@ export const RomeMap = async ({
     return (
       <>
         <RomeHeader />
-        <p role="status" className="p-6 text-zinc-600">
+        <p role="status" className="text-ink-muted p-6">
           Places are temporarily unavailable. Please try again later.
         </p>
       </>
@@ -60,7 +60,7 @@ export const RomeMap = async ({
           initialPersonSlug={initialPersonSlug}
         />
       ) : (
-        <p role="status" className="p-6 text-zinc-600">
+        <p role="status" className="text-ink-muted p-6">
           No published places are available yet.
         </p>
       )}

@@ -86,7 +86,7 @@ export const PoiDetailsDrawer = ({
             >
               <span
                 aria-hidden="true"
-                className="border-brand/20 border-t-brand size-8 animate-spin rounded-full border-3 motion-reduce:animate-none"
+                className="border-accent/20 border-t-accent size-8 animate-spin rounded-full border-3 motion-reduce:animate-none"
               />
               <span className="sr-only">
                 {selectedPersonId ? "Loading person..." : "Loading place..."}
@@ -105,7 +105,7 @@ export const PoiDetailsDrawer = ({
             </div>
             {!selectedPersonId && mainImageUrl && mainImageUrl !== failedMainImageUrl ? (
               <figure>
-                <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-zinc-100">
+                <div className="bg-surface-muted relative aspect-video w-full shrink-0 overflow-hidden">
                   <Image
                     src={mainImageUrl}
                     alt={`Main image of ${detail?.name ?? poi?.name}`}
@@ -133,7 +133,7 @@ export const PoiDetailsDrawer = ({
                   )}
                 </div>
                 {mainImage && (
-                  <figcaption className="px-5 py-2 text-xs/5 text-zinc-500">
+                  <figcaption className="text-ink-subtle px-5 py-2 text-xs/5">
                     {mainImage.attribution} ·{" "}
                     <a
                       href={mainImage.commonsPageUrl}
@@ -147,7 +147,7 @@ export const PoiDetailsDrawer = ({
                 )}
               </figure>
             ) : !selectedPersonId && detail ? (
-              <div className="flex aspect-video items-center justify-center gap-2 bg-zinc-100 text-sm text-zinc-500">
+              <div className="bg-surface-muted text-ink-subtle flex aspect-video items-center justify-center gap-2 text-sm">
                 <PhotoIcon className="size-6" aria-hidden="true" />
                 Image unavailable
               </div>
@@ -159,20 +159,20 @@ export const PoiDetailsDrawer = ({
                   onClick={() =>
                     onSelectPerson ? onSelectPerson(null) : setSelectedPerson(undefined)
                   }
-                  className="mb-3 inline-flex max-w-full cursor-pointer items-center gap-2 rounded-sm py-2 text-sm text-black/60 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black/60"
+                  className="text-ink-muted hover:text-ink focus-visible:outline-focus mb-3 inline-flex max-w-full cursor-pointer items-center gap-2 rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4"
                 >
                   <ArrowLeftIcon className="size-4 shrink-0" aria-hidden="true" />
                   <span className="truncate">Back to {selectedPoi.name}</span>
                 </button>
               ) : null}
-              <h2 className="font-serif text-2xl/7 tracking-tight text-black">
+              <h2 className="text-ink font-serif text-2xl/7 tracking-tight">
                 {selectedPersonId ? (person?.name ?? "Person") : (detail?.name ?? poi?.name)}
               </h2>
               <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
             </div>
-            <div className="px-5 pt-2 pb-4 text-sm/6 text-black/80">
+            <div className="text-ink px-5 pt-2 pb-4 text-sm/6">
               {excludedByFilters && (
-                <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100">
                   This place is excluded by your active filters.
                 </p>
               )}
@@ -180,7 +180,7 @@ export const PoiDetailsDrawer = ({
                 isPersonLoading ? null : person ? (
                   <Person person={person} />
                 ) : (
-                  <p className="text-black/60">This person is unavailable.</p>
+                  <p className="text-ink-muted">This person is unavailable.</p>
                 )
               ) : !detail && poi?.shortDescription ? (
                 <p>{poi.shortDescription}</p>
@@ -200,7 +200,7 @@ export const PoiDetailsDrawer = ({
                     }
                   />
                 ) : (
-                  <p className="mt-4 text-black/60">This place is unavailable.</p>
+                  <p className="text-ink-muted mt-4">This place is unavailable.</p>
                 ))}
             </div>
           </div>

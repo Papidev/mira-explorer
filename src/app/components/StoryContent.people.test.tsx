@@ -39,10 +39,7 @@ describe("People mentioned in a Story", () => {
       expect(screen.getByRole("link", { name: "Bernini" }).closest("strong")).toBeNull();
       expect(screen.getByText("fountain")).toHaveClass("font-semibold", "text-story-emphasis");
       expect(screen.getByText("fountain")).not.toHaveClass("underline");
-      expect(screen.getByRole("link", { name: "Bernini" })).toHaveClass(
-        "text-sky-800",
-        "underline",
-      );
+      expect(screen.getByRole("link", { name: "Bernini" })).toHaveClass("text-link", "underline");
       await userEvent.setup().click(screen.getByRole("link", { name: "Bernini" }));
       expect(opened).toEqual(["bernini"]);
       rerender(

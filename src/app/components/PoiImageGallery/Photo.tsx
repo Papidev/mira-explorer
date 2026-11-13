@@ -19,7 +19,7 @@ export const Photo = ({
           variant="photo"
         />
       </div>
-      <figcaption className="shrink-0 text-center text-xs/5 text-zinc-600">
+      <figcaption className="text-ink-muted shrink-0 text-center text-xs/5">
         {image.attribution} ·{" "}
         <a
           className="underline underline-offset-2"

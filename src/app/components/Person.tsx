@@ -10,9 +10,9 @@ const formatDate = (date: NonNullable<PublicPerson["birthDate"]>) => {
 };
 
 export const Person = ({ person }: { person: PublicPerson }) => (
-  <article className="space-y-6 text-base/7 text-zinc-800">
+  <article className="text-ink space-y-6 text-base/7">
     {person.image ? (
-      <figure className="overflow-hidden rounded-xl bg-zinc-100">
+      <figure className="bg-surface-muted overflow-hidden rounded-xl">
         <div className="relative h-72">
           <Image
             src={person.image.thumbnailUrl}
@@ -23,7 +23,7 @@ export const Person = ({ person }: { person: PublicPerson }) => (
           />
         </div>
         {person.image.attribution ? (
-          <figcaption className="px-3 py-2 text-xs/5 text-zinc-500">
+          <figcaption className="text-ink-subtle px-3 py-2 text-xs/5">
             {person.image.attribution}
             {person.image.license ? ` · ${person.image.license}` : ""}
           </figcaption>
@@ -54,10 +54,8 @@ export const Person = ({ person }: { person: PublicPerson }) => (
       ))}
     </div>
     {person.curiosities.length > 0 ? (
-      <section className="rounded-xl bg-zinc-50 px-4 py-3 ring-1 ring-zinc-950/5">
-        <h3 className="text-xs/5 font-semibold tracking-[0.2em] text-zinc-950 uppercase">
-          Curiosities
-        </h3>
+      <section className="bg-canvas rounded-xl px-4 py-3 ring-1 ring-zinc-950/5">
+        <h3 className="text-ink text-xs/5 font-semibold tracking-[0.2em] uppercase">Curiosities</h3>
         <ul className="marker:text-emphasis mt-3 list-disc space-y-3 pl-5">
           {person.curiosities.map((curiosity) => (
             <li key={curiosity}>

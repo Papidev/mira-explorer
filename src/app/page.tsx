@@ -13,6 +13,7 @@ import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
 import { HomeHeroStory } from "@/app/components/HomeHeroStory";
 import { MapShowcase } from "@/app/components/MapShowcase";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
+import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
 import { HomeCuriosity } from "@/app/components/HomeCuriosity";
 import { HomeNumbers } from "@/app/components/HomeNumbers";
 import { Suspense } from "react";
@@ -25,15 +26,15 @@ const Home = () => {
     .filter((entry) => entry !== undefined);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+    <div className="bg-canvas text-ink min-h-screen">
       <WorkInProgressNotice />
       <a
         href="#main-content"
-        className="sr-only rounded-lg bg-white p-3 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-20"
+        className="bg-surface sr-only rounded-lg p-3 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-20"
       >
         Skip to content
       </a>
-      <header className="bg-[#203e50] text-white">
+      <header className="bg-atlas-deep text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 pt-6 pb-5 sm:px-8 sm:pt-8 lg:px-12">
           <div className="flex items-baseline-last gap-7">
             <Link
@@ -53,7 +54,7 @@ const Home = () => {
       </header>
 
       <main id="main-content">
-        <div className="to-atlas relative isolate bg-linear-to-b from-[#203e50] text-white">
+        <div className="to-atlas from-atlas-deep relative isolate bg-linear-to-b text-white">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,#ffffff18_1px,transparent_1px)] mask-[linear-gradient(to_bottom,transparent,black_20%,transparent_100%)] bg-size-[20px_20px]"
@@ -132,7 +133,7 @@ const Home = () => {
           </section>
         </div>
 
-        <div className="bg-[linear-gradient(to_bottom,var(--color-atlas)_8rem,#e8eff2_40rem,var(--color-zinc-50)_100%)]">
+        <div className="bg-[linear-gradient(to_bottom,var(--color-atlas)_8rem,var(--color-atlas-mist)_40rem,var(--color-canvas)_100%)]">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
             <MapShowcase />
 
@@ -147,7 +148,7 @@ const Home = () => {
               className="border-brand grid gap-5 border-b-2 py-10 sm:py-14 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
             >
               <div>
-                <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+                <p className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">
                   Behind the Stories
                 </p>
                 <h2
@@ -158,7 +159,7 @@ const Home = () => {
                 </h2>
                 <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
               </div>
-              <div className="max-w-2xl space-y-4 text-base/7 text-zinc-600">
+              <div className="text-ink-muted max-w-2xl space-y-4 text-base/7">
                 <p>
                   Mira draws on the remarkable work of open knowledge communities: articles,
                   structured knowledge, images, and geographic data that help us understand places
@@ -192,7 +193,7 @@ const Home = () => {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 rounded-sm text-sm font-medium text-zinc-800 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                        className="text-ink decoration-line-strong hover:text-ink focus-visible:outline-focus flex items-center gap-3 rounded-sm text-sm font-medium underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
                       >
                         <Image
                           src={logo}
@@ -206,14 +207,14 @@ const Home = () => {
                     </li>
                   ))}
                 </ul>
-                <p className="text-xs/5 text-zinc-500">
+                <p className="text-ink-subtle text-xs/5">
                   Map and place data © OpenStreetMap contributors. OpenStreetMap and Wikimedia
                   Commons logos: Ken Vermette and Wikimedia Foundation, respectively, under{" "}
                   <a
                     href="https://creativecommons.org/licenses/by-sa/3.0/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                    className="focus-visible:outline-focus rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
                     CC BY-SA 3.0
                   </a>
@@ -234,7 +235,7 @@ const Home = () => {
               <section aria-labelledby="discoveries-title" className="py-12 sm:py-16">
                 <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
                   <div>
-                    <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+                    <p className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">
                       Start with a little curiosity
                     </p>
                     <h2
@@ -250,7 +251,7 @@ const Home = () => {
                   </div>
                   <Link
                     href="/rome"
-                    className="group text-atlas focus-visible:outline-atlas inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="group text-accent focus-visible:outline-accent inline-flex items-center gap-2 rounded-sm py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
                   >
                     See the map{" "}
                     <ArrowRightIcon
@@ -264,9 +265,9 @@ const Home = () => {
                     <article key={poi.id}>
                       <Link
                         href={`/rome?poi=${encodeURIComponent(poi.id)}`}
-                        className="group block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+                        className="group focus-visible:outline-focus block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4"
                       >
-                        <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-zinc-200">
+                        <div className="bg-surface-muted relative aspect-4/3 overflow-hidden rounded-xl">
                           <Image
                             src={mainImage.thumbnailUrl}
                             alt={poi.name}
@@ -276,7 +277,7 @@ const Home = () => {
                           />
                           <span
                             aria-hidden="true"
-                            className="bg-brand group-hover:bg-brand-action absolute right-3 bottom-3 flex size-10 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
+                            className="bg-brand absolute right-3 bottom-3 flex size-10 items-center justify-center rounded-tl-2xl rounded-tr-md rounded-br-2xl rounded-bl-md text-zinc-900 shadow-sm transition-colors"
                           >
                             <ArrowLongRightIcon
                               className="size-7 -rotate-45 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
@@ -284,20 +285,20 @@ const Home = () => {
                             />
                           </span>
                         </div>
-                        <h3 className="mt-4 font-serif text-2xl/7 tracking-tight group-hover:text-zinc-800">
+                        <h3 className="group-hover:text-ink mt-4 font-serif text-2xl/7 tracking-tight">
                           {poi.name}
                         </h3>
-                        <p className="mt-2 line-clamp-3 text-sm/6 text-zinc-600">
+                        <p className="text-ink-muted mt-2 line-clamp-3 text-sm/6">
                           {poi.previewDescription}
                         </p>
                       </Link>
-                      <p className="mt-3 text-xs/5 text-zinc-500">
+                      <p className="text-ink-subtle mt-3 text-xs/5">
                         Photo: {mainImage.attribution} ·{" "}
                         <a
                           href={mainImage.commonsPageUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded-sm underline decoration-zinc-300 underline-offset-2 hover:text-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                          className="decoration-line-strong hover:text-ink focus-visible:outline-focus rounded-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                           {mainImage.license} ↗
                         </a>
@@ -311,20 +312,21 @@ const Home = () => {
         </div>
       </main>
 
-      <footer className="border-brand mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t-2 px-5 py-6 text-xs text-zinc-500 sm:px-8 lg:px-12">
+      <footer className="border-brand text-ink-subtle mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t-2 px-5 py-6 text-xs sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-baseline gap-3">
           <Link
             href="/"
             aria-label="Mira home"
-            className="inline-flex items-baseline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+            className="focus-visible:outline-focus inline-flex items-baseline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
           >
             <MiraLogo size="small" />
           </Link>
           <p>Art, history, and the places between.</p>
         </div>
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center gap-3">
           <p>Mira is taking shape. Begin with Rome.</p>
           <AppVersion />
+          <ThemeSwitch tone="light" />
         </div>
       </footer>
     </div>

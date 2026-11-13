@@ -1,31 +1,93 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/*
+ * Theme: follows the system setting unless the visitor picks one in the app,
+ * which sets data-theme="light" or data-theme="dark" on <html>.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --canvas: var(--color-zinc-50);
+  --surface: var(--color-white);
+  --surface-muted: var(--color-zinc-100);
+  --ink: var(--color-zinc-900);
+  --ink-muted: var(--color-zinc-600);
+  --ink-subtle: var(--color-zinc-500);
+  --line: var(--color-zinc-200);
+  --line-strong: var(--color-zinc-300);
+  --focus: var(--color-zinc-800);
+  --accent: #345568;
+  --link: var(--color-sky-800);
+  --link-hover: var(--color-sky-950);
+  --link-line: var(--color-sky-300);
+  --brand-soft: var(--color-yellow-100);
+  --atlas-mist: #e8eff2;
+  --emphasis: color-mix(in oklch, var(--color-violet-700), var(--color-violet-800));
+  --story-emphasis: var(--color-amber-700);
+
+  @variant dark {
+    color-scheme: dark;
+    --canvas: var(--color-zinc-950);
+    --surface: var(--color-zinc-900);
+    --surface-muted: var(--color-zinc-800);
+    --ink: var(--color-zinc-100);
+    --ink-muted: var(--color-zinc-300);
+    --ink-subtle: var(--color-zinc-400);
+    --line: --alpha(var(--color-white) / 10%);
+    --line-strong: --alpha(var(--color-white) / 20%);
+    --focus: var(--color-zinc-200);
+    --accent: #ffda1a;
+    --link: var(--color-sky-300);
+    --link-hover: var(--color-sky-200);
+    --link-line: var(--color-sky-700);
+    --brand-soft: var(--color-yellow-950);
+    --atlas-mist: #1a2a33;
+    --emphasis: var(--color-violet-300);
+    --story-emphasis: var(--color-amber-400);
+  }
 }
 
 @theme inline {
+  /* Brand colors: the same in both themes. */
   --color-brand: #ffda1a;
-  --color-brand-action: var(--color-brand);
-  --color-brand-soft: var(--color-yellow-100);
   --color-atlas: #345568;
-  --color-emphasis: color-mix(in oklch, var(--color-violet-700), var(--color-violet-800));
-  --color-story-emphasis: var(--color-amber-700);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-atlas-deep: #203e50;
+  --color-atlas-glow: #426678;
+
+  /* Theme colors: switch between light and dark. */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-focus: var(--focus);
+  --color-accent: var(--accent);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-link-line: var(--link-line);
+  --color-brand-soft: var(--brand-soft);
+  --color-atlas-mist: var(--atlas-mist);
+  --color-emphasis: var(--emphasis);
+  --color-story-emphasis: var(--story-emphasis);
+
   --font-sans: var(--font-inter, Inter, sans-serif);
   --font-sans--font-feature-settings: "cv11";
   --font-serif: var(--font-fraunces), Georgia, serif;
   --font-mono: "Courier New", monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 @layer components {
@@ -41,136 +103,5 @@
       height: 1rem;
       width: 1rem;
     }
-  }
-
-  .poi-dialog-content > :first-child {
-    margin-top: 0;
-  }
-
-  .poi-dialog-content h2,
-  .poi-dialog-content h3,
-  .poi-dialog-content h4 {
-    color: var(--color-zinc-900);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0;
-  }
-
-  .poi-dialog-content h2 {
-    margin: calc(var(--spacing) * 7) 0 calc(var(--spacing) * 3);
-    border: 1px solid var(--poi-section-border, var(--color-zinc-200));
-    border-left: 4px solid var(--poi-section-accent, var(--color-zinc-500));
-    border-radius: var(--radius-lg);
-    background: var(--poi-section-bg, var(--color-zinc-100));
-    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3.5);
-    font-size: var(--text-xl);
-    line-height: var(--leading-tight);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n + 1) {
-    --poi-section-bg: var(--color-amber-100);
-    --poi-section-border: var(--color-amber-200);
-    --poi-section-accent: var(--color-amber-700);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n + 2) {
-    --poi-section-bg: var(--color-green-100);
-    --poi-section-border: var(--color-green-200);
-    --poi-section-accent: var(--color-green-700);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n + 3) {
-    --poi-section-bg: var(--color-sky-100);
-    --poi-section-border: var(--color-sky-200);
-    --poi-section-accent: var(--color-sky-700);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n + 4) {
-    --poi-section-bg: var(--color-pink-100);
-    --poi-section-border: var(--color-pink-200);
-    --poi-section-accent: var(--color-pink-700);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n + 5) {
-    --poi-section-bg: var(--color-violet-100);
-    --poi-section-border: var(--color-violet-200);
-    --poi-section-accent: var(--color-violet-700);
-  }
-
-  .poi-dialog-content h2:nth-of-type(6n) {
-    --poi-section-bg: var(--color-orange-100);
-    --poi-section-border: var(--color-orange-200);
-    --poi-section-accent: var(--color-orange-700);
-  }
-
-  .poi-dialog-content h3 {
-    margin: calc(var(--spacing) * 5.5) 0 calc(var(--spacing) * 2);
-    font-size: var(--text-lg);
-    line-height: 1.4;
-  }
-
-  .poi-dialog-content h4 {
-    margin: calc(var(--spacing) * 4.5) 0 calc(var(--spacing) * 1.5);
-    font-size: var(--text-base);
-    line-height: 1.4;
-  }
-
-  .poi-dialog-content p {
-    margin: calc(var(--spacing) * 3) 0;
-  }
-
-  .poi-dialog-content ul {
-    margin: calc(var(--spacing) * 3) 0;
-    padding-left: calc(var(--spacing) * 5);
-    list-style: disc;
-  }
-
-  .poi-dialog-content li {
-    margin: calc(var(--spacing) * 2) 0;
-    padding-left: calc(var(--spacing) * 0.5);
-  }
-
-  .poi-dialog-content a {
-    color: var(--color-sky-800);
-    font-weight: var(--font-weight-semibold);
-    text-decoration: underline;
-    text-decoration-color: var(--color-sky-300);
-    text-underline-offset: 3px;
-  }
-
-  .poi-dialog-content em {
-    color: var(--color-zinc-600);
-  }
-
-  .poi-dialog-content code {
-    border: 1px solid var(--color-zinc-200);
-    border-radius: var(--radius-sm);
-    background: var(--color-zinc-100);
-    padding: 1px calc(var(--spacing) * 1);
-    color: var(--color-zinc-900);
-    font-size: 0.8em;
-  }
-
-  .poi-dialog-content blockquote {
-    margin: calc(var(--spacing) * 4) 0;
-    border-left: 3px solid var(--color-amber-600);
-    background: var(--color-amber-50);
-    padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3.5);
-    color: var(--color-zinc-700);
-  }
-
-  .poi-dialog-content .poi-callout {
-    margin: calc(var(--spacing) * 4.5) 0;
-    border: 1px solid var(--color-orange-200);
-    border-left: 4px solid var(--color-orange-700);
-    border-radius: var(--radius-lg);
-    background: var(--color-orange-50);
-    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3.5);
-    color: var(--color-orange-950);
-  }
-
-  .poi-dialog-content .poi-callout-title {
-    margin: 0 0 calc(var(--spacing) * 1.5);
-    color: var(--color-orange-900);
-    font-weight: var(--font-weight-bold);
   }
 }

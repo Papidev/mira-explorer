@@ -30,7 +30,7 @@ export const MapShowcase = () => (
       <Link
         href="/rome"
         aria-label="Explore Rome on the map"
-        className="block cursor-pointer overflow-x-auto rounded-2xl border border-zinc-900/10 bg-white shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800"
+        className="border-line bg-surface focus-visible:outline-focus block cursor-pointer overflow-x-auto rounded-2xl border shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         <Image
           src="/rome-map-showcase-live-ara-pacis.webp"
@@ -41,13 +41,13 @@ export const MapShowcase = () => (
           className="h-auto w-full min-w-180"
         />
       </Link>
-      <figcaption className="mt-3 text-right text-xs/5 text-zinc-500">
+      <figcaption className="text-ink-subtle mt-3 text-right text-xs/5">
         Map: OpenFreeMap · © OpenMapTiles ·{" "}
         <a
           href="https://www.openstreetmap.org/copyright"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline decoration-zinc-300 underline-offset-2 hover:text-zinc-800"
+          className="decoration-line-strong hover:text-ink underline underline-offset-2"
         >
           OpenStreetMap contributors ↗
         </a>

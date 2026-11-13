@@ -9,8 +9,10 @@ import {
   type PoiCategory,
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
+import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 
-const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const mapStyleUrl = (isDark: boolean) =>
+  `https://tiles.openfreemap.org/styles/${isDark ? "dark" : "liberty"}`;
 const PREVIEW_CLOSE_DELAY_MS = 180;
 
 export type MapView = {
@@ -62,6 +64,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let activePreviewPoiId: string | null = null;
   let previewCloseTimeout: ReturnType<typeof setTimeout> | null = null;
   let isLoaded = false;
+  let unsubscribeFromTheme: (() => void) | null = null;
   let pendingPois: Poi[] | null = null;
   let categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS;
   let selectedCategories: PoiCategory[] | undefined;
@@ -291,12 +294,14 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
       map = new maplibregl.Map({
         container,
-        style: MAP_STYLE_URL,
+        style: mapStyleUrl(isDarkTheme()),
         center: initialView.center,
         zoom: initialView.zoom,
         minZoom: 9,
         maxZoom: 21,
       });
+      // Markers and the popup are DOM overlays, so they survive a style swap.
+      unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
 
       const navigationControl = new maplibregl.NavigationControl();
       const zoomValue = document.createElement("output");
@@ -455,6 +460,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       onPreviewChange = handler;
     },
     destroy() {
+      unsubscribeFromTheme?.();
+      unsubscribeFromTheme = null;
       map?.getContainer().removeEventListener("click", handleMapClick);
       removeMarkers();
       previewContainer?.removeEventListener("focusin", handlePreviewFocusIn);

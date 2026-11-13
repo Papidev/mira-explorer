@@ -20,7 +20,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
         <path d="M48 880V320a272 272 0 0 1 544 0v560" stroke="currentColor" />
         <path d="M72 880V320a248 248 0 0 1 496 0v560" stroke="currentColor" />
       </svg>
-      <div className="relative aspect-4/5 max-h-[max(8rem,calc(100svh-26rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl bg-zinc-200 sm:aspect-5/4 lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
+      <div className="bg-surface-muted relative aspect-4/5 max-h-[max(8rem,calc(100svh-26rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl sm:aspect-5/4 lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
         <Image
           src={cover.mainImage.thumbnailUrl}
           alt={cover.poi.name}
@@ -44,19 +44,19 @@ export const HomeHeroStory = ({ cover }: Props) => (
 
       <Link
         href={`/rome?poi=${encodeURIComponent(cover.poi.id)}`}
-        className="group mt-4 block rounded-2xl border border-zinc-900/10 bg-white p-5 shadow-xl transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-800 sm:ml-auto sm:w-80 lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
+        className="group border-line bg-surface hover:bg-canvas focus-visible:outline-focus mt-4 block rounded-2xl border p-5 shadow-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 sm:ml-auto sm:w-80 lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
       >
-        <span className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+        <span className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">
           A story behind the place
         </span>
-        <span className="mt-2 block font-serif text-2xl/7 tracking-tight text-zinc-900">
+        <span className="text-ink mt-2 block font-serif text-2xl/7 tracking-tight">
           From mausoleum to fortress
         </span>
-        <span className="mt-2 block text-sm/6 text-zinc-600">
+        <span className="text-ink-muted mt-2 block text-sm/6">
           Built for Hadrian, the castle later became a papal refuge connected to the Vatican by a
           fortified passage.
         </span>
-        <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-zinc-900">
+        <span className="text-ink mt-3 inline-flex items-center gap-2 text-sm font-semibold">
           Read the Story{" "}
           <span className="bg-brand grid size-8 shrink-0 place-items-center rounded-full">
             <ArrowRightIcon
