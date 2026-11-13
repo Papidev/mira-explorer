@@ -166,7 +166,20 @@ export const PoiDetailsDrawer = ({
                 </button>
               ) : null}
               <h2 className="text-ink font-serif text-2xl/7 tracking-tight">
-                {selectedPersonId ? (person?.name ?? "Person") : (detail?.name ?? poi?.name)}
+                {selectedPersonId
+                  ? (person?.name ??
+                    (isPersonLoading
+                      ? (content?.relatedPeople.find(
+                          ({ personId, slug }) =>
+                            personId === selectedPersonId || slug === selectedPersonId,
+                        )?.name ?? (
+                          <span
+                            aria-hidden="true"
+                            className="bg-surface-muted block h-7 w-48 animate-pulse rounded-sm motion-reduce:animate-none"
+                          />
+                        ))
+                      : "Person"))
+                  : (detail?.name ?? poi?.name)}
               </h2>
               <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
             </div>
