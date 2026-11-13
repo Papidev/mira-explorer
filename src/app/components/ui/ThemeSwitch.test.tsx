@@ -10,7 +10,7 @@ afterEach(cleanup);
 describe("ThemeSwitch", () => {
   it("toggles between light and dark and remembers the choice", async () => {
     const user = userEvent.setup();
-    render(<ThemeSwitch tone="light" />);
+    render(<ThemeSwitch />);
 
     await user.click(screen.getByRole("button", { name: "Switch to dark theme" }));
     expect(document.documentElement.dataset.theme).toBe("dark");

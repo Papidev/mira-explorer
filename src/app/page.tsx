@@ -49,6 +49,9 @@ const Home = () => {
               <br />
               the places between.
             </p>
+            <div className="self-center">
+              <ThemeSwitch />
+            </div>
           </div>
         </div>
       </header>
@@ -323,10 +326,9 @@ const Home = () => {
           </Link>
           <p>Art, history, and the places between.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-baseline gap-3">
           <p>Mira is taking shape. Begin with Rome.</p>
           <AppVersion />
-          <ThemeSwitch tone="light" />
         </div>
       </footer>
     </div>

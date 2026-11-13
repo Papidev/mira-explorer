@@ -60,7 +60,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
         <span className="hidden lg:inline-flex [&>span]:text-white/80">
           <AppVersion />
         </span>
-        <ThemeSwitch tone="dark" />
+        <ThemeSwitch />
       </div>
     </div>
   </header>
