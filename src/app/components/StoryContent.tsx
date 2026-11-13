@@ -62,7 +62,7 @@ export const StoryContent = ({
   const text = useStoryText(content, history, Boolean(onOpenPerson));
 
   return (
-    <div className="space-y-6 text-base/7 text-zinc-800">
+    <div className="text-ink space-y-6 text-base/7">
       {content.textFormat === "markdown" ? (
         <StoryText
           {...text.introduction[0]}
@@ -81,17 +81,17 @@ export const StoryContent = ({
       {period ? (
         <dl className="bg-brand-soft grid gap-2 rounded-lg p-3 text-sm/6">
           <div>
-            <dt className="font-semibold text-zinc-950">Period</dt>
+            <dt className="text-ink font-semibold">Period</dt>
             <dd>{period}</dd>
           </div>
         </dl>
       ) : null}
       {history.length > 0 ? (
-        <section className="bg-brand-soft/40 rounded-xl px-4 py-3 ring-1 ring-yellow-950/5">
-          <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-yellow-800 uppercase">
+        <section className="bg-brand-soft/40 rounded-xl px-4 py-3 ring-1 ring-yellow-950/5 dark:ring-white/5">
+          <h3 className="flex items-baseline gap-2 text-lg/6 font-semibold tracking-wide text-yellow-800 uppercase dark:text-yellow-300">
             <span
               aria-hidden="true"
-              className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-yellow-800"
+              className="size-5 shrink-0 bg-current mask-[url(/icons/story/scroll.svg)] mask-contain mask-bottom mask-no-repeat text-yellow-800 dark:text-yellow-300"
             />
             History
           </h3>
@@ -101,15 +101,15 @@ export const StoryContent = ({
                 {index < history.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className="absolute top-2 left-1 h-full w-0.5 bg-yellow-200"
+                    className="absolute top-2 left-1 h-full w-0.5 bg-yellow-200 dark:bg-yellow-900"
                   />
                 ) : null}
                 <span
                   aria-hidden="true"
-                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-yellow-800" : "border-2 border-yellow-800 bg-yellow-50"}`}
+                  className={`absolute top-2 left-0 size-2.5 rounded-full ${time ? "bg-yellow-800 dark:bg-yellow-300" : "border-2 border-yellow-800 bg-yellow-50 dark:border-yellow-300 dark:bg-zinc-900"}`}
                 />
                 {time ? (
-                  <p className="text-sm/6 font-semibold text-yellow-800">
+                  <p className="text-sm/6 font-semibold text-yellow-800 dark:text-yellow-300">
                     {formatHistoricalTime(time)}
                   </p>
                 ) : null}
@@ -152,26 +152,26 @@ export const StoryContent = ({
         ))}
       />
       {content.relatedPeople.length > 0 ? (
-        <section className="rounded-xl bg-white px-4 py-3 ring-1 ring-sky-200">
-          <h3 className="text-lg/6 font-semibold tracking-wide text-zinc-950 uppercase">
+        <section className="bg-surface rounded-xl px-4 py-3 ring-1 ring-sky-200 dark:ring-sky-900">
+          <h3 className="text-ink text-lg/6 font-semibold tracking-wide uppercase">
             Related People
           </h3>
           <ul className="mt-3 space-y-3">
             {content.relatedPeople.map(({ name, personId }, index) => (
               <li
                 key={personId ?? `${name}-${index}`}
-                className="relative pl-5 before:absolute before:top-0 before:left-1 before:text-2xl before:leading-7 before:font-semibold before:text-sky-700 before:content-['•']"
+                className="relative pl-5 before:absolute before:top-0 before:left-1 before:text-2xl before:leading-7 before:font-semibold before:text-sky-700 before:content-['•'] dark:before:text-sky-400"
               >
                 {personId && onOpenPerson ? (
                   <button
                     type="button"
                     onClick={() => onOpenPerson(personId)}
-                    className="cursor-pointer font-semibold text-sky-800 underline decoration-sky-300 underline-offset-4 hover:text-sky-950"
+                    className="text-link decoration-link-line hover:text-link-hover cursor-pointer font-semibold underline underline-offset-4"
                   >
                     {name}
                   </button>
                 ) : (
-                  <span className="font-semibold text-zinc-950">{name}</span>
+                  <span className="text-ink font-semibold">{name}</span>
                 )}
               </li>
             ))}

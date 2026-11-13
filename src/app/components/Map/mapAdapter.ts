@@ -9,8 +9,20 @@ import {
   type PoiCategory,
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
+import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 
-const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const mapStyleUrl = (isDark: boolean) =>
+  `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
+
+/** Fiord's street and place names are too faint; lift every label to near-white. */
+const brightenDarkLabels = (map: MapLibreMap) => {
+  for (const layer of map.getStyle().layers) {
+    if (layer.type !== "symbol" || !layer.layout?.["text-field"]) continue;
+    map.setPaintProperty(layer.id, "text-color", "hsl(210, 30%, 88%)");
+    map.setPaintProperty(layer.id, "text-halo-color", "hsl(222, 35%, 14%)");
+    map.setPaintProperty(layer.id, "text-halo-width", 1.5);
+  }
+};
 const PREVIEW_CLOSE_DELAY_MS = 180;
 
 export type MapView = {
@@ -62,6 +74,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let activePreviewPoiId: string | null = null;
   let previewCloseTimeout: ReturnType<typeof setTimeout> | null = null;
   let isLoaded = false;
+  let unsubscribeFromTheme: (() => void) | null = null;
   let pendingPois: Poi[] | null = null;
   let categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS;
   let selectedCategories: PoiCategory[] | undefined;
@@ -99,6 +112,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     popupElement?.removeEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement?.removeEventListener("pointerleave", handlePreviewPointerLeave);
     popupElement?.removeEventListener("click", handlePreviewClick);
+    popupElement?.removeEventListener("wheel", handlePreviewWheel);
     previewPopup?.remove();
     if (activePreviewPoiId !== null) {
       onPreviewChange?.(null);
@@ -120,6 +134,11 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     if (!activePreviewPoiId) return;
     event.stopPropagation();
     openPoiDetails(activePreviewPoiId);
+  };
+  // MapLibre mounts popups outside the canvas container that owns scroll zoom.
+  const handlePreviewWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    map?.getCanvasContainer().dispatchEvent(new WheelEvent(event.type, event));
   };
   const handlePreviewFocusIn = () => cancelPreviewClose();
   const handlePreviewFocusOut = (event: FocusEvent) => {
@@ -154,6 +173,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     popupElement.addEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement.addEventListener("pointerleave", handlePreviewPointerLeave);
     popupElement.addEventListener("click", handlePreviewClick);
+    popupElement.addEventListener("wheel", handlePreviewWheel, { passive: false });
     const popupContent = popupElement.querySelector<HTMLElement>(".maplibregl-popup-content");
     popupElement.style.pointerEvents = "auto";
     if (popupContent) {
@@ -291,11 +311,16 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
       map = new maplibregl.Map({
         container,
-        style: MAP_STYLE_URL,
+        style: mapStyleUrl(isDarkTheme()),
         center: initialView.center,
         zoom: initialView.zoom,
         minZoom: 9,
         maxZoom: 21,
+      });
+      // Markers and the popup are DOM overlays, so they survive a style swap.
+      unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
+      map.on("style.load", () => {
+        if (map && isDarkTheme()) brightenDarkLabels(map);
       });
 
       const navigationControl = new maplibregl.NavigationControl();
@@ -455,6 +480,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       onPreviewChange = handler;
     },
     destroy() {
+      unsubscribeFromTheme?.();
+      unsubscribeFromTheme = null;
       map?.getContainer().removeEventListener("click", handleMapClick);
       removeMarkers();
       previewContainer?.removeEventListener("focusin", handlePreviewFocusIn);

@@ -25,35 +25,37 @@ export const Search = ({ pois, onSelect }: { pois: Poi[]; onSelect: (poi: Poi) =
       }}
       onClose={() => setQuery("")}
     >
-      <Label className="block text-sm font-semibold text-zinc-800">Search</Label>
+      <Label className="text-ink block text-sm font-semibold">Search</Label>
       <div className="relative mt-2">
         <MagnifyingGlassIcon
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400"
+          className="text-ink-subtle pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
         />
         <ComboboxInput
           autoComplete="off"
           placeholder="Search by name"
           displayValue={() => ""}
           onChange={(event) => setQuery(event.target.value)}
-          className="block min-h-11 w-full rounded-lg bg-white py-2.5 pr-3 pl-9 text-base text-zinc-900 outline-1 -outline-offset-1 outline-zinc-300 placeholder:text-zinc-400 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-700 sm:text-sm md:min-h-9 md:py-2"
+          className="bg-surface text-ink outline-line-strong placeholder:text-ink-subtle focus:outline-accent block min-h-11 w-full rounded-lg py-2.5 pr-3 pl-9 text-base outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 sm:text-sm md:min-h-9 md:py-2"
         />
       </div>
       <ComboboxOptions
         anchor="bottom start"
-        className="z-50 max-h-72 w-(--input-width) overflow-y-auto rounded-lg border border-zinc-200 bg-white p-1 shadow-lg [--anchor-gap:0.25rem] empty:invisible"
+        className="border-line bg-surface z-50 max-h-72 w-(--input-width) overflow-y-auto rounded-lg border p-1 shadow-lg [--anchor-gap:0.25rem] empty:invisible"
       >
         {query.trim() && !matches.length && (
-          <p className="px-3 py-3 text-sm text-zinc-500">No places match your search.</p>
+          <p className="text-ink-subtle px-3 py-3 text-sm">No places match your search.</p>
         )}
         {matches.map((poi) => (
           <ComboboxOption
             key={poi.id}
             value={poi}
-            className="group cursor-pointer rounded-md px-3 py-2.5 text-zinc-900 select-none data-focus:bg-yellow-100 data-focus:outline-hidden"
+            className="group text-ink data-focus:bg-brand-soft cursor-pointer rounded-md px-3 py-2.5 select-none data-focus:outline-hidden"
           >
             <span className="block text-sm font-medium">{poi.name}</span>
-            {poi.address && <span className="mt-1 block text-xs text-zinc-500">{poi.address}</span>}
+            {poi.address && (
+              <span className="text-ink-subtle mt-1 block text-xs">{poi.address}</span>
+            )}
           </ComboboxOption>
         ))}
       </ComboboxOptions>

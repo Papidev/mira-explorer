@@ -29,7 +29,7 @@ export const Thumbnails = ({
           aria-label={`View photo ${i + 1}`}
           aria-pressed={i === index}
           onClick={() => onSelect(i)}
-          className="relative h-16 w-24 shrink-0 cursor-pointer overflow-hidden rounded-lg opacity-50 ring-2 ring-transparent ring-offset-2 ring-offset-stone-100 first:ml-auto last:mr-auto hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-900 aria-pressed:opacity-100 aria-pressed:ring-zinc-900"
+          className="ring-offset-surface-muted focus-visible:outline-focus aria-pressed:ring-focus relative h-16 w-24 shrink-0 cursor-pointer overflow-hidden rounded-lg opacity-50 ring-2 ring-transparent ring-offset-2 first:ml-auto last:mr-auto hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 aria-pressed:opacity-100"
         >
           <GalleryImage src={image.thumbnailUrl} alt="" variant="thumbnail" />
         </button>

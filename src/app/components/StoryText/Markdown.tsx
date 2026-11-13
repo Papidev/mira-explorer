@@ -51,18 +51,18 @@ export const Markdown = ({
                     }
                   : undefined
               }
-              className="cursor-pointer font-semibold text-sky-800 underline decoration-sky-300 underline-offset-4 hover:text-sky-950 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800"
+              className="text-link decoration-link-line hover:text-link-hover focus-visible:outline-link cursor-pointer font-semibold underline underline-offset-4 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               {children}
             </a>
           );
         },
-        h1: ({ children }) => <h4 className="text-lg font-semibold text-zinc-950">{children}</h4>,
-        h2: ({ children }) => <h4 className="text-lg font-semibold text-zinc-950">{children}</h4>,
-        h3: ({ children }) => <h4 className="font-semibold text-zinc-950">{children}</h4>,
-        h4: ({ children }) => <h4 className="font-semibold text-zinc-950">{children}</h4>,
-        h5: ({ children }) => <h5 className="font-semibold text-zinc-950">{children}</h5>,
-        h6: ({ children }) => <h6 className="font-semibold text-zinc-950">{children}</h6>,
+        h1: ({ children }) => <h4 className="text-ink text-lg font-semibold">{children}</h4>,
+        h2: ({ children }) => <h4 className="text-ink text-lg font-semibold">{children}</h4>,
+        h3: ({ children }) => <h4 className="text-ink font-semibold">{children}</h4>,
+        h4: ({ children }) => <h4 className="text-ink font-semibold">{children}</h4>,
+        h5: ({ children }) => <h5 className="text-ink font-semibold">{children}</h5>,
+        h6: ({ children }) => <h6 className="text-ink font-semibold">{children}</h6>,
       }}
     >
       {text}
@@ -71,7 +71,7 @@ export const Markdown = ({
   return inline ? (
     rendered
   ) : (
-    <div className="prose prose-zinc prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-sky-800 prose-a:decoration-sky-300 prose-a:underline-offset-4 prose-a:hover:text-sky-950 prose-blockquote:border-brand prose-li:marker:text-zinc-700 max-w-none text-base/7 text-zinc-800 [&_ul>li]:marker:text-2xl">
+    <div className="prose prose-zinc dark:prose-invert prose-headings:font-serif prose-headings:tracking-tight prose-a:cursor-pointer prose-a:text-link prose-a:decoration-link-line prose-a:underline-offset-4 prose-a:hover:text-link-hover prose-blockquote:border-brand prose-li:marker:text-ink-muted text-ink max-w-none text-base/7 [&_ul>li]:marker:text-2xl">
       {rendered}
     </div>
   );

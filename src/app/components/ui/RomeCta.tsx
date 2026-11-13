@@ -27,7 +27,7 @@ export const RomeCta = ({
   <Link
     href="/rome"
     onClick={() => track("rome_cta_click", { placement })}
-    className={`group bg-brand text-atlas focus-visible:outline-brand inline-flex cursor-pointer items-center rounded-full font-semibold whitespace-nowrap transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 ${sizes[size]} ${className}`}
+    className={`group bg-brand text-atlas focus-visible:outline-accent inline-flex cursor-pointer items-center rounded-full font-semibold whitespace-nowrap transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 ${sizes[size]} ${className}`}
   >
     <span className="inline-flex items-center gap-5">
       {label}

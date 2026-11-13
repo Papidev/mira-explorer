@@ -11,10 +11,9 @@ const sizes = {
 } as const;
 
 const tones = {
-  primary:
-    "bg-brand-action text-zinc-950 hover:bg-brand focus-visible:outline-zinc-800 dark:bg-brand-action dark:text-zinc-950 dark:hover:bg-brand dark:focus-visible:outline-brand",
+  primary: "bg-brand text-zinc-950 focus-visible:outline-focus",
   secondary:
-    "border border-black/15 bg-white text-black hover:bg-black/3 focus-visible:outline-black dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:focus-visible:outline-white",
+    "border border-line-strong bg-surface text-ink hover:bg-surface-muted focus-visible:outline-focus",
   danger:
     "bg-red-700 text-white hover:bg-red-600 focus-visible:outline-red-700 dark:bg-red-600 dark:hover:bg-red-500 dark:focus-visible:outline-red-600",
 } as const;
@@ -55,7 +54,7 @@ export const IconButton = ({
       <span
         id={tooltipId}
         role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 rounded bg-neutral-900 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-md transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 rounded bg-zinc-900 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-md transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
       >
         {tooltip}
       </span>

@@ -14,7 +14,7 @@ export const HomeNumbers = async () => {
       className="border-brand grid gap-6 border-y-2 py-10 sm:py-14 lg:grid-cols-[1fr_2fr] lg:gap-16"
     >
       <div>
-        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+        <p className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Mira in numbers
         </p>
         <h2
@@ -33,14 +33,14 @@ export const HomeNumbers = async () => {
             { value: city.peopleCount ?? 0, label: "Historical figures to discover" },
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col-reverse gap-2">
-              <dt className="text-sm/6 text-zinc-600">{label}</dt>
-              <dd className="text-atlas font-serif text-4xl/none tracking-tight tabular-nums sm:text-5xl/none">
+              <dt className="text-ink-muted text-sm/6">{label}</dt>
+              <dd className="text-accent font-serif text-4xl/none tracking-tight tabular-nums sm:text-5xl/none">
                 {value.toLocaleString("en")}
               </dd>
             </div>
           ))}
         </dl>
-        <p className="mt-8 text-base/7 text-zinc-600">
+        <p className="text-ink-muted mt-8 text-base/7">
           The entire city is there, and you choose what to see. Use the filters to follow your
           interests, one place at a time.
         </p>

@@ -16,8 +16,8 @@ export const Toggle = ({
   onChange: (checked: boolean) => void;
 }) => (
   <div className="flex items-center justify-between gap-3">
-    <div className="group outline-atlas has-checked:bg-atlas relative inline-flex w-11 shrink-0 rounded-full bg-gray-200 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 transition-colors duration-200 ease-in-out has-focus-visible:outline-2 dark:bg-white/5 dark:inset-ring-white/10 dark:outline-blue-300 dark:has-checked:bg-blue-300">
-      <span className="size-5 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5" />
+    <div className="group outline-accent has-checked:bg-atlas relative inline-flex w-11 shrink-0 rounded-full bg-zinc-200 p-0.5 inset-ring inset-ring-zinc-900/5 outline-offset-2 transition-colors duration-200 ease-in-out has-focus-visible:outline-2 dark:bg-white/5 dark:inset-ring-white/10 dark:outline-blue-300 dark:has-checked:bg-blue-300">
+      <span className="bg-surface size-5 rounded-full shadow-xs ring-1 ring-zinc-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5" />
       <input
         id={id}
         name={name}
@@ -30,10 +30,10 @@ export const Toggle = ({
       />
     </div>
     <div className="text-sm">
-      <label id={`${id}-label`} htmlFor={id} className="cursor-pointer font-medium text-gray-900">
+      <label id={`${id}-label`} htmlFor={id} className="text-ink cursor-pointer font-medium">
         {label}
       </label>{" "}
-      <span id={`${id}-description`} className="text-gray-500">
+      <span id={`${id}-description`} className="text-ink-subtle">
         {description}
       </span>
     </div>

@@ -1,5 +1,29 @@
 # mira-explorer
 
+## 0.24.0
+
+### Minor Changes
+
+- Add a dark theme that follows the system setting, with a sun/moon switch in the homepage and Rome headers. The Rome map uses a dark blue basemap with readable labels in dark mode, and loading spinners use Atlas Blue on light surfaces and Mira Yellow on dark ones.
+
+## 0.23.3
+
+### Patch Changes
+
+- Show the person name, or a quiet title placeholder, instead of the generic "Person" heading while a person loads.
+
+## 0.23.2
+
+### Patch Changes
+
+- Keep mouse-wheel zoom working on the Rome map while the pointer is over a POI or its preview popover.
+
+## 0.23.1
+
+### Patch Changes
+
+- Refresh the homepage map screenshot with the current Rome map, header, and catalog.
+
 ## 0.23.0
 
 ### Minor Changes
