@@ -4,10 +4,11 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
+import { RomeCta } from "@/app/components/ui/RomeCta";
 
 export const MapShowcase = () => (
-  <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
-    <div className="text-ink mb-7 flex flex-wrap items-end justify-between gap-5">
+  <section aria-labelledby="map-showcase-title" className="pt-6 pb-8 sm:pt-8 sm:pb-16">
+    <div className="text-ink flex flex-wrap items-end justify-between gap-5 sm:mb-7">
       <div className="min-w-0 flex-1 basis-2xl">
         <p className="text-ink-muted text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Beyond the familiar
@@ -21,9 +22,16 @@ export const MapShowcase = () => (
           overlooked places, and corners better known to locals. Open a marker and discover a reason
           to look closer.
         </p>
+        {/* Phones get a direct link: the wide screenshot would only scroll sideways there. */}
+        <RomeCta
+          placement="map-link"
+          label="Open the live map"
+          size="small"
+          className="mt-5 sm:hidden"
+        />
       </div>
     </div>
-    <figure>
+    <figure className="max-sm:hidden">
       <Link
         href="/rome"
         aria-label="Explore Rome on the map"
