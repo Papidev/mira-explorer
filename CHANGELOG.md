@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.23.3
+
+### Patch Changes
+
+- Show the person name, or a quiet title placeholder, instead of the generic "Person" heading while a person loads.
+
 ## 0.23.2
 
 ### Patch Changes
