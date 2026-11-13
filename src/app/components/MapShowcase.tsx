@@ -1,6 +1,9 @@
+"use client";
+
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 
 export const MapShowcase = () => (
   <section aria-labelledby="map-showcase-title" className="pt-6 pb-12 sm:pt-8 sm:pb-16">
@@ -19,18 +22,13 @@ export const MapShowcase = () => (
           to look closer.
         </p>
       </div>
-      <Link
-        href="/rome"
-        className="focus-visible:outline-accent inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-      >
-        Open the map <ArrowRightIcon className="size-4" aria-hidden="true" />
-      </Link>
     </div>
     <figure>
       <Link
         href="/rome"
         aria-label="Explore Rome on the map"
-        className="border-line bg-surface focus-visible:outline-focus block cursor-pointer overflow-x-auto rounded-2xl border shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+        onClick={() => track("rome_cta_click", { placement: "map-screenshot" })}
+        className="group border-line bg-surface focus-visible:outline-focus relative block cursor-pointer overflow-x-auto rounded-2xl border shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         <Image
           src="/rome-map-showcase-v0-23-ara-pacis.webp"
@@ -40,6 +38,13 @@ export const MapShowcase = () => (
           unoptimized
           className="h-auto w-full min-w-180"
         />
+        <span
+          aria-hidden="true"
+          className="bg-brand text-atlas absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg transition-colors group-hover:bg-yellow-300"
+        >
+          Open the live map
+          <ArrowRightIcon className="size-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-1" />
+        </span>
       </Link>
       <figcaption className="text-ink-subtle mt-3 text-right text-xs/5">
         Map: OpenFreeMap · © OpenMapTiles ·{" "}

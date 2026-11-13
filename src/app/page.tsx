@@ -16,6 +16,7 @@ import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
 import { HomeCuriosity } from "@/app/components/HomeCuriosity";
 import { HomeNumbers } from "@/app/components/HomeNumbers";
+import { RomeCta } from "@/app/components/ui/RomeCta";
 import { Suspense } from "react";
 
 const Home = () => {
@@ -118,20 +119,7 @@ const Home = () => {
                 <strong className="text-accent font-semibold">Mira begins in Rome.</strong> More
                 cities will follow.
               </p>
-              <Link
-                href="/rome"
-                className="group bg-brand text-atlas focus-visible:outline-accent mt-6 inline-flex items-center gap-6 rounded-full px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4"
-              >
-                <span className="inline-flex items-center gap-3">
-                  Explore Rome
-                  <Image src="/icons/cities/rome-blue.svg" alt="" width={36} height={24} />
-                </span>
-                <ArrowRightIcon
-                  className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </Link>
+              <RomeCta placement="hero" className="mt-6" />
               <p className="text-ink-subtle mt-4 text-sm">From your doorstep, or from anywhere.</p>
             </div>
           </section>
@@ -314,6 +302,23 @@ const Home = () => {
             )}
           </div>
         </div>
+
+        <section
+          aria-labelledby="final-cta-title"
+          className="bg-atlas-deep text-white [--color-accent:var(--color-brand)]"
+        >
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
+            <div>
+              <h2 id="final-cta-title" className="font-serif text-3xl tracking-tight sm:text-4xl">
+                Rome is waiting.
+              </h2>
+              <p className="mt-3 max-w-md text-base/7 text-white/85">
+                Open the map and follow the first story that catches your eye.
+              </p>
+            </div>
+            <RomeCta placement="final" />
+          </div>
+        </section>
       </main>
 
       <footer className="border-brand text-ink-subtle mx-auto flex max-w-7xl flex-wrap items-baseline justify-between gap-3 border-t-2 px-5 py-6 text-xs sm:px-8 lg:px-12">

@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { RomeCta } from "@/app/components/ui/RomeCta";
 import { visitorContent } from "@/server/visitorContent";
 
 // Same online counts as the Rome map header. Hidden when the online read fails.
@@ -43,6 +44,7 @@ export const HomeNumbers = async () => {
           The entire city is there, and you choose what to see. Use the filters to follow your
           interests, one place at a time.
         </p>
+        <RomeCta placement="numbers" label="Start with Rome" className="mt-6" />
       </div>
     </section>
   );
