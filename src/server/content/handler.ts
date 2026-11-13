@@ -29,6 +29,36 @@ export const createContentHandler =
       authenticateContentRequest(request);
       const { segments } = await context.params;
       const [resource, identity, action] = segments;
+      if (
+        resource === "catalogs" &&
+        segments.length === 3 &&
+        ["inventory", "stories"].includes(action)
+      ) {
+        if (request.method !== "GET")
+          return contentJson(
+            { error: { code: "invalid", message: "This method is not supported." } },
+            405,
+            { Allow: "GET" },
+          );
+        const city = parseContentInput(publishedPoiSummarySchema.shape.city, identity);
+        if (action === "inventory")
+          return contentJson(await getRepository().getAdminInventory(city));
+        const parameters = new URL(request.url).searchParams;
+        const ids = parseContentInput(
+          z
+            .array(z.uuid())
+            .min(1)
+            .max(25)
+            .refine((values) => new Set(values).size === values.length),
+          parameters.get("ids")?.split(","),
+        );
+        if (
+          [...parameters.keys()].some((key) => key !== "ids") ||
+          parameters.getAll("ids").length !== 1
+        )
+          throw new ContentHttpError(400, "invalid", "Expected one ids query parameter.");
+        return contentJson({ stories: await getRepository().getAdminStories(city, ids) });
+      }
       if (resource === "type-rules" && segments.length === 1) {
         if (request.method === "GET")
           return contentJson(await getRepository().getTypeCategoryRules());

@@ -115,6 +115,109 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         expectedStateDigest: (await repository.getTypeCategoryRules()).stateDigest,
       });
 
+    it("reads private catalog-only POIs and complete saved Stories without exposing incomplete work to visitors", async () => {
+      const saved = example();
+      const unpublished = example();
+      const catalog = await prepare([saved, unpublished]);
+      await repository.saveStory(saved);
+      const inventory = await repository.getAdminInventory("rome");
+      expect(inventory.pois).toHaveLength(2);
+      expect(inventory.pois.find(({ id }) => id === saved.detail.id)).toMatchObject({
+        publicationId: saved.detail.publicationId,
+        relatedPeople: [
+          { personId: saved.people[0].person.id, profileVersion: saved.people[0].profileVersion },
+        ],
+      });
+      expect(
+        inventory.pois.find(({ id }) => id === unpublished.detail.id)?.publicationId,
+      ).toBeNull();
+      const stories = await repository.getAdminStories("rome", [
+        saved.detail.id,
+        unpublished.detail.id,
+      ]);
+      expect(stories).toHaveLength(1);
+      expect(stories[0]).toMatchObject({
+        detail: { id: saved.detail.id, story: saved.detail.story },
+        generation: saved.generation,
+        people: [
+          { person: { id: saved.people[0].person.id }, generation: saved.people[0].generation },
+        ],
+      });
+      expect(await repository.getAdminStories("milan", [saved.detail.id])).toEqual([]);
+      expect((await repository.getCity("rome")).pois.map(({ id }) => id)).toEqual([
+        saved.detail.id,
+      ]);
+      await repository.synchronizeCatalog({
+        ...catalog,
+        revision: randomUUID(),
+        expectedRevision: catalog.revision,
+        pois: catalog.pois.filter(({ id }) => id === saved.detail.id),
+      });
+      expect((await repository.getAdminInventory("rome")).pois.map(({ id }) => id)).toEqual([
+        saved.detail.id,
+      ]);
+    });
+
+    it("invalidates private read versions after a shared Person changes without changing its Story publication ID", async () => {
+      const saved = example();
+      await prepare([saved]);
+      await repository.saveStory(saved);
+      const profileVersion = randomUUID();
+      await repository.savePerson({
+        ...saved.people[0],
+        profileVersion,
+        expectedProfileVersion: saved.people[0].profileVersion,
+      });
+      const inventory = await repository.getAdminInventory("rome");
+      expect(inventory.pois[0]).toMatchObject({
+        publicationId: saved.detail.publicationId,
+        relatedPeople: [{ profileVersion }],
+      });
+      expect(
+        (await repository.getAdminStories("rome", [saved.detail.id]))[0].people[0].profileVersion,
+      ).toBe(profileVersion);
+    });
+
+    it("authenticates private inventory and bounded Story reads with no-store responses", async () => {
+      const saved = example();
+      await prepare([saved]);
+      await repository.saveStory(saved);
+      const handle = createContentHandler(() => repository);
+      const read = async (
+        action: string,
+        query = "",
+        authorization = "Bearer integration-test-token-with-at-least-32-bytes",
+      ) => {
+        const input = new Request(
+          `http://localhost/api/admin/content/v1/catalogs/rome/${action}${query}`,
+          {
+            headers: authorization ? { authorization } : {},
+          },
+        );
+        return handle(input, {
+          params: Promise.resolve({ segments: ["catalogs", "rome", action] }),
+        });
+      };
+      for (const action of ["inventory", "stories"]) {
+        const query = action === "stories" ? `?ids=${saved.detail.id}` : "";
+        expect((await read(action, query, "")).status).toBe(401);
+        const response = await read(action, query);
+        expect(response.status).toBe(200);
+        expect(response.headers.get("cache-control")).toBe("no-store");
+        const value = await response.json();
+        expect(action === "inventory" ? value.pois : value.stories).toHaveLength(1);
+      }
+      for (const query of [
+        "",
+        "?ids=bad",
+        `?ids=${saved.detail.id},${saved.detail.id}`,
+        `?ids=${saved.detail.id}&extra=1`,
+        `?ids=${saved.detail.id}&ids=${saved.detail.id}`,
+        `?ids=${Array.from({ length: 26 }, () => randomUUID()).join(",")}`,
+      ])
+        expect((await read("stories", query)).status).toBe(400);
+    });
+
     it("persists automatic origin, reason and new definitions atomically with multi-POI assignments", async () => {
       const writes = [example(), example()];
       writes[1].detail.id = randomUUID();

@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.23.0
+
+### Minor Changes
+
+- Add authenticated Admin inventory and saved Story reads, including Source metadata, generation provenance and versioned shared Person relationships, without requiring local domain-content files for browsing.
+
 ## 0.22.12
 
 ### Patch Changes

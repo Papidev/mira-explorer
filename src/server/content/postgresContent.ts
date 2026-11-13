@@ -1,4 +1,5 @@
 // Adapted from Papidev/mira-admin, commit 2b7b203cb2ba35dadd5a36d6b0ea6eb1bf971b1d.
+import { adminSavedStorySchema } from "./adminReads";
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { derivePoiCategories, expandCategorySelection } from "./categoryInterpretation";
@@ -78,6 +79,17 @@ export const catalogBaselineSchema = z
     pois: z.array(catalogPoiSchema.extend({ inputRevision: z.uuid().toLowerCase() })),
   })
   .strict();
+
+export const adminInventorySchema = catalogBaselineSchema.extend({
+  pois: z.array(
+    catalogBaselineSchema.shape.pois.element.extend({
+      publicationId: z.uuid().nullable(),
+      relatedPeople: z.array(
+        z.object({ personId: z.string(), wikidataId: z.string(), profileVersion: z.uuid() }),
+      ),
+    }),
+  ),
+});
 
 export const personBaselineSchema = z
   .object({
@@ -1289,6 +1301,46 @@ export const createPostgresContent = (pool: Pool) => ({
       [publishedPoiSummarySchema.shape.city.parse(city)],
     );
     return catalogBaselineSchema.parse({ city, ...result });
+  },
+
+  getAdminInventory: async (city: string) => {
+    const {
+      rows: [result],
+    } = await pool.query(
+      `SELECT (SELECT revision FROM content.city_catalogs WHERE city = $1) AS revision,
+       COALESCE(jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+         'id', p.id, 'name', p.name, 'coordinates', jsonb_build_object('lat', p.latitude, 'lng', p.longitude),
+         'wikidataId', p.wikidata_id, 'osmIds', p.osm_ids, 'wikipediaPages', p.wikipedia_pages,
+         'inputRevision', p.input_revision)) || jsonb_build_object('publicationId', s.publication_id,
+           'relatedPeople', COALESCE((SELECT jsonb_agg(jsonb_build_object('personId', r.person_id,
+             'wikidataId', person.wikidata_id, 'profileVersion', person.profile_version) ORDER BY r.position)
+             FROM content.poi_people r JOIN content.people person ON person.id = r.person_id
+             WHERE r.poi_id = p.id), '[]'::jsonb)) ORDER BY p.id), '[]'::jsonb) AS pois
+       FROM content.pois p LEFT JOIN content.published_stories s ON s.poi_id = p.id
+       WHERE p.city = $1 AND p.removed_at IS NULL`,
+      [publishedPoiSummarySchema.shape.city.parse(city)],
+    );
+    return adminInventorySchema.parse({ city, ...result });
+  },
+
+  getAdminStories: async (city: string, ids: string[]) => {
+    const { rows } = await pool.query(
+      `SELECT jsonb_build_object('detail', story.response, 'generation', saved.generation,
+         'people', COALESCE((SELECT jsonb_agg(jsonb_build_object('personId', person.id,
+           'wikidataId', person.wikidata_id, 'profileVersion', person.profile_version,
+           'person', profile.response || jsonb_strip_nulls(jsonb_build_object('image', person.image)),
+           'generation', person.generation) ORDER BY relation.position)
+           FROM content.poi_people relation JOIN content.people person ON person.id = relation.person_id
+           JOIN content.visitor_people profile ON profile.id = person.id
+           WHERE relation.poi_id = story.id), '[]'::jsonb)) AS response
+       FROM content.visitor_stories story JOIN content.published_stories saved ON saved.poi_id = story.id
+       WHERE story.city = $1 AND story.id = ANY($2::uuid[]) ORDER BY story.id`,
+      [
+        publishedPoiSummarySchema.shape.city.parse(city),
+        z.array(z.uuid()).min(1).max(25).parse(ids),
+      ],
+    );
+    return rows.map(({ response }) => adminSavedStorySchema.parse(response));
   },
 
   getPoiBaseline: async (poiId: string) => {
