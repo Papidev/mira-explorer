@@ -44,7 +44,7 @@ export const HomeNumbers = async () => {
           The entire city is there, and you choose what to see. Use the filters to follow your
           interests, one place at a time.
         </p>
-        <RomeCta placement="numbers" label="Start exploring" className="mt-6" />
+        <RomeCta placement="numbers" label="Start with Rome" className="mt-6" />
       </div>
     </section>
   );
