@@ -434,3 +434,20 @@ describe("category catalog HTTP validation", () => {
     expect((await request(["categories"], input).response).status).toBe(400);
   });
 });
+
+describe("private Admin read validation", () => {
+  it.each(["inventory", "stories"])("authenticates %s before database access", async (action) => {
+    vi.stubEnv("CONTENT_API_TOKEN", token);
+    expect(
+      (await request(["catalogs", "rome", action], undefined, { headers: {} }).response).status,
+    ).toBe(401);
+    const response = await request(["catalogs", "rome", action], {}, { method: "PUT" }).response;
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("GET");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+  it("rejects missing IDs before accessing the database", async () => {
+    vi.stubEnv("CONTENT_API_TOKEN", token);
+    expect((await request(["catalogs", "rome", "stories"]).response).status).toBe(400);
+  });
+});

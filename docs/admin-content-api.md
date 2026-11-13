@@ -326,3 +326,35 @@ boundary. Tests use disposable data. Apply schema 005 with separate approval, de
 Explorer, then Admin. Schema 005 was applied and independently verified on
 2026-10-31, with all 11 existing content tables unchanged. No production category
 deletion was performed. The owner deferred live functional verification to the next suitable opportunity.
+
+## Private Admin catalog and saved-content reads
+
+Explorer #228 adds read-only endpoints under the existing Bearer-authenticated v1
+boundary. Both return `Cache-Control: no-store` and require the same server-side
+API credential as existing baseline operations. They do not change visitor APIs,
+publication eligibility, schema or content.
+
+- `GET /api/admin/content/v1/catalogs/<city>/inventory` returns the active imported
+  catalog, its revision, input identities, publication IDs (null for POIs without
+  a Story), and ordered Related Person identities/profile versions. Removed POIs
+  are excluded. An empty catalog is distinct from a failed request.
+- `GET /api/admin/content/v1/catalogs/<city>/stories?ids=<uuid>,<uuid>` returns
+  `{ stories: [...] }` for complete published Stories in that city, with their
+  saved generation provenance, Source references, gallery and canonical linked
+  Person profiles/provenance. Request 1–25 distinct UUIDs. Missing or unpublished
+  IDs are absent from the result; IDs from another city return no content.
+
+These responses contain saved domain content and Source metadata, not local raw
+Wikipedia archives, unlinked working People or incomplete Draft stages. A Person
+update changes the profile version in the inventory even when its linked Story's
+publication ID stays the same, allowing a client to invalidate versioned reads.
+A client must reject an inventory/content version mismatch and reload rather than
+falling back to filesystem artifacts or publishing anything.
+
+Deploy Explorer before enabling `CONTENT_API_ADMIN_READS=true` in Mira Admin.
+This read-only extension needs no database migration. Current generation and
+column-refresh persistence still use Admin working artifacts; do not delete those
+artifacts merely because the read extension is available. Working-content writes
+and the separately authorized, verified local cleanup must finish before the
+filesystem can be retired for those actions. No content deletion or migration is
+performed by these endpoints.
