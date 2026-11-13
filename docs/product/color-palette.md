@@ -17,7 +17,7 @@ The [Tailwind theme](../../src/app/globals.css) defines the shared tokens. Atlas
 
 ## Themes and neutrals
 
-The app follows the system setting. Visitors can override it with the System, Light, and Dark switch in the Rome header and the homepage footer; the choice is stored in the browser and set as `data-theme` on `<html>`. Use Tailwind's `dark:` variant for one-off dark values: it follows the same rule.
+The app follows the system setting. Visitors can switch between light and dark with the sun/moon button next to the version, in the Rome header and the homepage footer; the choice is stored in the browser and set as `data-theme` on `<html>`. Use Tailwind's `dark:` variant for one-off dark values: it follows the same rule.
 
 Components use role tokens instead of raw zinc or white, so both themes stay in sync:
 
