@@ -58,7 +58,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
         </span>
         <span className="text-ink mt-3 inline-flex items-center gap-2 text-sm font-semibold">
           Read the Story{" "}
-          <span className="bg-brand grid size-8 shrink-0 place-items-center rounded-full">
+          <span className="bg-brand text-atlas grid size-8 shrink-0 place-items-center rounded-full">
             <ArrowRightIcon
               className="size-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5"
               aria-hidden="true"
