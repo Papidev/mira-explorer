@@ -1,5 +1,6 @@
 import { GalleryImage } from "./GalleryImage";
 import type { PublishedPoiDetail } from "@/server/content/publishedContent";
+import { ImageAttribution } from "@/app/components/ImageAttribution";
 
 export const Photo = ({
   image,
@@ -20,7 +21,7 @@ export const Photo = ({
         />
       </div>
       <figcaption className="text-ink-muted shrink-0 text-center text-xs/5">
-        {image.attribution} ·{" "}
+        <ImageAttribution text={image.attribution} /> ·{" "}
         <a
           className="underline underline-offset-2"
           href={image.commonsPageUrl}

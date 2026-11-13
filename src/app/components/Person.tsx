@@ -2,6 +2,7 @@ import type { PublicPerson } from "@/server/person";
 import Image from "next/image";
 import { WikipediaLinks } from "@/app/components/WikipediaLinks";
 import { StoryText } from "@/app/components/StoryText";
+import { ImageAttribution } from "@/app/components/ImageAttribution";
 
 const formatDate = (date: NonNullable<PublicPerson["birthDate"]>) => {
   const year = `${Math.abs(date.year)} ${date.year < 0 ? "BC" : "AD"}`;
@@ -24,7 +25,7 @@ export const Person = ({ person }: { person: PublicPerson }) => (
         </div>
         {person.image.attribution ? (
           <figcaption className="text-ink-subtle px-3 py-2 text-xs/5">
-            {person.image.attribution}
+            <ImageAttribution text={person.image.attribution} />
             {person.image.license ? ` · ${person.image.license}` : ""}
           </figcaption>
         ) : null}
