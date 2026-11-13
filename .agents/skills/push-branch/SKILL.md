@@ -13,7 +13,7 @@ Use this skill before creating a remote branch.
 2. If the branch has a generic exploratory name such as `feat/new-task`, `feat/new-work`, or `feat/exploration`, rename it to a more meaningful `feat/<short-task-name>` before pushing.
 3. Choose the meaningful name from the work already done in the branch.
 4. If the work scope is still unclear, keep the generic branch name and push it as-is.
-5. Push the renamed branch and set upstream tracking.
+5. Push the renamed branch and set upstream tracking with `git push -u origin HEAD`. `origin` uses the `github.com-papidev` SSH host alias, which authenticates as `Papidev`; confirm it with `git remote get-url origin` before pushing.
 
 ## Safety
 
