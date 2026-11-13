@@ -1,5 +1,17 @@
 # mira-explorer
 
+## 0.23.2
+
+### Patch Changes
+
+- Keep mouse-wheel zoom working on the Rome map while the pointer is over a POI or its preview popover.
+
+## 0.23.1
+
+### Patch Changes
+
+- Refresh the homepage map screenshot with the current Rome map, header, and catalog.
+
 ## 0.23.0
 
 ### Minor Changes

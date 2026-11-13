@@ -99,6 +99,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     popupElement?.removeEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement?.removeEventListener("pointerleave", handlePreviewPointerLeave);
     popupElement?.removeEventListener("click", handlePreviewClick);
+    popupElement?.removeEventListener("wheel", handlePreviewWheel);
     previewPopup?.remove();
     if (activePreviewPoiId !== null) {
       onPreviewChange?.(null);
@@ -120,6 +121,11 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     if (!activePreviewPoiId) return;
     event.stopPropagation();
     openPoiDetails(activePreviewPoiId);
+  };
+  // MapLibre mounts popups outside the canvas container that owns scroll zoom.
+  const handlePreviewWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    map?.getCanvasContainer().dispatchEvent(new WheelEvent(event.type, event));
   };
   const handlePreviewFocusIn = () => cancelPreviewClose();
   const handlePreviewFocusOut = (event: FocusEvent) => {
@@ -154,6 +160,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     popupElement.addEventListener("pointerenter", handlePreviewPointerEnter);
     popupElement.addEventListener("pointerleave", handlePreviewPointerLeave);
     popupElement.addEventListener("click", handlePreviewClick);
+    popupElement.addEventListener("wheel", handlePreviewWheel, { passive: false });
     const popupContent = popupElement.querySelector<HTMLElement>(".maplibregl-popup-content");
     popupElement.style.pointerEvents = "auto";
     if (popupContent) {
