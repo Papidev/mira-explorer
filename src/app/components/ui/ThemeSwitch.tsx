@@ -17,7 +17,7 @@ export const ThemeSwitch = ({ tone = "light" }: { tone?: "light" | "dark" }) => 
       aria-label={label}
       title={label}
       onClick={() => setThemePreference(isDark ? "light" : "dark")}
-      className={`flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full ring-1 backdrop-blur-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${tone === "dark" ? "text-brand focus-visible:outline-brand bg-white/10 ring-white/20 hover:bg-white/20" : "text-accent focus-visible:outline-accent bg-atlas/5 ring-atlas/15 hover:bg-atlas/10 dark:bg-white/10 dark:ring-white/20 dark:hover:bg-white/20"}`}
+      className={`flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full ring-1 backdrop-blur-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${tone === "dark" ? "text-brand focus-visible:outline-brand bg-white/10 ring-white/20 hover:bg-white/20" : "bg-brand text-atlas focus-visible:outline-accent dark:text-brand ring-transparent hover:bg-yellow-300 dark:bg-white/10 dark:ring-white/20 dark:hover:bg-white/20"}`}
     >
       <Icon className="size-5" aria-hidden="true" />
     </button>
