@@ -49,9 +49,10 @@ const Home = () => {
               <br />
               the places between.
             </p>
-            <div className="self-center">
-              <ThemeSwitch />
-            </div>
+          </div>
+          {/* Sits above the hero photo, which rises into the header on large screens. */}
+          <div className="relative z-10 self-start">
+            <ThemeSwitch />
           </div>
         </div>
       </header>
