@@ -52,6 +52,23 @@
     }
   }
 
+  /* Required map credits, kept small so they don't compete with the map. */
+  .city-map .maplibregl-ctrl-attrib {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .city-map .maplibregl-ctrl-attrib.maplibregl-compact {
+    margin: calc(var(--spacing) * 2);
+  }
+
+  /* Phones zoom with pinch, so the buttons only cover the map. */
+  @media (hover: none) and (pointer: coarse) {
+    .city-map .maplibregl-ctrl-top-right {
+      display: none;
+    }
+  }
+
   @media (width < 48rem) {
     .city-map[data-controls-covered="true"] .maplibregl-ctrl-top-right {
       display: none;
