@@ -107,7 +107,7 @@ const Home = () => {
                   { label: "Culture", Icon: SparklesIcon },
                 ].map(({ label, Icon }) => (
                   <li key={label} className="flex items-center gap-2">
-                    <span className="text-accent bg-atlas/5 ring-atlas/15 flex size-9 shrink-0 items-center justify-center rounded-full ring-1 dark:bg-white/10 dark:ring-white/20">
+                    <span className="bg-brand text-atlas dark:text-brand flex size-9 shrink-0 items-center justify-center rounded-full dark:bg-white/10 dark:ring-1 dark:ring-white/20">
                       <Icon className="size-5" aria-hidden="true" />
                     </span>
                     {label}
