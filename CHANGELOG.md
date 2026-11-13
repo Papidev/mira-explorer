@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.23.1
+
+### Patch Changes
+
+- Refresh the homepage map screenshot with the current Rome map, header, and catalog.
+
 ## 0.23.0
 
 ### Minor Changes
