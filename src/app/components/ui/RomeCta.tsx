@@ -29,7 +29,7 @@ export const RomeCta = ({
     onClick={() => track("rome_cta_click", { placement })}
     className={`group bg-brand text-atlas focus-visible:outline-brand inline-flex cursor-pointer items-center rounded-full font-semibold whitespace-nowrap transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 ${sizes[size]} ${className}`}
   >
-    <span className="inline-flex items-center gap-3">
+    <span className="inline-flex items-center gap-4">
       {label}
       {size === "large" && (
         <Image src="/icons/cities/rome-blue.svg" alt="" width={36} height={24} />
