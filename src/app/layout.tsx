@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { WebAnalytics } from "./components/WebAnalytics";
+import { themeInitScript } from "./theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,9 +28,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body
-        className={`${inter.variable} ${fraunces.variable} bg-background text-foreground font-sans antialiased`}
+        className={`${inter.variable} ${fraunces.variable} bg-canvas text-ink font-sans antialiased`}
       >
         {children}
         <WebAnalytics />

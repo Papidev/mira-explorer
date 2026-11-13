@@ -20,11 +20,11 @@ export const MiraLogo = ({
         large: "-ms-[0.18em] text-[3.5rem]/none sm:text-[4.25rem]/none",
         city: "items-center gap-1.25 sm:gap-1",
       }[size],
-      tone === "dark" ? "text-zinc-50" : "text-zinc-900",
+      tone === "dark" ? "text-zinc-50" : "text-ink",
     )}
   >
     {size === "city" ? (
-      <span className="grid size-11 shrink-0 place-items-center sm:size-14 [&>svg]:-translate-y-0.5 [&>svg]:w-full">
+      <span className="grid size-11 shrink-0 place-items-center sm:size-14 [&>svg]:w-full [&>svg]:-translate-y-0.5">
         <Bird tone={tone} />
       </span>
     ) : (

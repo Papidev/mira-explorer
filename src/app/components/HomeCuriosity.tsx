@@ -4,7 +4,7 @@ export const HomeCuriosity = () => (
   <section aria-labelledby="closer-look-title" className="border-brand border-b-2 py-10 sm:py-14">
     <div className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
       <div>
-        <p className="text-atlas text-xs/5 font-semibold tracking-[0.2em] uppercase">
+        <p className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">
           Follow your curiosity
         </p>
         <h2
@@ -12,12 +12,10 @@ export const HomeCuriosity = () => (
           className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
         >
           Some places reveal themselves when you{" "}
-          <span className="text-story-emphasis italic">
-            look closer.
-          </span>
+          <span className="text-story-emphasis italic">look closer.</span>
         </h2>
       </div>
-      <div className="bg-brand-soft relative space-y-4 rounded-2xl p-6 text-base/7 text-zinc-600 sm:p-8">
+      <div className="bg-brand-soft text-ink-muted relative space-y-4 rounded-2xl p-6 text-base/7 sm:p-8">
         <div
           className="pointer-events-none absolute -top-10 right-3 -scale-x-100 text-7xl sm:right-6 sm:text-8xl"
           aria-hidden="true"
@@ -28,7 +26,7 @@ export const HomeCuriosity = () => (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pr-16">
             <p
               lang="it"
-              className="font-serif text-6xl leading-none font-medium tracking-[-0.055em] text-zinc-900 sm:text-7xl"
+              className="text-ink font-serif text-6xl leading-none font-medium tracking-[-0.055em] sm:text-7xl"
             >
               mira
               <sup
@@ -38,14 +36,14 @@ export const HomeCuriosity = () => (
                 1
               </sup>
             </p>
-            <p className="border-brand max-w-36 translate-y-1 border-l-2 pl-4 text-sm/6 font-medium text-zinc-800">
+            <p className="border-brand text-ink max-w-36 translate-y-1 border-l-2 pl-4 text-sm/6 font-medium">
               Our name is an invitation.
             </p>
           </div>
-          <p className="text-xs/5 tracking-wide text-zinc-500">
+          <p className="text-ink-subtle text-xs/5 tracking-wide">
             Italian · from <i lang="it">mirare</i> · literary
           </p>
-          <p lang="it" className="text-atlas font-serif text-lg/7 font-medium italic sm:text-xl/8">
+          <p lang="it" className="text-accent font-serif text-lg/7 font-medium italic sm:text-xl/8">
             «Ammirare; contemplare con ammirazione.»
           </p>
         </div>
@@ -67,7 +65,7 @@ export const HomeCuriosity = () => (
       </div>
     </div>
 
-    <div className="mt-10 grid gap-8 text-base/7 text-zinc-600 sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
+    <div className="text-ink-muted mt-10 grid gap-8 text-base/7 sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
       <p className="border-brand border-t-2 pt-4">
         <strong className="text-story-emphasis font-semibold">Take your curiosity further.</strong>{" "}
         The city continues beyond its celebrated centre. Mira helps you find places across its

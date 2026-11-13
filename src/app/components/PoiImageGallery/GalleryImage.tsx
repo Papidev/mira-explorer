@@ -16,7 +16,7 @@ export const GalleryImage = ({
   return (
     <div className="relative h-full w-full" aria-busy={status === "loading"}>
       {status !== "loaded" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-stone-200/50 text-zinc-500">
+        <div className="bg-surface-muted text-ink-subtle absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg">
           {variant === "thumbnail" ? (
             <>
               <PhotoIcon className="size-5" aria-hidden="true" />
@@ -34,7 +34,7 @@ export const GalleryImage = ({
                     setAttempt((current) => current + 1);
                     setStatus("loading");
                   }}
-                  className="cursor-pointer rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+                  className="border-line-strong bg-surface text-ink hover:bg-canvas focus-visible:outline-focus cursor-pointer rounded-full border px-4 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   Retry
                 </button>

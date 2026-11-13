@@ -68,13 +68,13 @@ export const PoiImageGallery = ({
       >
         <DialogBackdrop className="fixed inset-0 bg-zinc-950/35" />
         <div className="fixed inset-0 flex items-center justify-center p-3 sm:p-6 md:p-8">
-          <DialogPanel className="flex h-[90dvh] max-h-[56rem] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white text-zinc-900 shadow-2xl">
+          <DialogPanel className="bg-surface text-ink flex h-[90dvh] max-h-[56rem] w-full max-w-6xl flex-col overflow-hidden rounded-2xl shadow-2xl">
             <header className="flex shrink-0 items-center justify-between gap-4 px-5 py-4 md:px-8">
               <div className="min-w-0">
                 <DialogTitle className="truncate font-serif text-2xl/7 tracking-tight">
                   {name}
                 </DialogTitle>
-                <p className="mt-1 text-xs/5 text-zinc-500" aria-live="polite">
+                <p className="text-ink-subtle mt-1 text-xs/5" aria-live="polite">
                   Photo {(index ?? 0) + 1} of {images.length}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export const PoiImageGallery = ({
             </header>
             {index !== null && (
               <>
-                <div className="flex min-h-0 flex-1 flex-col gap-4 bg-stone-100 p-4 md:px-16">
+                <div className="bg-surface-muted flex min-h-0 flex-1 flex-col gap-4 p-4 md:px-16">
                   <div
                     className="min-h-0 flex-1"
                     onTouchStart={(event) => {
@@ -126,7 +126,7 @@ export const PoiImageGallery = ({
                       <ChevronLeftIcon />
                     </IconButton>
                   )}
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-ink-subtle text-xs">
                     {images.length > 1 ? "← → Browse photos · Esc Close" : "Esc Close"}
                   </p>
                   {images.length > 1 && (

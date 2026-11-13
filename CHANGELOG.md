@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.24.0
+
+### Minor Changes
+
+- Add a dark theme that follows the system setting, with a sun/moon switch in the homepage and Rome headers. The Rome map uses a dark blue basemap with readable labels in dark mode, and loading spinners use Atlas Blue on light surfaces and Mira Yellow on dark ones.
+
 ## 0.23.3
 
 ### Patch Changes

@@ -34,7 +34,7 @@ describe("StoryContent", () => {
     expect(html).toContain("<p>It reopened later.</p>");
     expect(html).toContain("<ul>");
     expect(html).toContain("<ol>");
-    expect(html).toContain('<h4 class="text-lg font-semibold text-zinc-950">Details</h4>');
+    expect(html).toContain('<h4 class="text-ink text-lg font-semibold">Details</h4>');
     expect(html).not.toContain("<p><div");
     expect(html).not.toContain("**");
   });

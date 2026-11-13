@@ -14,7 +14,7 @@ const RomePage = async ({ searchParams }: Props) => {
   const query = await searchParams;
 
   return (
-    <main className="flex h-dvh flex-col bg-zinc-50 text-zinc-900">
+    <main className="bg-canvas text-ink flex h-dvh flex-col">
       <WorkInProgressNotice />
       <RefreshPoiCategories city="rome" />
 
