@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.1
+
+### Patch Changes
+
+- Separate the Mira brand from the Rome title in the Rome map header: the city leads on the left, the Mira logo moves right beside the counts and theme switch with the version as a superscript, and every header item is vertically centred on one line.
+
 ## 0.25.0
 
 ### Minor Changes
