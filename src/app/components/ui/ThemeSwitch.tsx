@@ -4,8 +4,10 @@ import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headless
 import { CheckIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from "@heroicons/react/20/solid";
 import { useSyncExternalStore } from "react";
 import {
+  isDarkTheme,
   readThemePreference,
   setThemePreference,
+  subscribeToDarkTheme,
   subscribeToThemePreference,
   type ThemePreference,
 } from "@/app/theme";
@@ -23,7 +25,10 @@ export const ThemeSwitch = ({ tone }: { tone: "light" | "dark" }) => {
     readThemePreference,
     () => "system" as const,
   );
+  // The button shows the theme on screen (sun or moon), even when it comes from the system.
+  const isDark = useSyncExternalStore(subscribeToDarkTheme, isDarkTheme, () => false);
   const current = options.find((option) => option.value === theme) ?? options[0];
+  const ButtonIcon = isDark ? MoonIcon : SunIcon;
 
   return (
     <Listbox value={theme} onChange={setThemePreference}>
@@ -32,7 +37,7 @@ export const ThemeSwitch = ({ tone }: { tone: "light" | "dark" }) => {
         title="Theme"
         className={`flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${tone === "dark" ? "focus-visible:outline-brand text-white/80 hover:bg-white/10 hover:text-white" : "focus-visible:outline-focus text-ink-subtle hover:bg-surface-muted hover:text-ink"}`}
       >
-        <current.Icon className="size-4" aria-hidden="true" />
+        <ButtonIcon className="size-4" aria-hidden="true" />
       </ListboxButton>
       <ListboxOptions
         anchor={{ to: "bottom end", gap: 6 }}
