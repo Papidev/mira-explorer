@@ -5,6 +5,7 @@
 ### Minor Changes
 
 - Make the way into the Rome map more visible from the homepage: a larger hero button, an "Open the live map" badge on the map screenshot, a "Start with Rome" button below the live numbers, and a closing "Rome is waiting." band. Each entry point reports its placement to Vercel Analytics.
+- In dark mode, show soft brand panels in atlas blue instead of brown and keep the "Read the Story" arrow readable on its yellow circle.
 
 ## 0.24.0
 
