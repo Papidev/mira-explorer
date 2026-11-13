@@ -50,7 +50,7 @@ const Home = () => {
               the places between.
             </p>
           </div>
-          <RomeCta placement="header" size="small" />
+          <RomeCta placement="header" size="small" className="relative z-10" />
         </div>
       </header>
 
