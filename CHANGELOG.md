@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.0
+
+### Minor Changes
+
+- Make the way into the Rome map more visible from the homepage: a larger hero button, an "Open the live map" badge on the map screenshot, a "Start with Rome" button below the live numbers, and a closing "Rome is waiting." band. Each entry point reports its placement to Vercel Analytics.
+
 ## 0.24.0
 
 ### Minor Changes
