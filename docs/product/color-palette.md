@@ -69,4 +69,4 @@ Use text or an icon alongside the color to identify the state.
 | Nature | Lime | `#65A30D` |
 | Other places | Cyan | `#3FB1CE` |
 
-Markers keep their colors in both themes; the Rome map switches between the OpenFreeMap Liberty and Dark basemaps. The marker and its filter pin share a category color and icon. A selected marker keeps its category hue and gains a larger silhouette and outline. See the [category rules](../poi-categories.md) and the [marker color definitions](../../src/app/components/categoryMarkerColors.ts).
+Markers keep their colors in both themes; the Rome map switches between the OpenFreeMap Liberty and Fiord basemaps (Fiord is a dark blue style whose roads and labels stay readable). The marker and its filter pin share a category color and icon. A selected marker keeps its category hue and gains a larger silhouette and outline. See the [category rules](../poi-categories.md) and the [marker color definitions](../../src/app/components/categoryMarkerColors.ts).

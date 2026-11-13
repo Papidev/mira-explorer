@@ -12,7 +12,7 @@ import {
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 
 const mapStyleUrl = (isDark: boolean) =>
-  `https://tiles.openfreemap.org/styles/${isDark ? "dark" : "liberty"}`;
+  `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
 const PREVIEW_CLOSE_DELAY_MS = 180;
 
 export type MapView = {
