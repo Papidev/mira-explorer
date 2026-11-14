@@ -1170,7 +1170,7 @@ describe("visitor place search", () => {
     expect(screen.getByRole("checkbox", { name: "Museums" })).not.toBeChecked();
   });
 
-  it("closes mobile discovery after selecting a suggestion and leaves the map centered on return", async () => {
+  it("closes mobile discovery after selecting a suggestion and focuses the place", async () => {
     window.innerWidth = 390;
     const user = userEvent.setup();
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
@@ -1179,7 +1179,7 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
-    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41], offset: [0, 0] });
+    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41] });
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });

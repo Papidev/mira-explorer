@@ -93,7 +93,8 @@ Update `AGENTS.md` only with important stuff that cannot be clearly/quickly deri
 - Before running a check, briefly state which concrete risk in the change it verifies. Choose the smallest relevant check; broaden or repeat only after new changes, failures, or unresolved concerns.
 - For documentation or agent-instruction-only edits, inspect the diff; skip application tests, TypeScript checks, lint, and builds. For scripts or CI changes, verify the affected script or workflow rather than automatically rebuilding the application.
 - `pnpm lint` is not a TypeScript check. Select a type check for type-related risk and a build for bundling or production behavior risk; run both only when both are relevant.
-- There is no automated map test harness yet; add colocated `*.test.tsx` files when introducing logic-heavy components and stub MapLibre APIs if needed.
+- There is no automated map test harness yet; add colocated `*.test.tsx` files when introducing logic-heavy components.
+- Avoid stubs and mocks unless strictly necessary. Simulate network calls with MSW. Fake only what the test environment lacks (for example MapLibre rendering or `matchMedia` in jsdom), and never assert on calls into a faked collaborator when a visible outcome or documented manual QA can cover the behavior.
 - Keep tests user-centric: verify visible behavior, interactions, and outcomes rather than implementation details.
 - Prefer accessible queries (for example `getByRole`, `getByLabelText`) and avoid brittle selectors.
 - Report which checks ran and any relevant checks skipped in the PR description. CI checks that the built app starts and responds on the PR. Browser smoke checks require an explicit request.
