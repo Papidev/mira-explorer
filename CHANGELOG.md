@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.9
+
+### Patch Changes
+
+- Make tapping places on the Rome map faster on phones.
+
 ## 0.25.8
 
 ### Patch Changes
