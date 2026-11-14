@@ -1,10 +1,5 @@
 import { useId, useState } from "react";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  MinusIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronDownIcon, MinusIcon } from "@heroicons/react/24/outline";
 import type { Poi } from "@/types/Poi";
 import {
   DEFAULT_POI_CATEGORY_DEFINITIONS,
@@ -13,6 +8,7 @@ import {
 } from "@/types/PoiCategory";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { CategoryGroup } from "./CategoryGroup";
+import { PlaceRow } from "./PlaceRow";
 import { Search } from "./Search";
 
 export const Sidebar = ({
@@ -174,34 +170,23 @@ export const Sidebar = ({
               : "Select a category to explore places."}
           </p>
         )}
-        <ul aria-labelledby={placesHeadingId} className="mt-3 space-y-2">
+        <ul
+          aria-labelledby={placesHeadingId}
+          className="mt-3 space-y-2"
+          onClick={(event) => {
+            const poiId = (event.target as Element)
+              .closest<HTMLElement>("[data-poi-id]")
+              ?.getAttribute("data-poi-id");
+            if (poiId) onOpenPoi(poiId);
+          }}
+        >
           {visiblePois.map((poi) => (
-            <li key={poi.id}>
-              <button
-                type="button"
-                aria-label={poi.name}
-                aria-pressed={selectedPoiId === poi.id}
-                onClick={() => onOpenPoi(poi.id)}
-                className={`group focus-visible:outline-focus flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${selectedPoiId === poi.id ? "border-brand bg-brand-soft/50" : "hover:border-brand border-line bg-surface"}`}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block text-lg leading-snug font-medium">{poi.name}</span>
-                  <span className="text-ink-subtle mt-1.5 block text-xs/5">
-                    {poi.categories
-                      ?.map(
-                        (id) =>
-                          categoryDefinitions.find((category) => category.id === id)?.name ?? id,
-                      )
-                      .sort((a, b) => a.localeCompare(b, "en"))
-                      .join(" · ") || "Uncategorized"}
-                  </span>
-                </span>
-                <ChevronRightIcon
-                  aria-hidden="true"
-                  className="text-ink-subtle group-hover:text-ink size-5 shrink-0 transition-colors"
-                />
-              </button>
-            </li>
+            <PlaceRow
+              key={poi.id}
+              poi={poi}
+              selected={selectedPoiId === poi.id}
+              categoryDefinitions={categoryDefinitions}
+            />
           ))}
         </ul>
       </div>
