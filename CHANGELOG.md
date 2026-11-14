@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.8
+
+### Patch Changes
+
+- Reorganize the Work in progress notice internally, with no visible changes.
+
 ## 0.25.7
 
 ### Patch Changes
