@@ -299,7 +299,6 @@ Deploy this API before the matching Mira Admin client (Papidev/mira-admin#35).
 
 ## Shared category deletion (Admin #36)
 
-
 `PUT /api/admin/content/v1/categories/:id/delete` accepts only
 `{ expectedStateDigest }` and returns `{ status: "saved", deletedIds }`.
 The captured definitions digest fixes the confirmed scope: deleting a parent also
