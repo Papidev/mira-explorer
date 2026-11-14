@@ -1,28 +1,12 @@
 "use client";
 
 import { animate, motion, useDragControls, useMotionValue, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-
-const phoneQuery = "(max-width: 767px)";
-
-const subscribeToPhone = (onChange: () => void) => {
-  const media = window.matchMedia?.(phoneQuery);
-  media?.addEventListener("change", onChange);
-  return () => media?.removeEventListener("change", onChange);
-};
-
-/** Below md the details panel is a bottom sheet; from md up it stays a side drawer. */
-export const usePhoneLayout = () =>
-  useSyncExternalStore(
-    subscribeToPhone,
-    () => window.matchMedia?.(phoneQuery).matches ?? false,
-    () => false,
-  );
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type Snap = "peek" | "full";
 
-// The preview leaves the top half of the map visible, like a map app's place card.
-const peekRatio = 0.5;
+/** Share of the sheet's height that the preview covers; it leaves the top half visible. */
+export const BOTTOM_SHEET_PEEK_RATIO = 0.5;
 
 /**
  * Map-app bottom sheet: opens as a preview, drags up to full height and down to close.
@@ -58,7 +42,7 @@ export const BottomSheet = ({
 
   const height = () => sheetRef.current?.offsetHeight ?? 0;
   const snapY = (target: Snap | "closed") =>
-    target === "full" ? 0 : target === "peek" ? height() * peekRatio : height();
+    target === "full" ? 0 : target === "peek" ? height() * BOTTOM_SHEET_PEEK_RATIO : height();
 
   const moveTo = (target: Snap) => {
     setSnap(target);

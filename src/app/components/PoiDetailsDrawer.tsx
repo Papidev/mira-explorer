@@ -4,7 +4,8 @@ import { useState } from "react";
 import { PoiImageGallery } from "@/app/components/PoiImageGallery";
 import Image from "next/image";
 import { Drawer } from "@/app/components/ui/Drawer";
-import { BottomSheet, usePhoneLayout } from "@/app/components/ui/BottomSheet";
+import { BottomSheet } from "@/app/components/ui/BottomSheet";
+import { useViewport } from "@/app/viewport";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { ArrowLeftIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import type { Poi } from "@/types/Poi";
@@ -15,12 +16,15 @@ import { Person } from "@/app/components/Person";
 import { usePerson } from "@/app/components/usePerson";
 import { ImageAttribution } from "@/app/components/ImageAttribution";
 
+/** Default width of the details side drawer, before the visitor resizes it. */
+export const DETAILS_PANEL_WIDTH = 448;
+
 export const PoiDetailsDrawer = ({
   citySlug,
   onClose,
   openRequestId = 0,
   poi: selectedPoi,
-  width,
+  width = DETAILS_PANEL_WIDTH,
   onResize,
   excludedByFilters = false,
   personSlug,
@@ -57,7 +61,7 @@ export const PoiDetailsDrawer = ({
   const mainImageUrl = detail ? mainImage?.thumbnailUrl : content ? poi?.mainImageUrl : undefined;
   const isWideImage =
     mainImage?.width && mainImage.height ? mainImage.width >= mainImage.height : null;
-  const isPhone = usePhoneLayout();
+  const isPhone = useViewport().detailsAsSheet;
   const { person, isLoading: isPersonLoading } = usePerson(
     selectedPersonId,
     citySlug,
@@ -113,7 +117,7 @@ export const PoiDetailsDrawer = ({
                   src={mainImageUrl}
                   alt={`Main image of ${detail?.name ?? poi?.name}`}
                   fill
-                  sizes={`(min-width: 768px) ${width ?? 448}px, 100vw`}
+                  sizes={`(min-width: 768px) ${width}px, 100vw`}
                   className={
                     (isWideImage ?? mainImageUrl === loadedWideImageUrl)
                       ? "object-cover"

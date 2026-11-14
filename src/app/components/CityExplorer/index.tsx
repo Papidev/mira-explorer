@@ -8,17 +8,20 @@ import {
 } from "@/types/PoiCategory";
 import { Sidebar } from "./Sidebar";
 import { Search } from "./Search";
-import { usePhoneLayout } from "@/app/components/ui/BottomSheet";
 import { useFilterSwipe } from "./useFilterSwipe";
-import { useDesktopLayout } from "./useDesktopLayout";
 import { useSelectedPoi } from "./useSelectedPoi";
 import { useState } from "react";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { DrawerTab } from "@/app/components/ui/DrawerTab";
 import { Drawer } from "@/app/components/ui/Drawer";
 import type { Poi } from "@/types/Poi";
-import { Map } from "@/app/components/Map";
-import { PoiDetailsDrawer } from "@/app/components/PoiDetailsDrawer";
+import { Map, type CoveredArea } from "@/app/components/Map";
+import { DETAILS_PANEL_WIDTH, PoiDetailsDrawer } from "@/app/components/PoiDetailsDrawer";
+import { BOTTOM_SHEET_PEEK_RATIO } from "@/app/components/ui/BottomSheet";
+import { useViewport } from "@/app/viewport";
+
+/** Default width of the filters drawer, before the visitor resizes it. */
+const SIDEBAR_WIDTH = 352;
 
 type Props = {
   citySlug: string;
@@ -54,11 +57,10 @@ export const CityExplorer = ({
     availableCategories.length > 0 &&
     availableCategories.every((category) => selectedCategories.includes(category));
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
-  const isDesktop = useDesktopLayout();
-  const isPhone = usePhoneLayout();
-  const sidebarVisible = sidebarOpen ?? isDesktop;
-  const [sidebarWidth, setSidebarWidth] = useState<number>();
-  const [detailsWidth, setDetailsWidth] = useState<number>();
+  const { detailsAsSheet, sidebarBesideMap } = useViewport();
+  const sidebarVisible = sidebarOpen ?? sidebarBesideMap;
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
+  const [detailsWidth, setDetailsWidth] = useState(DETAILS_PANEL_WIDTH);
   const openFiltersSwipe = useFilterSwipe("right", () => setSidebarOpen(true));
   const closeFiltersSwipe = useFilterSwipe("left", () => setSidebarOpen(false));
   const [zoom, setZoom] = useState(initialZoom);
@@ -114,6 +116,13 @@ export const CityExplorer = ({
     setSearchPoiId(poi.id);
     openPoi(poi.id);
   };
+  const detailsOpen = Boolean(selectedPoi || selectedPersonSlug);
+  // Below lg, opening a place closes the filters, so they only ever cover the map beside it.
+  const coveredArea: CoveredArea = {
+    left: sidebarVisible ? sidebarWidth : 0,
+    right: detailsOpen && !detailsAsSheet ? detailsWidth : 0,
+    bottom: detailsOpen && detailsAsSheet ? BOTTOM_SHEET_PEEK_RATIO : 0,
+  };
 
   return (
     <div data-panel-container className="relative flex h-full w-full overflow-hidden">
@@ -123,7 +132,7 @@ export const CityExplorer = ({
         side="left"
         width={sidebarWidth}
         {...closeFiltersSwipe}
-        className="z-30 touch-pan-y lg:w-[var(--panel-width,22rem)]"
+        className="z-30 touch-pan-y"
       >
         <Sidebar
           categoryDefinitions={categoryDefinitions}
@@ -170,7 +179,7 @@ export const CityExplorer = ({
           }
           onToggleAll={() => updateCategories(allCategoriesSelected ? [] : availableCategories)}
           onOpenPoi={openPoi}
-          onSearchPoi={searchPoi}
+          onSearchPoi={detailsAsSheet ? undefined : searchPoi}
           onClose={() => setSidebarOpen(false)}
         />
         <PanelResizeHandle edge="right" label="Resize filters panel" onResize={setSidebarWidth} />
@@ -184,10 +193,10 @@ export const CityExplorer = ({
             aria-controls="discovery-sidebar"
             {...openFiltersSwipe}
             onClick={() => setSidebarOpen(true)}
-            className={selectedPoi || selectedPersonSlug ? "hidden md:block" : undefined}
+            className={detailsOpen ? "hidden md:block" : undefined}
           />
         )}
-        {isPhone && (
+        {detailsAsSheet && (
           // Phones search from a bar over the map; the details sheet and filters cover it.
           <div className="absolute inset-x-3 top-3 z-10">
             <Search variant="floating" pois={pois} onSelect={searchPoi} />
@@ -197,26 +206,14 @@ export const CityExplorer = ({
           coordinates={coordinates}
           zoom={zoom}
           pois={searchExcluded && selectedPoi ? [...visiblePois, selectedPoi] : visiblePois}
-          focusRequest={
-            selectedPoi
-              ? {
-                  poi: selectedPoi,
-                  requestId: openRequestId,
-                  leftInset: sidebarVisible && isDesktop ? (sidebarWidth ?? 352) : 0,
-                  rightInset: detailsWidth ?? 448,
-                }
-              : undefined
-          }
+          focusRequest={selectedPoi ? { poi: selectedPoi, requestId: openRequestId } : undefined}
+          coveredArea={coveredArea}
           selectedPoiId={selectedPoiId}
           categoryDefinitions={categoryDefinitions}
           selectedCategories={selectedCategories}
           onZoomChange={setZoom}
           onOpenPoiDetails={openPoi}
           onMapClick={() => selectPoi(null)}
-          controlsRightInset={selectedPoi || selectedPersonSlug ? (detailsWidth ?? 448) : 0}
-          hideControlsOnMobile={
-            sidebarVisible || Boolean(selectedPoi) || Boolean(selectedPersonSlug)
-          }
         />
         <PoiDetailsDrawer
           citySlug={citySlug}

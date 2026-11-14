@@ -14,7 +14,6 @@ import {
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { CategoryGroup } from "./CategoryGroup";
 import { Search } from "./Search";
-import { usePhoneLayout } from "@/app/components/ui/BottomSheet";
 
 export const Sidebar = ({
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
@@ -42,11 +41,11 @@ export const Sidebar = ({
   onSelectOnlyCategory: (category: PoiCategory) => void;
   onToggleAll: () => void;
   onOpenPoi: (poiId: string) => void;
-  onSearchPoi: (poi: Poi) => void;
+  /** Omitted when search sits over the map instead. */
+  onSearchPoi?: (poi: Poi) => void;
   onClose: () => void;
 }) => {
   const [expanded, setExpanded] = useState(true);
-  const isPhone = usePhoneLayout();
   const categoriesId = useId();
   const placesHeadingId = useId();
   return (
@@ -62,8 +61,7 @@ export const Sidebar = ({
         <p className="text-ink-muted text-xs/5">Big city, huh? But you can filter what you want.</p>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
-      {/* Phones search from the bar over the map instead. */}
-      {!isPhone && (
+      {onSearchPoi && (
         <div className="shrink-0 px-4 pt-3 pb-2">
           <Search pois={pois} onSelect={onSearchPoi} />
         </div>

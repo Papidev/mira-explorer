@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.6
+
+### Patch Changes
+
+- Keep the selected place visible above the details sheet on phones.
+
 ## 0.25.5
 
 ### Patch Changes
