@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.4
+
+### Patch Changes
+
+- Search places on phones from a bar floating over the Rome map, like a map app, instead of from inside the filters panel.
+
 ## 0.25.3
 
 ### Patch Changes
