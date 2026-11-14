@@ -35,6 +35,9 @@ export type MapViewUpdate = {
   zoom?: number;
 };
 
+/** Map edges hidden by panels: left and right in pixels, bottom as a share of the map height. */
+export type CoveredArea = { left: number; right: number; bottom: number };
+
 export type MapPreview = {
   poi: Poi;
   container: HTMLDivElement;
@@ -50,7 +53,7 @@ export interface MapAdapter {
     selectedCategories?: PoiCategory[],
   ) => void;
   updateSelectedPoi: (poiId: string | null) => void;
-  focusPoi: (request: { poi: Poi; leftInset: number; rightInset: number }) => void;
+  focusPoi: (poi: Poi, coveredArea: CoveredArea) => void;
   getZoom: () => number | null;
   setOnZoomChange: (handler: ((zoom: number) => void) | null) => void;
   setOnOpenPoiDetails: (handler: ((poiId: string) => void) | null) => void;
@@ -486,20 +489,22 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       selectedPoiId = poiId;
       updateMarkerSelection();
     },
-    focusPoi({ poi, leftInset, rightInset }) {
+    focusPoi(poi, { left, right, bottom }) {
       if (!map) return;
       closePreview();
       const center: [number, number] = [poi.coordinates.lng, poi.coordinates.lat];
-      // Mobile Stories cover the map; keep the place centered for the return to it.
-      const offsetX = window.innerWidth >= 768 ? (leftInset - rightInset) / 2 : 0;
+      // An offset, unlike easeTo's padding, does not persist into later zooms.
+      const offsetX = (left - right) / 2;
+      const coveredBelow = bottom * map.getContainer().clientHeight;
+      const offsetY = coveredBelow ? -coveredBelow / 2 : 0;
       const target = map.project(center);
       const current = map.project(map.getCenter());
-      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y);
+      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y - offsetY);
       map.easeTo({
         center,
         duration: Math.min(1150, Math.max(600, distance * 1.1)),
         easing: (progress) => progress * progress * (3 - 2 * progress),
-        offset: [offsetX, 0],
+        offset: [offsetX, offsetY],
       });
     },
     getZoom() {

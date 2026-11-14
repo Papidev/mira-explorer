@@ -1,5 +1,23 @@
 # mira-explorer
 
+## 0.25.8
+
+### Patch Changes
+
+- Reorganize the Work in progress notice internally, with no visible changes.
+
+## 0.25.7
+
+### Patch Changes
+
+- Reorganize the place and Person details panel internally, with no visible changes.
+
+## 0.25.6
+
+### Patch Changes
+
+- Keep the selected place visible above the details sheet on phones.
+
 ## 0.25.5
 
 ### Patch Changes

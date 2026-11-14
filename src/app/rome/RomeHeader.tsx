@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { AppVersion } from "@/app/components/ui/AppVersion";
 import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
-import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
+import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgress";
 
 // The city leads as the page title; the Mira brand signs off on the right with the app
 // tools, so the two serif names never read as one title. On phones only Rome and the bird
@@ -76,10 +76,8 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           </span>
         </div>
         <div className="hidden items-center gap-4 sm:flex">
-          {/* Below lg the map shows a one-time note instead, so this row stays on one line. */}
-          <span className="hidden lg:flex">
-            <WorkInProgressNotice tone="dark" />
-          </span>
+          {/* Below lg the map note takes over, so this row stays on one line. */}
+          <WorkInProgressNotice tone="dark" mapNoteBelowLg />
           <ThemeSwitch tone="dark" />
         </div>
       </div>

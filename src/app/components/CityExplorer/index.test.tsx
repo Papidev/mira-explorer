@@ -1170,8 +1170,8 @@ describe("visitor place search", () => {
     expect(screen.getByRole("checkbox", { name: "Museums" })).not.toBeChecked();
   });
 
-  it("closes mobile discovery after selecting a suggestion and leaves the map centered on return", async () => {
-    window.innerWidth = 390;
+  it("closes tablet discovery after selecting a suggestion and focuses the place", async () => {
+    window.innerWidth = 800;
     const user = userEvent.setup();
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
     await user.click(screen.getByRole("button", { name: "Open filters" }));
@@ -1179,7 +1179,7 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
-    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41], offset: [0, 0] });
+    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41] });
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });
@@ -1232,6 +1232,10 @@ describe("visitor place search", () => {
     expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
     expect(window.location.search).toBe("?poi=colosseum&source=share");
     expect(window.location.hash).toBe("#map");
+    await user.click(screen.getByRole("button", { name: "Vespasian" }));
+    expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Open details for Renamed Colosseum" }));
+    expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
   });
 
   it.each(["?person=vespasian", "?poi=museum&person=vespasian"])(
@@ -1288,35 +1292,25 @@ describe("visitor place search", () => {
 });
 
 describe("phone place search", () => {
-  afterEach(() => vi.unstubAllGlobals());
-
   it("searches from a bar over the map instead of the filters panel", async () => {
-    vi.stubGlobal("matchMedia", (query: string) => ({
-      matches: query === "(max-width: 767px)",
-      addEventListener() {},
-      removeEventListener() {},
-    }));
+    window.innerWidth = 390;
     const user = userEvent.setup();
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
 
     const search = screen.getByRole("combobox", { name: "Search" });
     expect(screen.getAllByRole("combobox")).toHaveLength(1);
-    expect(screen.getByRole("complementary", { name: "Discover places" })).not.toContainElement(
-      search,
-    );
+    expect(
+      screen.getByRole("complementary", { name: "Discover places", hidden: true }),
+    ).not.toContainElement(search);
 
     await user.type(search, "museum");
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("museum");
   });
+
   it("lists places only while the filters panel is open or closing", async () => {
-    vi.stubGlobal("matchMedia", (query: string) => ({
-      matches: query === "(max-width: 767px)",
-      addEventListener() {},
-      removeEventListener() {},
-    }));
-    vi.stubGlobal("innerWidth", 375);
+    window.innerWidth = 390;
     const user = userEvent.setup();
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
     const placeRow = () => screen.queryByRole("button", { name: "A Museum", hidden: true });
