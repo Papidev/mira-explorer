@@ -5,9 +5,10 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
+import { useState, type ComponentProps } from "react";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Poi } from "@/types/Poi";
-import { PoiDetailsDrawer } from "./PoiDetailsDrawer";
+import { DetailsPanel } from ".";
 import { exampleStoryWrite } from "@/server/content/__fixtures__/writes";
 
 const server = setupServer();
@@ -44,6 +45,14 @@ afterAll(() => {
   vi.unstubAllGlobals();
 });
 
+// The page owns the selected Person (in the URL); this keeps it in state instead.
+const Panel = (
+  props: Omit<ComponentProps<typeof DetailsPanel>, "personSlug" | "onSelectPerson">,
+) => {
+  const [personSlug, setPersonSlug] = useState<string | null>(null);
+  return <DetailsPanel {...props} personSlug={personSlug} onSelectPerson={setPersonSlug} />;
+};
+
 const useStoryResponse = () => {
   server.use(
     http.get("*/api/pois/rome/forum-boarium/dialog-content", () =>
@@ -56,7 +65,7 @@ describe("POI details person navigation", () => {
   it("opens a resolved Person, returns to the same Story, and closes the drawer", async () => {
     useStoryResponse();
     server.use(
-      http.get("*/api/people/hercules", () =>
+      http.get("*/api/people/by-slug/hercules", () =>
         HttpResponse.json({
           person: {
             id: "hercules",
@@ -69,7 +78,7 @@ describe("POI details person navigation", () => {
     );
     const user = userEvent.setup();
     const onClose = vi.fn();
-    const { rerender } = render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={onClose} />);
+    const { rerender } = render(<Panel citySlug="rome" poi={poi} onClose={onClose} />);
 
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(await screen.findByText("A visitor-facing introduction.")).toBeInTheDocument();
@@ -88,7 +97,7 @@ describe("POI details person navigation", () => {
 
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(onClose).toHaveBeenCalledOnce();
-    rerender(<PoiDetailsDrawer citySlug="rome" onClose={onClose} />);
+    rerender(<Panel citySlug="rome" onClose={onClose} />);
     expect(screen.getByText("A visitor-facing introduction.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Forum Boarium" })).not.toBeInTheDocument();
     await waitFor(() =>
@@ -108,7 +117,7 @@ describe("POI details person navigation", () => {
       }),
     );
     server.use(
-      http.get("*/api/people/hercules", async () => {
+      http.get("*/api/people/by-slug/hercules", async () => {
         await new Promise<void>((resolve) => {
           finishPerson = resolve;
         });
@@ -116,7 +125,7 @@ describe("POI details person navigation", () => {
       }),
     );
     const user = userEvent.setup();
-    render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={() => {}} />);
+    render(<Panel citySlug="rome" poi={poi} onClose={() => {}} />);
 
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(screen.queryByText(/No additional content/)).not.toBeInTheDocument();
@@ -132,34 +141,6 @@ describe("POI details person navigation", () => {
     expect(await screen.findByText("This person is unavailable.")).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Back to Forum Boarium" }));
-    expect(screen.getByText("A visitor-facing introduction.")).toBeInTheDocument();
-  });
-
-  it("returns to the POI when the same POI is opened again", async () => {
-    useStoryResponse();
-    server.use(
-      http.get("*/api/people/hercules", () =>
-        HttpResponse.json({
-          person: {
-            id: "hercules",
-            name: "Hercules",
-            description: ["First Person paragraph.", "Second Person paragraph."],
-            curiosities: [],
-          },
-        }),
-      ),
-    );
-    const user = userEvent.setup();
-    const { rerender } = render(
-      <PoiDetailsDrawer citySlug="rome" poi={poi} openRequestId={1} onClose={() => {}} />,
-    );
-
-    await user.click(await screen.findByRole("button", { name: "Hercules" }));
-    expect(await screen.findByRole("heading", { name: "Hercules" })).toBeInTheDocument();
-
-    rerender(<PoiDetailsDrawer citySlug="rome" poi={poi} openRequestId={2} onClose={() => {}} />);
-
-    expect(screen.getByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
     expect(screen.getByText("A visitor-facing introduction.")).toBeInTheDocument();
   });
 });
@@ -180,7 +161,7 @@ describe("online Story details", () => {
           },
         }),
       ),
-      http.get("*/api/people/vespasian", () =>
+      http.get("*/api/people/by-slug/vespasian", () =>
         HttpResponse.json({
           person: {
             id: "vespasian",
@@ -193,7 +174,7 @@ describe("online Story details", () => {
       ),
     );
     const user = userEvent.setup();
-    render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={() => {}} />);
+    render(<Panel citySlug="rome" poi={poi} onClose={() => {}} />);
     expect(await screen.findByText("Image unavailable")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Vespasian" })).toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: "Vespasian" }));
@@ -219,7 +200,7 @@ describe("online Story details", () => {
       ),
     );
     const user = userEvent.setup();
-    const { rerender } = render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={() => {}} />);
+    const { rerender } = render(<Panel citySlug="rome" poi={poi} onClose={() => {}} />);
     const mainImage = await screen.findByAltText("Main image of Colosseum");
     expect(mainImage).toHaveClass("object-contain");
     expect(mainImage).toHaveAttribute("src", expect.stringContaining("First.jpg"));
@@ -229,7 +210,7 @@ describe("online Story details", () => {
     await user.click(screen.getByRole("button", { name: "Next photo" }));
     expect(screen.getByRole("img", { name: "Colosseum — photo 2" })).toBeInTheDocument();
     expect(screen.getByText(/Gallery photographer/)).toBeVisible();
-    rerender(<PoiDetailsDrawer citySlug="rome" onClose={() => {}} />);
+    rerender(<Panel citySlug="rome" onClose={() => {}} />);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 });
