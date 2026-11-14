@@ -7,6 +7,8 @@ import {
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
 import { Sidebar } from "./Sidebar";
+import { Search } from "./Search";
+import { usePhoneLayout } from "@/app/components/ui/BottomSheet";
 import { useFilterSwipe } from "./useFilterSwipe";
 import { useDesktopLayout } from "./useDesktopLayout";
 import { useSelectedPoi } from "./useSelectedPoi";
@@ -53,6 +55,7 @@ export const CityExplorer = ({
     availableCategories.every((category) => selectedCategories.includes(category));
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   const isDesktop = useDesktopLayout();
+  const isPhone = usePhoneLayout();
   const sidebarVisible = sidebarOpen ?? isDesktop;
   const [sidebarWidth, setSidebarWidth] = useState<number>();
   const [detailsWidth, setDetailsWidth] = useState<number>();
@@ -106,6 +109,10 @@ export const CityExplorer = ({
     selectPoi(poiId);
     if (poiId === selectedPoiId) setOpenRequestId((current) => current + 1);
     setSidebarOpen((current) => (current === false ? false : null));
+  };
+  const searchPoi = (poi: Poi) => {
+    setSearchPoiId(poi.id);
+    openPoi(poi.id);
   };
 
   return (
@@ -163,10 +170,7 @@ export const CityExplorer = ({
           }
           onToggleAll={() => updateCategories(allCategoriesSelected ? [] : availableCategories)}
           onOpenPoi={openPoi}
-          onSearchPoi={(poi) => {
-            setSearchPoiId(poi.id);
-            openPoi(poi.id);
-          }}
+          onSearchPoi={searchPoi}
           onClose={() => setSidebarOpen(false)}
         />
         <PanelResizeHandle edge="right" label="Resize filters panel" onResize={setSidebarWidth} />
@@ -182,6 +186,12 @@ export const CityExplorer = ({
             onClick={() => setSidebarOpen(true)}
             className={selectedPoi || selectedPersonSlug ? "hidden md:block" : undefined}
           />
+        )}
+        {isPhone && (
+          // Phones search from a bar over the map; the details sheet and filters cover it.
+          <div className="absolute inset-x-3 top-3 z-10">
+            <Search variant="floating" pois={pois} onSelect={searchPoi} />
+          </div>
         )}
         <Map
           coordinates={coordinates}

@@ -1286,3 +1286,28 @@ describe("visitor place search", () => {
     },
   );
 });
+
+describe("phone place search", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("searches from a bar over the map instead of the filters panel", async () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query === "(max-width: 767px)",
+      addEventListener() {},
+      removeEventListener() {},
+    }));
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    const search = screen.getByRole("combobox", { name: "Search" });
+    expect(screen.getAllByRole("combobox")).toHaveLength(1);
+    expect(screen.getByRole("complementary", { name: "Discover places" })).not.toContainElement(
+      search,
+    );
+
+    await user.type(search, "museum");
+    await user.click(await screen.findByRole("option", { name: "A Museum" }));
+    expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
+    expect(new URLSearchParams(window.location.search).get("poi")).toBe("museum");
+  });
+});
