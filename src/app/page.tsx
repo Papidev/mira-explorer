@@ -9,7 +9,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import catalog from "../../data/public/catalog.json";
-import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
+import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgress";
 import { HomeHeroStory } from "@/app/components/HomeHeroStory";
 import { ImageAttribution } from "@/app/components/ImageAttribution";
 import { MapShowcase } from "@/app/components/MapShowcase";
