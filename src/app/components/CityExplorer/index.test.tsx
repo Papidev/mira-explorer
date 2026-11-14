@@ -1232,6 +1232,10 @@ describe("visitor place search", () => {
     expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
     expect(window.location.search).toBe("?poi=colosseum&source=share");
     expect(window.location.hash).toBe("#map");
+    await user.click(screen.getByRole("button", { name: "Vespasian" }));
+    expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Open details for Renamed Colosseum" }));
+    expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
   });
 
   it.each(["?person=vespasian", "?poi=museum&person=vespasian"])(

@@ -16,7 +16,7 @@ import { DrawerTab } from "@/app/components/ui/DrawerTab";
 import { Drawer } from "@/app/components/ui/Drawer";
 import type { Poi } from "@/types/Poi";
 import { Map, type CoveredArea } from "@/app/components/Map";
-import { DETAILS_PANEL_WIDTH, PoiDetailsDrawer } from "@/app/components/PoiDetailsDrawer";
+import { DETAILS_PANEL_WIDTH, DetailsPanel } from "@/app/components/DetailsPanel";
 import { BOTTOM_SHEET_PEEK_RATIO } from "@/app/components/ui/BottomSheet";
 import { useViewport } from "@/app/viewport";
 
@@ -215,7 +215,7 @@ export const CityExplorer = ({
           onOpenPoiDetails={openPoi}
           onMapClick={() => selectPoi(null)}
         />
-        <PoiDetailsDrawer
+        <DetailsPanel
           citySlug={citySlug}
           personSlug={selectedPersonSlug}
           onSelectPerson={selectPerson}
