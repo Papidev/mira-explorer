@@ -222,10 +222,7 @@ describe("online Story details", () => {
     const { rerender } = render(<PoiDetailsDrawer citySlug="rome" poi={poi} onClose={() => {}} />);
     const mainImage = await screen.findByAltText("Main image of Colosseum");
     expect(mainImage).toHaveClass("object-contain");
-    expect(mainImage).toHaveAttribute(
-      "src",
-      expect.stringContaining("First.jpg"),
-    );
+    expect(mainImage).toHaveAttribute("src", expect.stringContaining("First.jpg"));
     expect(screen.getByText(/Main photographer/)).toBeInTheDocument();
     expect(screen.queryByText("More images")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Open image gallery for Colosseum" }));

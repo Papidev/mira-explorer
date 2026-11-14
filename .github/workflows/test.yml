@@ -46,21 +46,22 @@ jobs:
           fi
 
       - name: Set up pnpm
-        if: steps.changes.outputs.run_checks == 'true'
         uses: pnpm/action-setup@v6
         with:
           version: 10.18.0
 
       - name: Set up Node.js
-        if: steps.changes.outputs.run_checks == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        if: steps.changes.outputs.run_checks == 'true'
         run: pnpm install --frozen-lockfile
+
+      # Runs on every change, docs included, so unformatted files never reach main.
+      - name: Check formatting
+        run: pnpm exec prettier --check .
 
       - name: Check application version
         if: steps.changes.outputs.run_checks == 'true'

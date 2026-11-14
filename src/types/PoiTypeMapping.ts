@@ -25,9 +25,7 @@ export type CategoryActions = {
   save: (id: string | null, name: string) => Promise<{ updatedPois: number; cities: string[] }>;
   delete: (id: string) => Promise<{ updatedPois: number; cities: string[] }>;
 };
-export type ClassifyTypeMappings = (
-  formData: FormData,
-) => Promise<{
+export type ClassifyTypeMappings = (formData: FormData) => Promise<{
   classified: number;
   updatedPois: number;
   cities: string[];
