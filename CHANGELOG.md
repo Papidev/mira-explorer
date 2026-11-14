@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.7
+
+### Patch Changes
+
+- Reorganize the place and Person details panel internally, with no visible changes.
+
 ## 0.25.6
 
 ### Patch Changes
