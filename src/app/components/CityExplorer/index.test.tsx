@@ -1170,8 +1170,8 @@ describe("visitor place search", () => {
     expect(screen.getByRole("checkbox", { name: "Museums" })).not.toBeChecked();
   });
 
-  it("closes mobile discovery after selecting a suggestion and focuses the place", async () => {
-    window.innerWidth = 390;
+  it("closes tablet discovery after selecting a suggestion and focuses the place", async () => {
+    window.innerWidth = 800;
     const user = userEvent.setup();
     render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
     await user.click(screen.getByRole("button", { name: "Open filters" }));
@@ -1285,4 +1285,23 @@ describe("visitor place search", () => {
       expect(window.location.hash).toBe("#map");
     },
   );
+});
+
+describe("phone place search", () => {
+  it("searches from a bar over the map instead of the filters panel", async () => {
+    window.innerWidth = 390;
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    const search = screen.getByRole("combobox", { name: "Search" });
+    expect(screen.getAllByRole("combobox")).toHaveLength(1);
+    expect(
+      screen.getByRole("complementary", { name: "Discover places", hidden: true }),
+    ).not.toContainElement(search);
+
+    await user.type(search, "museum");
+    await user.click(await screen.findByRole("option", { name: "A Museum" }));
+    expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
+    expect(new URLSearchParams(window.location.search).get("poi")).toBe("museum");
+  });
 });

@@ -7,6 +7,7 @@ import {
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
 import { Sidebar } from "./Sidebar";
+import { Search } from "./Search";
 import { useFilterSwipe } from "./useFilterSwipe";
 import { useSelectedPoi } from "./useSelectedPoi";
 import { useState } from "react";
@@ -111,6 +112,10 @@ export const CityExplorer = ({
     if (poiId === selectedPoiId) setOpenRequestId((current) => current + 1);
     setSidebarOpen((current) => (current === false ? false : null));
   };
+  const searchPoi = (poi: Poi) => {
+    setSearchPoiId(poi.id);
+    openPoi(poi.id);
+  };
   const detailsOpen = Boolean(selectedPoi || selectedPersonSlug);
   // Below lg, opening a place closes the filters, so they only ever cover the map beside it.
   const coveredArea: CoveredArea = {
@@ -174,10 +179,7 @@ export const CityExplorer = ({
           }
           onToggleAll={() => updateCategories(allCategoriesSelected ? [] : availableCategories)}
           onOpenPoi={openPoi}
-          onSearchPoi={(poi) => {
-            setSearchPoiId(poi.id);
-            openPoi(poi.id);
-          }}
+          onSearchPoi={detailsAsSheet ? undefined : searchPoi}
           onClose={() => setSidebarOpen(false)}
         />
         <PanelResizeHandle edge="right" label="Resize filters panel" onResize={setSidebarWidth} />
@@ -193,6 +195,12 @@ export const CityExplorer = ({
             onClick={() => setSidebarOpen(true)}
             className={detailsOpen ? "hidden md:block" : undefined}
           />
+        )}
+        {detailsAsSheet && (
+          // Phones search from a bar over the map; the details sheet and filters cover it.
+          <div className="absolute inset-x-3 top-3 z-10">
+            <Search variant="floating" pois={pois} onSelect={searchPoi} />
+          </div>
         )}
         <Map
           coordinates={coordinates}

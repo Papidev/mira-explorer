@@ -41,7 +41,8 @@ export const Sidebar = ({
   onSelectOnlyCategory: (category: PoiCategory) => void;
   onToggleAll: () => void;
   onOpenPoi: (poiId: string) => void;
-  onSearchPoi: (poi: Poi) => void;
+  /** Omitted when search sits over the map instead. */
+  onSearchPoi?: (poi: Poi) => void;
   onClose: () => void;
 }) => {
   const [expanded, setExpanded] = useState(true);
@@ -60,9 +61,11 @@ export const Sidebar = ({
         <p className="text-ink-muted text-xs/5">Big city, huh? But you can filter what you want.</p>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
-      <div className="shrink-0 px-4 pt-3 pb-2">
-        <Search pois={pois} onSelect={onSearchPoi} />
-      </div>
+      {onSearchPoi && (
+        <div className="shrink-0 px-4 pt-3 pb-2">
+          <Search pois={pois} onSelect={onSearchPoi} />
+        </div>
+      )}
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-4">
         <fieldset className="border-line bg-surface space-y-2 rounded-xl border px-3 py-1">
           <legend className="sr-only">Category filters</legend>
