@@ -42,7 +42,7 @@ export const HomeNumbers = async () => {
             },
           ].map(({ value, label, short }) => (
             <div key={label} className="flex flex-col-reverse justify-end gap-1.5 sm:gap-2">
-              <dt className="text-ink-muted text-xs/5 sm:text-sm/6">
+              <dt className="text-ink-muted text-xs/5 sm:text-base/7">
                 <span className="sm:hidden">{short}</span>
                 <span className="max-sm:hidden">{label}</span>
               </dt>
@@ -52,9 +52,12 @@ export const HomeNumbers = async () => {
             </div>
           ))}
         </dl>
-        <p className="text-ink-muted mt-6 text-base/7 sm:mt-8">
-          The entire city is there, and you choose what to see. Use the filters to follow your
-          interests, one place at a time.
+        <p className="text-ink-muted mt-6 text-base/7 sm:mt-8 sm:text-lg/8">
+          <strong className="text-story-emphasis font-semibold">
+            Nothing is left off the map:
+          </strong>{" "}
+          every place of interest in Rome and its surroundings is there. Filter it down to what
+          interests you, or keep everything in view.
         </p>
         <RomeCta placement="numbers" label="Start with Rome" className="mt-6" />
       </div>
