@@ -18,8 +18,14 @@ permissions:
   contents: read
 
 jobs:
-  ci:
+  # Three parallel tracks of similar length; each repeats the ~20s setup.
+  checks:
+    name: checks (${{ matrix.task }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [static, test, build]
 
     steps:
       - name: Check out repository
@@ -46,51 +52,55 @@ jobs:
           fi
 
       - name: Set up pnpm
+        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
         uses: pnpm/action-setup@v6
         with:
           version: 10.18.0
 
       - name: Set up Node.js
+        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
         run: pnpm install --frozen-lockfile
 
       # Runs on every change, docs included, so unformatted files never reach main.
       - name: Check formatting
+        if: matrix.task == 'static'
         run: pnpm exec prettier --check .
 
       - name: Check application version
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
         env:
           RELEASE_BASE: ${{ inputs.release_base || github.event.pull_request.base.sha || github.event.before }}
         run: pnpm release:check "$RELEASE_BASE"
 
       - name: Test release policy
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
         run: node --test scripts/check-release.tests.mjs
 
       - name: Lint
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
         run: pnpm lint
 
       - name: Test
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'test'
         run: pnpm test
 
       - name: Test content API with isolated PostgreSQL
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
         run: pnpm test:content-database
 
       - name: Build
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'build'
         run: pnpm build
 
       - name: Check built app starts
-        if: steps.changes.outputs.run_checks == 'true'
+        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'build'
         run: |
           pnpm start --hostname 127.0.0.1 --port 3000 > /tmp/next-start.log 2>&1 &
           server_pid=$!
@@ -109,6 +119,15 @@ jobs:
 
           cat /tmp/next-start.log
           exit 1
+
+  # Single required status check for the main ruleset.
+  ci:
+    if: always()
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all checks to pass
+        run: test "${{ needs.checks.result }}" = success
 
   release-tag:
     if: github.event_name == 'push'
