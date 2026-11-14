@@ -54,3 +54,6 @@ next-env.d.ts
 
 # ide files
 /.idea/
+
+# Per-checkout dev server config for the Claude browser pane
+.claude/launch.json

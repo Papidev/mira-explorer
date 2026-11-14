@@ -43,6 +43,7 @@ Read `docs/agents/domain.md` before domain exploration.
 - Editorial workflows belong in Mira Admin. Keep the authenticated content API in Mira Explorer for private Admin clients.
 - The Rome map merges online publications with the build-generated local public catalog by POI ID or Wikidata identity. An online publication replaces the entire matching local POI; confirmed online removals suppress it. Only local-only POIs use local Stories and People. Online failures never select local replacements. Keep credentials and removal identities server-side. Online reads have a hard 60-second cache. The homepage retains its existing catalog and presentation; keep snapshot generation out of production request handlers.
 - Use `pnpm` exclusively for dependency management and scripts (do not use npm or yarn).
+- When creating `.claude/launch.json` to preview the app, use port 3000 if it is free, otherwise the first free port above it: other checkouts may already run a dev server.
 - If dependency installation fails, stop immediately and ask for help. Do not continue with alternative approaches intended to bypass the failed installation.
 - `pnpm lint` runs ESLint with the Next `core-web-vitals` rules plus `eslint-config-prettier` to keep formatting conflicts out.
 - Select local checks according to [Testing & Verification](#testing--verification), including before commits and PRs.
