@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.5
+
+### Patch Changes
+
+- Format the source files with Prettier and check formatting on every pull request. No visible change.
+
 ## 0.25.4
 
 ### Patch Changes
