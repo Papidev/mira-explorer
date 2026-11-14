@@ -277,6 +277,27 @@ describe("Map and its MapLibre adapter", () => {
     adapter.destroy();
   });
 
+  it("keeps unchanged markers and their open preview when places are sent again", async () => {
+    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
+    const container = document.createElement("div");
+    document.body.append(container);
+    adapter.mount(container);
+    adapter.updatePois(pois);
+    const forum = screen.getByRole("button", { name: "Open details for Forum Boarium" });
+    dispatchPointerEvent(forum, "pointerenter", "mouse");
+
+    adapter.updatePois(pois.map((poi) => ({ ...poi })));
+
+    expect(mapLibreFakes.markers).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Open details for Forum Boarium" })).toBe(forum);
+    expect(mapLibreFakes.popups[0].isOpen).toBe(true);
+
+    adapter.updatePois([pois[1]]);
+    expect(forum).not.toBeInTheDocument();
+    expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+    adapter.destroy();
+  });
+
   it("shows the matching preview on mouse hover and keyboard focus", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
 
