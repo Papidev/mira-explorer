@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.9
+
+### Patch Changes
+
+- 1cc67c4: Highlight that the Rome map covers every place of interest in the city and its surroundings, including lesser-known places most guides leave out. Rewrite the homepage curiosity and open-knowledge sections, explain how AI helps Mira cover and connect places, enlarge homepage body text, and use one highlight colour throughout.
+
 ## 0.25.8
 
 ### Patch Changes

@@ -58,7 +58,10 @@ export const Sidebar = ({
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
           <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
         </div>
-        <p className="text-ink-muted text-xs/5">Big city, huh? But you can filter what you want.</p>
+        <p className="text-ink-muted text-xs/5">
+          Every place of interest in Rome and its surroundings, hidden corners included. Filter to
+          what interests you.
+        </p>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
       {onSearchPoi && (

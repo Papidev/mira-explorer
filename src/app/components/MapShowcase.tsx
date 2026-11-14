@@ -11,16 +11,20 @@ export const MapShowcase = () => (
     <div className="text-ink flex flex-wrap items-end justify-between gap-5 sm:mb-7">
       <div className="min-w-0 flex-1 basis-2xl">
         <p className="text-ink-muted text-xs/5 font-semibold tracking-[0.2em] uppercase">
-          Beyond the familiar
+          Beyond the guidebook
         </p>
         <h2 id="map-showcase-title" className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
-          More of Rome to discover.
+          All of Rome, and beyond its walls.
         </h2>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
-        <p className="text-ink-muted mt-3 text-sm/6">
-          Our map makes room for the Rome beyond the famous sights: outlying neighbourhoods,
-          overlooked places, and corners better known to locals. Open a marker and discover a reason
-          to look closer.
+        <p className="text-ink-muted mt-4 max-w-3xl text-base/7 sm:text-lg/8">
+          Mira maps{" "}
+          <strong className="text-story-emphasis font-semibold">
+            every place of interest in Rome and its surroundings
+          </strong>
+          , not just the famous sights: outlying neighbourhoods, countryside ruins, castles, and
+          villas that rarely make it into the guidebooks. Many are worth the trip, and some are{" "}
+          <strong className="text-story-emphasis font-semibold">true hidden gems</strong>.
         </p>
         {/* Phones get a direct link: the wide screenshot would only scroll sideways there. */}
         <RomeCta

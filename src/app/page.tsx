@@ -90,7 +90,7 @@ const Home = () => {
                 className="text-ink mt-2 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight sm:mt-6 sm:text-6xl lg:text-7xl"
               >
                 Every place has a{" "}
-                <span className="text-accent decoration-brand italic underline decoration-4 underline-offset-8">
+                <span className="text-story-emphasis decoration-brand italic underline decoration-4 underline-offset-8">
                   story.
                 </span>
               </h1>
@@ -99,7 +99,7 @@ const Home = () => {
             {cover && <HomeHeroStory cover={cover} />}
 
             <div className="lg:col-start-1">
-              <div className="text-ink-muted space-y-4 text-base/7">
+              <div className="text-ink-muted space-y-4 text-base/7 sm:text-lg/8">
                 <p>
                   The landmarks draw you in. The unexpected discoveries make a city your own.
                   Explore the places you came to see and the quiet corners you might have missed.
@@ -127,13 +127,13 @@ const Home = () => {
                   </li>
                 ))}
               </ul>
-              <p className="text-ink-muted mt-6 max-w-md text-base/7">
-                <strong className="text-accent font-semibold">Mira begins in Rome.</strong> More
-                cities will follow.
+              <p className="text-ink-muted mt-6 max-w-md text-base/7 sm:text-lg/8">
+                <strong className="text-story-emphasis font-semibold">Mira begins in Rome.</strong>{" "}
+                More cities will follow.
               </p>
               <div className="max-lg:hidden">
                 <RomeCta placement="hero" className="mt-6" />
-                <p className="text-ink-subtle mt-4 text-sm">
+                <p className="text-ink-subtle mt-4 text-base">
                   From your doorstep, or from anywhere.
                 </p>
               </div>
@@ -163,15 +163,16 @@ const Home = () => {
                   id="shared-knowledge-title"
                   className="mt-3 max-w-sm font-serif text-3xl tracking-tight sm:text-4xl"
                 >
-                  Built on shared knowledge.
+                  Open knowledge, powered by AI.
                 </h2>
                 <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
               </div>
-              <div className="text-ink-muted max-w-2xl space-y-4 text-base/7">
+              <div className="text-ink-muted max-w-2xl space-y-4 text-base/7 sm:text-lg/8">
                 <p>
-                  Mira draws on the remarkable work of open knowledge communities: articles,
-                  structured knowledge, images, and geographic data that help us understand places
-                  and the lives connected to them.
+                  Every Story starts from{" "}
+                  <strong className="text-story-emphasis font-semibold">open knowledge</strong>:
+                  articles, structured data, images, and maps shared freely by volunteer communities
+                  around the world.
                 </p>
                 <ul className="grid gap-x-6 gap-y-4 py-2 sm:grid-cols-2" aria-label="Data sources">
                   {[
@@ -201,7 +202,7 @@ const Home = () => {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-ink decoration-line-strong hover:text-ink focus-visible:outline-focus flex items-center gap-3 rounded-sm text-sm font-medium underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+                        className="text-ink decoration-line-strong hover:text-ink focus-visible:outline-focus flex items-center gap-3 rounded-sm text-base font-medium underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
                       >
                         <Image
                           src={logo}
@@ -216,12 +217,16 @@ const Home = () => {
                   ))}
                 </ul>
                 <p>
-                  Every Story and Person profile keeps Wikipedia within reach. Start with a quick
-                  read on Mira, then follow the link whenever a detail leaves you wanting more.
+                  <strong className="text-story-emphasis font-semibold">
+                    AI is our power assistant.
+                  </strong>{" "}
+                  It reads these sources in several languages, drafts Stories for hundreds of
+                  places, and finds the people who connect them. That is how Mira can cover a whole
+                  city, outskirts included, and still go deep on every place.
                 </p>
                 <p>
-                  We use AI as an assistant to prepare Story drafts and suggest possible connections
-                  between places and people. The sources remain the foundation of what we share.
+                  The facts always come from the sources. Every Story stays grounded in them, and
+                  Wikipedia is one click away.
                 </p>
               </div>
             </section>
@@ -283,7 +288,7 @@ const Home = () => {
                         <h3 className="group-hover:text-ink mt-4 font-serif text-2xl/7 tracking-tight">
                           {poi.name}
                         </h3>
-                        <p className="text-ink-muted mt-2 line-clamp-3 text-sm/6">
+                        <p className="text-ink-muted mt-2 line-clamp-3 text-base/7">
                           {poi.previewDescription}
                         </p>
                       </Link>
@@ -315,7 +320,7 @@ const Home = () => {
               <h2 id="final-cta-title" className="font-serif text-3xl tracking-tight sm:text-4xl">
                 Rome is waiting.
               </h2>
-              <p className="mt-3 max-w-md text-base/7 text-white/85">
+              <p className="mt-3 max-w-md text-base/7 text-white/85 sm:text-lg/8">
                 Open the map and follow the first story that catches your eye.
               </p>
             </div>

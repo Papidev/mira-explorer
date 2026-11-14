@@ -39,7 +39,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
       </div>
       {/* Only where it fits on the header row; it never wraps onto a line of its own. */}
       <p className="hidden text-sm/5 text-white/90 [text-box:trim-both_cap_alphabetic] 2xl:mr-auto 2xl:block">
-        Ancient ruins, Baroque squares, and the stories between.
+        Every place worth knowing, in Rome and beyond its walls.
       </p>
       <div className="ml-auto flex items-center gap-4 2xl:ml-0">
         {counts && (
