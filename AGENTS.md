@@ -28,6 +28,7 @@ Read `docs/agents/domain.md` before domain exploration.
 ## Before Starting Work
 
 - Before starting further work on the current branch, check whether its pull request has already been merged. If it has, create a new `feat/` branch from updated `main` before making any changes, even if the current branch still exists locally. Check the PR's merge status rather than Git ancestry, because squash merges do not preserve the branch commits.
+- Before working on a branch with commits not yet on main, compare `git log --oneline origin/main..HEAD` with `git log --oneline -10 origin/main`. A matching subject means the work already merged from another branch, for example from a parallel session or worktree: start again from main.
 - Always work on a branch, never on `main`.
 - Before creating a feature branch, fetch `origin/main` and verify that local `main` points to the same commit. If they differ, align `main` before creating the branch.
 - If needed, create a branch before coding (example: `git checkout -b feat/<short-name>`).
