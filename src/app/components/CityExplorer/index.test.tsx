@@ -1310,4 +1310,22 @@ describe("phone place search", () => {
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("museum");
   });
+  it("lists places only while the filters panel is open or closing", async () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query === "(max-width: 767px)",
+      addEventListener() {},
+      removeEventListener() {},
+    }));
+    vi.stubGlobal("innerWidth", 375);
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    const placeRow = () => screen.queryByRole("button", { name: "A Museum", hidden: true });
+
+    expect(placeRow()).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Open filters" }));
+    expect(placeRow()).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Close filters" }));
+    await waitFor(() => expect(placeRow()).not.toBeInTheDocument());
+  });
 });

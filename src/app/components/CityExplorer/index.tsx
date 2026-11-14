@@ -57,6 +57,9 @@ export const CityExplorer = ({
   const isDesktop = useDesktopLayout();
   const isPhone = usePhoneLayout();
   const sidebarVisible = sidebarOpen ?? isDesktop;
+  // A closed sidebar still holds ~1,000 place rows; drop them once it has slid away.
+  const [placesListed, setPlacesListed] = useState(sidebarVisible);
+  if (sidebarVisible && !placesListed) setPlacesListed(true);
   const [sidebarWidth, setSidebarWidth] = useState<number>();
   const [detailsWidth, setDetailsWidth] = useState<number>();
   const openFiltersSwipe = useFilterSwipe("right", () => setSidebarOpen(true));
@@ -122,13 +125,14 @@ export const CityExplorer = ({
         open={sidebarVisible}
         side="left"
         width={sidebarWidth}
+        afterLeave={() => setPlacesListed(false)}
         {...closeFiltersSwipe}
         className="z-30 touch-pan-y lg:w-[var(--panel-width,22rem)]"
       >
         <Sidebar
           categoryDefinitions={categoryDefinitions}
           pois={pois}
-          visiblePois={visiblePois}
+          visiblePois={placesListed ? visiblePois : []}
           selectedCategories={selectedCategories}
           availableCategories={availableCategories}
           allCategoriesSelected={allCategoriesSelected}
