@@ -1,10 +1,16 @@
 # mira-explorer
 
-## 0.25.12
+## 0.25.13
 
 ### Patch Changes
 
 - Show each place's stored catalog name everywhere, and keep its Wikidata types after a rename.
+
+## 0.25.12
+
+### Patch Changes
+
+- 91d5018: Draw the Rome map's places on the map itself instead of as separate page elements, so panning and zooming stay smooth on phones. Keyboard and screen reader users reach every place through the places list and search.
 
 ## 0.25.11
 
