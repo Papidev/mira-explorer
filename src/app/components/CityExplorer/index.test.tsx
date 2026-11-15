@@ -12,10 +12,10 @@ vi.mock("maplibre-gl", () => import("../Map/maplibreFake"));
 import { CityExplorer } from ".";
 import {
   cameraUpdates,
-  clickMapPin,
-  mapPinNames,
+  clickMapMarker,
+  mapMarkerNames,
   resetMapLibreFakes,
-  selectedMapPinName,
+  selectedMapMarkerName,
 } from "../Map/maplibreFake";
 
 const pois: Poi[] = (
@@ -27,7 +27,7 @@ const pois: Poi[] = (
   ] satisfies Array<Pick<Poi, "id" | "name" | "categories">>
 ).map((poi, index) => ({
   city: "Rome",
-  // Apart, so each pin can be hovered and clicked on its own.
+  // Apart, so each marker can be hovered and clicked on its own.
   coordinates: { lat: 41, lng: 12 + index * 0.01 },
   funFacts: [],
   ...poi,
@@ -285,31 +285,31 @@ describe("visitor category filtering", () => {
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     await user.click(screen.getByRole("button", { name: "Show subcategories for Religion" }));
     expect(getListedPlaces()).toHaveLength(4);
-    expect(mapPinNames()).toContain("An Unclassified Place");
+    expect(mapMarkerNames()).toContain("An Unclassified Place");
     for (const checkbox of screen.getAllByRole("checkbox")) expect(checkbox).toBeChecked();
     await user.click(screen.getByRole("checkbox", { name: "All categories" }));
     await user.click(screen.getByRole("checkbox", { name: "Churches" }));
     expect(screen.getByRole("checkbox", { name: "All categories" })).toBePartiallyChecked();
     expect(getListedPlaces()).toHaveLength(2);
-    expect(mapPinNames()).not.toContain("An Unclassified Place");
-    expect(mapPinNames()).not.toContain("A Museum");
+    expect(mapMarkerNames()).not.toContain("An Unclassified Place");
+    expect(mapMarkerNames()).not.toContain("A Museum");
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
     expect(getListedPlaces()).toHaveLength(4);
     expect(screen.getByRole("checkbox", { name: "All categories" })).toBeChecked();
-    expect(mapPinNames().filter((name) => name === "A Church Museum")).toHaveLength(1);
+    expect(mapMarkerNames().filter((name) => name === "A Church Museum")).toHaveLength(1);
     await user.click(screen.getByRole("checkbox", { name: "Churches" }));
     expect(getListedPlaces()).toHaveLength(2);
-    expect(mapPinNames()).not.toContain("A Church");
+    expect(mapMarkerNames()).not.toContain("A Church");
     await user.click(screen.getByRole("checkbox", { name: "All categories" }));
     await user.click(screen.getByRole("checkbox", { name: "All categories" }));
     expect(getListedPlaces()).toHaveLength(0);
-    expect(mapPinNames()).toEqual([]);
+    expect(mapMarkerNames()).toEqual([]);
     expect(screen.getByRole("checkbox", { name: "All categories" })).not.toBeChecked();
     expect(screen.getByRole("checkbox", { name: "All categories" })).not.toBePartiallyChecked();
     expect(screen.getByRole("checkbox", { name: "Museums" })).not.toBeChecked();
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
     expect(getListedPlaces()).toHaveLength(2);
-    expect(mapPinNames()).toContain("A Museum");
+    expect(mapMarkerNames()).toContain("A Museum");
     expect(screen.getByRole("checkbox", { name: "All categories" })).toBePartiallyChecked();
     await user.click(screen.getByRole("button", { name: "Hide categories" }));
     expect(screen.queryByRole("checkbox", { name: "Museums" })).not.toBeInTheDocument();
@@ -320,7 +320,7 @@ describe("visitor category filtering", () => {
     for (const checkbox of screen.getAllByRole("checkbox")) expect(checkbox).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "All categories" })).not.toBePartiallyChecked();
     expect(getListedPlaces()).toHaveLength(4);
-    expect(mapPinNames()).toContain("An Unclassified Place");
+    expect(mapMarkerNames()).toContain("An Unclassified Place");
     await user.keyboard(" ");
     for (const checkbox of screen.getAllByRole("checkbox")) expect(checkbox).not.toBeChecked();
     expect(getListedPlaces()).toHaveLength(0);
@@ -353,7 +353,7 @@ describe("visitor category filtering", () => {
       />,
     );
     expect(screen.queryByRole("button", { name: "Open filters" })).not.toBeInTheDocument();
-    expect(selectedMapPinName()).toBe("A Museum");
+    expect(selectedMapMarkerName()).toBe("A Museum");
     await user.click(screen.getByRole("button", { name: "Close filters" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Open filters" }));
@@ -381,11 +381,11 @@ describe("visitor category filtering", () => {
     );
     expect(screen.getByRole("heading", { name: "A Church" })).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("church");
-    expect(selectedMapPinName()).toBe("A Church");
+    expect(selectedMapMarkerName()).toBe("A Church");
     expect(await screen.findByText("A real story response.")).toBeInTheDocument();
     await user.click(screen.getByRole("checkbox", { name: "Churches" }));
     expect(getListedPlaces()).toHaveLength(0);
-    expect(mapPinNames()).toEqual([]);
+    expect(mapMarkerNames()).toEqual([]);
     expect(screen.queryByRole("heading", { name: "A Church" })).not.toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).has("poi")).toBe(false);
     window.history.back();
@@ -411,8 +411,8 @@ describe("visitor category filtering", () => {
     );
     expect(window.history.length).toBe(historyLength);
     await user.click(screen.getByRole("button", { name: "Close" }));
-    expect(mapPinNames()).toContain("A Museum");
-    expect(selectedMapPinName()).not.toBe("A Museum");
+    expect(mapMarkerNames()).toContain("A Museum");
+    expect(selectedMapMarkerName()).not.toBe("A Museum");
     expect(window.location.search).toBe("?source=shared");
     window.history.back();
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeInTheDocument();
@@ -510,14 +510,14 @@ describe("visitor category filtering", () => {
     expect(screen.getByRole("checkbox", { name: "Churches" })).not.toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Basilicas" })).not.toBeChecked();
     expect(getListedPlaces()).toHaveLength(0);
-    expect(mapPinNames()).toEqual([]);
+    expect(mapMarkerNames()).toEqual([]);
     await user.click(screen.getByRole("checkbox", { name: "Religion" }));
     await user.click(screen.getByRole("checkbox", { name: "Churches" }));
     expect(screen.getByRole("checkbox", { name: "Religion" })).not.toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Religion" })).toBePartiallyChecked();
     expect(screen.getByRole("checkbox", { name: "Basilicas" })).toBeChecked();
     expect(getListedPlaces()).toHaveLength(2);
-    expect(mapPinNames()).not.toContain("A Church");
+    expect(mapMarkerNames()).not.toContain("A Church");
     expect(screen.queryByRole("heading", { name: "A Basilica" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
     expect(getListedPlaces()).toHaveLength(4);
@@ -595,7 +595,7 @@ it("changes the visitor category-filter results after a Curator saves a shared t
     );
     await user.click(screen.getByRole("checkbox", { name: "Religion" }));
     expect(getListedPlaces()).toHaveLength(1);
-    expect(mapPinNames()).not.toContain("A Church");
+    expect(mapMarkerNames()).not.toContain("A Church");
     visitor.unmount();
     repository.save("Q16970", ["Church", "Museum"]);
     render(
@@ -608,8 +608,8 @@ it("changes the visitor category-filter results after a Curator saves a shared t
     );
     await user.click(screen.getByRole("checkbox", { name: "Religion" }));
     expect(getListedPlaces()).toHaveLength(2);
-    expect(mapPinNames()).toContain("A Church");
-    expect(mapPinNames()).toContain("A Museum");
+    expect(mapMarkerNames()).toContain("A Church");
+    expect(mapMarkerNames()).toContain("A Museum");
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -643,7 +643,7 @@ it("shows newly created categories and preserves filter membership when a catego
   await user.click(screen.getByRole("checkbox", { name: "All categories" }));
   await user.click(screen.getByRole("checkbox", { name: "A lookout" }));
   expect(getListedPlaces()).toHaveLength(1);
-  expect(mapPinNames()).toContain("A Lookout");
+  expect(mapMarkerNames()).toContain("A Lookout");
   view.rerender(
     <CityExplorer
       citySlug="rome"
@@ -763,7 +763,7 @@ describe("category filter tree", () => {
     );
     expect(screen.getByRole("checkbox", { name: "Cultural places" })).toBePartiallyChecked();
     expect(screen.getByRole("checkbox", { name: "All categories" })).toBePartiallyChecked();
-    expect(mapPinNames()).not.toContain("A Cultural Place");
+    expect(mapMarkerNames()).not.toContain("A Cultural Place");
     await user.click(
       screen.getByRole("button", { name: "Hide subcategories for Cultural places" }),
     );
@@ -784,7 +784,7 @@ describe("category filter tree", () => {
       "All",
     );
     expect(getListedPlaces()).toHaveLength(6);
-    expect(mapPinNames()).toContain("An Unclassified Place");
+    expect(mapMarkerNames()).toContain("An Unclassified Place");
   });
 
   it("selects all children from a mixed parent and clears them from a checked parent", async () => {
@@ -829,7 +829,7 @@ describe("category filter tree", () => {
     expect(screen.getByRole("checkbox", { name: "Monument" })).not.toBeChecked();
     expect(screen.getByRole("checkbox", { name: "All categories" })).toBePartiallyChecked();
     expect(getListedPlaces()).toHaveLength(4);
-    expect(mapPinNames()).toContain("A Cultural Place");
+    expect(mapMarkerNames()).toContain("A Cultural Place");
     expect(
       within(screen.getByRole("complementary", { name: "Discover places" })).getAllByRole(
         "listitem",
@@ -841,7 +841,7 @@ describe("category filter tree", () => {
       expect(checkbox).not.toBePartiallyChecked();
     }
     expect(getListedPlaces()).toHaveLength(0);
-    expect(mapPinNames()).toEqual([]);
+    expect(mapMarkerNames()).toEqual([]);
   });
 
   it("completes a parent from individual children without selecting another group", async () => {
@@ -902,25 +902,25 @@ it("centers the selected marker in the visible map from both the map and the lis
       ]}
     />,
   );
-  clickMapPin("A Church");
+  clickMapMarker("A Church");
   expect(cameraUpdates.at(-1)).toMatchObject({
     center: [12.45, 41.9],
     offset: [-48, 0],
     duration: 600,
   });
-  expect(selectedMapPinName()).toBe("A Church");
+  expect(selectedMapMarkerName()).toBe("A Church");
 
   cameraUpdates.length = 0;
   await user.click(screen.getByRole("button", { name: "A Museum" }));
   expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.89], offset: [-48, 0] }]);
   expect(cameraUpdates[0].duration).toBeGreaterThan(600);
-  expect(selectedMapPinName()).toBe("A Museum");
-  expect(mapPinNames()).toContain("A Church");
+  expect(selectedMapMarkerName()).toBe("A Museum");
+  expect(mapMarkerNames()).toContain("A Church");
   expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
 
   await user.click(screen.getByRole("button", { name: "Close filters" }));
   expect(cameraUpdates).toHaveLength(1);
-  clickMapPin("A Museum");
+  clickMapMarker("A Museum");
   expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.89], offset: [-224, 0] });
 });
 
@@ -953,7 +953,7 @@ describe("visitor place search", () => {
     expect(screen.getAllByRole("option")).toHaveLength(2);
     await user.keyboard("{ArrowDown}{ArrowUp}{Enter}");
     expect(await screen.findByRole("heading", { name: "Café Museum" })).toBeVisible();
-    expect(selectedMapPinName()).toBe("Café Museum");
+    expect(selectedMapMarkerName()).toBe("Café Museum");
     expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.8], offset: [-48, 0] });
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("cafe");
     expect(search).toHaveValue("");
@@ -998,10 +998,10 @@ describe("visitor place search", () => {
     expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Religion" })).not.toBeChecked();
     expect(getListedPlaces()).toHaveLength(2);
-    expect(selectedMapPinName()).toBe("A Church");
+    expect(selectedMapMarkerName()).toBe("A Church");
     expect(await screen.findByText("A real story response.")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Close" }));
-    expect(mapPinNames()).not.toContain("A Church");
+    expect(mapMarkerNames()).not.toContain("A Church");
     expect(screen.getByRole("checkbox", { name: "Museums" })).toBeChecked();
     expect(getListedPlaces()).toHaveLength(2);
   });
@@ -1016,15 +1016,15 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Church" }));
     await user.type(search, "A Museum");
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
-    expect(mapPinNames()).not.toContain("A Church");
-    expect(selectedMapPinName()).toBe("A Museum");
+    expect(mapMarkerNames()).not.toContain("A Church");
+    expect(selectedMapMarkerName()).toBe("A Museum");
     expect(getListedPlaces()).toHaveLength(0);
     expect(screen.getByRole("checkbox", { name: "All categories" })).not.toBeChecked();
     await user.click(screen.getByRole("checkbox", { name: "Religion" }));
     expect(screen.getByText("This place is excluded by your active filters.")).toBeVisible();
-    clickMapPin("A Church");
+    clickMapMarker("A Church");
     expect(await screen.findByRole("heading", { name: "A Church" })).toBeVisible();
-    expect(mapPinNames()).not.toContain("A Museum");
+    expect(mapMarkerNames()).not.toContain("A Museum");
     expect(
       screen.queryByText("This place is excluded by your active filters."),
     ).not.toBeInTheDocument();
