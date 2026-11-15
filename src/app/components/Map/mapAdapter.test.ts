@@ -263,6 +263,22 @@ describe("Map and its MapLibre adapter", () => {
     expect(fakePopups[0].isOpen).toBe(false);
   });
 
+  it("keeps the preview open when the pointer leaves the pin for the popup covering it", async () => {
+    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+
+    hoverMapPin("Forum Boarium");
+    const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
+    const popup = fakePopups[0].container;
+    // Boundary events: the popup is entered before the map reports the pointer leaving.
+    dispatchPointerEvent(popup, "pointerenter", "mouse");
+    leaveMap(popup);
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    expect(heading).toBeInTheDocument();
+
+    dispatchPointerEvent(popup, "pointerleave", "mouse");
+    await waitFor(() => expect(heading).not.toBeInTheDocument());
+  });
+
   it("keeps the preview open over its pointer and closes it after leaving the popup", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
 

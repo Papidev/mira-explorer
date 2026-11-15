@@ -5,7 +5,7 @@ import { act } from "@testing-library/react";
 import type { EaseToOptions } from "maplibre-gl";
 
 type Feature = { properties: Record<string, unknown> };
-type Handler = (event: { point: { x: number; y: number } }) => void;
+type Handler = (event: { point: { x: number; y: number }; originalEvent?: Event }) => void;
 
 export const fakeMaps: FakeMap[] = [];
 export const fakePopups: FakePopup[] = [];
@@ -108,8 +108,10 @@ class FakeMap {
   features() {
     return [...this.sources.values()].flatMap(({ data }) => data.features);
   }
-  fire(type: string) {
-    this.handlers.get(type)?.forEach((handler) => handler({ point: { x: 0, y: 0 } }));
+  fire(type: string, originalEvent?: Event) {
+    this.handlers
+      .get(type)
+      ?.forEach((handler) => handler({ point: { x: 0, y: 0 }, originalEvent }));
   }
   remove() {
     this.removed = true;
@@ -195,7 +197,9 @@ const pointAt = (name: string | null) => {
 export const hoverMapPin = (name: string | null) => act(() => pointAt(name).fire("mousemove"));
 /** Clicks or taps a place's pin, or empty map with `null`. */
 export const clickMapPin = (name: string | null) => act(() => pointAt(name).fire("click"));
-export const leaveMap = () => act(() => pointAt(null).fire("mouseout"));
+/** Moves the mouse off the map, optionally onto `to` (such as the preview popup). */
+export const leaveMap = (to?: Element) =>
+  act(() => pointAt(null).fire("mouseout", new MouseEvent("mouseout", { relatedTarget: to })));
 
 export { FakeMap as Map, FakePopup as Popup, NavigationControl };
 const maplibregl = { Map: FakeMap, Popup: FakePopup, NavigationControl };

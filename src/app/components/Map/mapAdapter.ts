@@ -114,7 +114,12 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     hoveredPoiId = poi?.id ?? null;
   };
   const handleMouseMove = (event: MapMouseEvent) => setHoveredPoi(poiAt(event.point));
-  const handleMouseOut = () => setHoveredPoi(undefined);
+  const handleMouseOut = ({ originalEvent }: MapMouseEvent) => {
+    // The preview covers its pin; the popup's own pointerleave closes it from there.
+    const to = originalEvent.relatedTarget;
+    if (to instanceof Node && previewPopup?.getElement()?.contains(to)) hoveredPoiId = null;
+    setHoveredPoi(undefined);
+  };
 
   const cancelPreviewClose = () => {
     if (previewCloseTimeout) {
