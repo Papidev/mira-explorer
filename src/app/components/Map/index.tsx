@@ -3,11 +3,6 @@
 import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from "react";
 import { createPortal, flushSync } from "react-dom";
 import type { Poi } from "@/types/Poi";
-import {
-  DEFAULT_POI_CATEGORY_DEFINITIONS,
-  type PoiCategory,
-  type PoiCategoryDefinition,
-} from "@/types/PoiCategory";
 import "./markers.css";
 import "./controls.css";
 import {
@@ -15,6 +10,7 @@ import {
   type CoveredArea,
   type MapAdapter,
   type MapPreview,
+  type PoiMarker,
 } from "./mapAdapter";
 
 export type { CoveredArea };
@@ -23,10 +19,8 @@ import { PoiPreviewCard } from "./PoiPreviewCard";
 type Props = {
   coordinates: [number, number];
   zoom: number;
-  pois: Poi[];
+  markers: PoiMarker[];
   selectedPoiId?: string | null;
-  categoryDefinitions?: PoiCategoryDefinition[];
-  selectedCategories?: PoiCategory[];
   onZoomChange?: (zoom: number) => void;
   onOpenPoiDetails?: (poiId: string) => void;
   onMapClick?: () => void;
@@ -46,10 +40,8 @@ const ZOOM_EPSILON = 0.001;
 export const Map = ({
   coordinates,
   zoom,
-  pois,
+  markers,
   selectedPoiId = null,
-  categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
-  selectedCategories,
   onZoomChange,
   onOpenPoiDetails,
   onMapClick,
@@ -135,8 +127,8 @@ export const Map = ({
   }, [zoom]);
 
   useEffect(() => {
-    adapterRef.current?.updatePois(pois, categoryDefinitions, selectedCategories);
-  }, [pois, categoryDefinitions, selectedCategories]);
+    adapterRef.current?.updatePois(markers);
+  }, [markers]);
 
   useEffect(() => {
     adapterRef.current?.updateSelectedPoi(selectedPoiId);

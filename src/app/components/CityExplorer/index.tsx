@@ -2,15 +2,15 @@
 
 import {
   DEFAULT_POI_CATEGORY_DEFINITIONS,
-  matchesPoiCategory,
   type PoiCategory,
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
+import { categoryFilter, type CategorySelection } from "@/types/PoiCategory/filter";
 import { Sidebar } from "./Sidebar";
 import { Search } from "./Search";
 import { useFilterSwipe } from "./useFilterSwipe";
 import { useSelectedPoi } from "./useSelectedPoi";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { DrawerTab } from "@/app/components/ui/DrawerTab";
 import { Drawer } from "@/app/components/ui/Drawer";
@@ -44,18 +44,11 @@ export const CityExplorer = ({
   pois,
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
 }: Props) => {
-  const availableCategories = categoryDefinitions
-    .map(({ id }) => id)
-    .filter((category) =>
-      pois.some((poi) => matchesPoiCategory(poi.categories, category, categoryDefinitions)),
-    );
-  const [categorySelection, setSelectedCategories] = useState<PoiCategory[] | null>(null);
-  const selectedCategories = (categorySelection ?? availableCategories).filter((id) =>
-    categoryDefinitions.some((category) => category.id === id),
+  const [categorySelection, setSelectedCategories] = useState<CategorySelection>(null);
+  const filter = useMemo(
+    () => categoryFilter(categoryDefinitions, pois, categorySelection),
+    [categoryDefinitions, pois, categorySelection],
   );
-  const allCategoriesSelected =
-    availableCategories.length > 0 &&
-    availableCategories.every((category) => selectedCategories.includes(category));
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   const { detailsAsSheet, sidebarBesideMap } = useViewport();
   const sidebarVisible = sidebarOpen ?? sidebarBesideMap;
@@ -76,14 +69,7 @@ export const CityExplorer = ({
   const [previousSelectedPoiId, setPreviousSelectedPoiId] = useState(selectedPoiId);
   const [openRequestId, setOpenRequestId] = useState(0);
   const [searchPoiId, setSearchPoiId] = useState<string | null>(null);
-  const visiblePois = pois.filter(
-    (poi) =>
-      selectedCategories.length > 0 &&
-      (allCategoriesSelected ||
-        selectedCategories.some((category) =>
-          matchesPoiCategory(poi.categories, category, categoryDefinitions),
-        )),
-  );
+  const visiblePois = filter.visible;
   const selectedPoi = selectedPoiId
     ? (searchPoiId === selectedPoiId ? pois : visiblePois).find((poi) => poi.id === selectedPoiId)
     : undefined;
@@ -101,15 +87,19 @@ export const CityExplorer = ({
     if (
       selectedPoi &&
       searchPoiId !== selectedPoiId &&
-      (!next.length ||
-        (!availableCategories.every((category) => next.includes(category)) &&
-          !next.some((category) =>
-            matchesPoiCategory(selectedPoi.categories, category, categoryDefinitions),
-          )))
+      categoryFilter(categoryDefinitions, pois, next).excludes(selectedPoi)
     ) {
       selectPoi(null);
     }
   };
+  const markers = useMemo(
+    () =>
+      (searchExcluded && selectedPoi ? [...visiblePois, selectedPoi] : visiblePois).map((poi) => ({
+        poi,
+        color: filter.markerColor(poi),
+      })),
+    [filter, visiblePois, searchExcluded, selectedPoi],
+  );
   const openPoi = (poiId: string) => {
     selectPoi(poiId);
     if (poiId === selectedPoiId) setOpenRequestId((current) => current + 1);
@@ -142,46 +132,11 @@ export const CityExplorer = ({
           categoryDefinitions={categoryDefinitions}
           pois={pois}
           visiblePois={placesListed ? visiblePois : []}
-          selectedCategories={selectedCategories}
-          availableCategories={availableCategories}
-          allCategoriesSelected={allCategoriesSelected}
+          filter={filter}
           selectedPoiId={selectedPoiId}
-          onToggleCategory={(category) => {
-            const children: PoiCategory[] = categoryDefinitions
-              .filter(({ parent }) => parent === category)
-              .map(({ id }) => id);
-            const parent = categoryDefinitions.find(
-              (definition) => definition.id === category,
-            )?.parent;
-            const next = selectedCategories.includes(category)
-              ? selectedCategories.filter(
-                  (selected) =>
-                    selected !== category && !children.includes(selected) && selected !== parent,
-                )
-              : [...new Set([...selectedCategories, category, ...children])];
-            if (
-              parent &&
-              !next.includes(parent) &&
-              categoryDefinitions
-                .filter(
-                  (definition) =>
-                    definition.parent === parent && availableCategories.includes(definition.id),
-                )
-                .every((definition) => next.includes(definition.id))
-            ) {
-              next.push(parent);
-            }
-            updateCategories(next);
-          }}
-          onSelectOnlyCategory={(category) =>
-            updateCategories([
-              category,
-              ...categoryDefinitions
-                .filter(({ parent }) => parent === category)
-                .map(({ id }) => id),
-            ])
-          }
-          onToggleAll={() => updateCategories(allCategoriesSelected ? [] : availableCategories)}
+          onToggleCategory={(category) => updateCategories(filter.toggle(category))}
+          onSelectOnlyCategory={(category) => updateCategories(filter.selectOnly(category))}
+          onToggleAll={() => updateCategories(filter.toggleAll())}
           onOpenPoi={openPoi}
           onSearchPoi={detailsAsSheet ? undefined : searchPoi}
           onClose={() => setSidebarOpen(false)}
@@ -209,12 +164,10 @@ export const CityExplorer = ({
         <Map
           coordinates={coordinates}
           zoom={zoom}
-          pois={searchExcluded && selectedPoi ? [...visiblePois, selectedPoi] : visiblePois}
+          markers={markers}
           focusRequest={selectedPoi ? { poi: selectedPoi, requestId: openRequestId } : undefined}
           coveredArea={coveredArea}
           selectedPoiId={selectedPoiId}
-          categoryDefinitions={categoryDefinitions}
-          selectedCategories={selectedCategories}
           onZoomChange={setZoom}
           onOpenPoiDetails={openPoi}
           onMapClick={() => selectPoi(null)}

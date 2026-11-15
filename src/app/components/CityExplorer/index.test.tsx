@@ -1095,7 +1095,7 @@ describe("visitor place search", () => {
     expect(window.location.hash).toBe("#map");
     await user.click(screen.getByRole("button", { name: "Vespasian" }));
     expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
-    clickMapPin("Renamed Colosseum");
+    clickMapMarker("Renamed Colosseum");
     expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
   });
 

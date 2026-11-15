@@ -52,6 +52,8 @@ const dispatchPointerEvent = (element: HTMLElement, type: string, pointerType: s
   act(() => element.dispatchEvent(event));
 };
 
+const markersOf = (places: Poi[]) => places.map((poi) => ({ poi, color: "#3FB1CE" }));
+
 const mountAdapter = () => {
   const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
   const container = document.createElement("div");
@@ -74,7 +76,7 @@ describe("Map and its MapLibre adapter", () => {
         createElement(
           StrictMode,
           null,
-          createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }),
+          createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
         ),
       );
       hoverMapMarker("Forum Boarium");
@@ -102,7 +104,7 @@ describe("Map and its MapLibre adapter", () => {
     adapter.setOnMapClick(onMapClick);
     adapter.setOnOpenPoiDetails(onOpenPoiDetails);
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois(markersOf(pois));
 
     clickMapMarker(null);
     expect(onMapClick).toHaveBeenCalledOnce();
@@ -117,7 +119,7 @@ describe("Map and its MapLibre adapter", () => {
     const { adapter, container } = mountAdapter();
     adapter.updateSelectedPoi("forum-boarium");
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois(markersOf(pois));
 
     expect(mapMarkerNames()).toEqual(["Forum Boarium", "Cloisters of Bramante"]);
     expect(container.querySelector(".maplibregl-marker")).toBeNull();
@@ -125,7 +127,7 @@ describe("Map and its MapLibre adapter", () => {
     adapter.updateSelectedPoi("cloisters-of-bramante");
     expect(selectedMapMarkerName()).toBe("Cloisters of Bramante");
 
-    adapter.updatePois([pois[1]]);
+    adapter.updatePois(markersOf([pois[1]]));
     expect(mapMarkerNames()).toEqual(["Cloisters of Bramante"]);
     expect(selectedMapMarkerName()).toBe("Cloisters of Bramante");
     adapter.updateSelectedPoi(null);
@@ -136,7 +138,7 @@ describe("Map and its MapLibre adapter", () => {
   it("draws the markers again after the theme swaps the map style", () => {
     const { adapter, container } = mountAdapter();
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois(markersOf(pois));
     adapter.updateSelectedPoi("forum-boarium");
 
     act(() => fakeMaps[0].setStyle("https://tiles.openfreemap.org/styles/fiord"));
@@ -146,38 +148,36 @@ describe("Map and its MapLibre adapter", () => {
     adapter.destroy();
   });
 
-  it("colors markers by category and a place shared by two groups with the active group's color", () => {
+  it("draws each marker in the color it is given", () => {
     const { adapter, container } = mountAdapter();
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois([
+      { poi: pois[0], color: "#3FB1CE" },
+      { poi: pois[1], color: "#facc15" },
+    ]);
     expect(mapMarkers().map(({ color }) => color)).toEqual(["#3FB1CE", "#facc15"]);
-    const sharedPoi = { ...pois[1], categories: ["Museum", "Castle"] };
-
-    adapter.updatePois([sharedPoi], undefined, ["Architecture", "Castle"]);
-    expect(mapMarkers()[0].color).toBe("#ea580c");
-
-    adapter.updatePois([sharedPoi], undefined, ["Arts & Culture", "Museum"]);
-    expect(mapMarkers()[0].color).toBe("#10b981");
     adapter.destroy();
   });
 
   it("keeps an open preview when places are sent again and closes it when its place goes", () => {
     const { adapter, container } = mountAdapter();
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois(markersOf(pois));
     hoverMapMarker("Forum Boarium");
 
-    adapter.updatePois(pois.map((poi) => ({ ...poi })));
+    adapter.updatePois(markersOf(pois.map((poi) => ({ ...poi }))));
     expect(fakePopups[0].isOpen).toBe(true);
     expect(fakePopups[0].additions).toBe(1);
 
-    adapter.updatePois([pois[1]]);
+    adapter.updatePois(markersOf([pois[1]]));
     expect(fakePopups[0].isOpen).toBe(false);
     adapter.destroy();
   });
 
   it("shows the matching preview while the mouse is over a marker", async () => {
-    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    render(
+      createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
+    );
     const canvas = fakeMaps[0].getCanvas();
 
     hoverMapMarker("Forum Boarium");
@@ -210,7 +210,7 @@ describe("Map and its MapLibre adapter", () => {
     adapter.mount(container);
     // Ten pixels apart: both markers cover a point between their tips.
     const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
-    adapter.updatePois([pois[0], neighbor]);
+    adapter.updatePois(markersOf([pois[0], neighbor]));
     const forum = mapMarkerHead("Forum Boarium");
     const overlap = { x: forum.x + 6, y: forum.y };
 
@@ -233,7 +233,9 @@ describe("Map and its MapLibre adapter", () => {
   });
 
   it("updates preview content before positioning it at another marker", async () => {
-    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    render(
+      createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
+    );
 
     hoverMapMarker("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
@@ -248,7 +250,9 @@ describe("Map and its MapLibre adapter", () => {
   });
 
   it("keeps the same preview attached when the mouse returns to its marker", async () => {
-    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    render(
+      createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
+    );
 
     hoverMapMarker("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
@@ -269,7 +273,7 @@ describe("Map and its MapLibre adapter", () => {
       createElement(Map, {
         coordinates: [12.481, 41.889],
         zoom: 15,
-        pois,
+        markers: markersOf(pois),
         onOpenPoiDetails,
         onMapClick,
       }),
@@ -294,7 +298,9 @@ describe("Map and its MapLibre adapter", () => {
   });
 
   it("keeps the preview open when the pointer leaves the marker for the popup covering it", async () => {
-    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    render(
+      createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
+    );
 
     hoverMapMarker("Forum Boarium");
     const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
@@ -310,7 +316,9 @@ describe("Map and its MapLibre adapter", () => {
   });
 
   it("keeps the preview open over its pointer and closes it after leaving the popup", async () => {
-    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    render(
+      createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, markers: markersOf(pois) }),
+    );
 
     hoverMapMarker("Forum Boarium");
     const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
@@ -333,7 +341,7 @@ describe("Map and its MapLibre adapter", () => {
       createElement(Map, {
         coordinates: [12.481, 41.889],
         zoom: 15,
-        pois,
+        markers: markersOf(pois),
         onOpenPoiDetails,
         onMapClick,
       }),
@@ -354,7 +362,7 @@ describe("Map and its MapLibre adapter", () => {
       createElement(Map, {
         coordinates: [12.481, 41.889],
         zoom: 15,
-        pois,
+        markers: markersOf(pois),
         onOpenPoiDetails: (poiId) => openedPoiIds.push(poiId),
       }),
     );
@@ -370,7 +378,7 @@ describe("Map and its MapLibre adapter", () => {
   it("removes the map and closes the popup when destroyed", () => {
     const { adapter, container } = mountAdapter();
     adapter.mount(container);
-    adapter.updatePois(pois);
+    adapter.updatePois(markersOf(pois));
     hoverMapMarker("Forum Boarium");
 
     adapter.destroy();

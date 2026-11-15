@@ -6,6 +6,7 @@ import {
   type PoiCategory,
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
+import type { CategoryFilter } from "@/types/PoiCategory/filter";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { CategoryGroup } from "./CategoryGroup";
 import { PlaceRow } from "./PlaceRow";
@@ -15,9 +16,7 @@ export const Sidebar = ({
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
   pois,
   visiblePois,
-  selectedCategories,
-  availableCategories,
-  allCategoriesSelected,
+  filter,
   selectedPoiId,
   onToggleCategory,
   onSelectOnlyCategory,
@@ -29,9 +28,7 @@ export const Sidebar = ({
   categoryDefinitions?: PoiCategoryDefinition[];
   pois: Poi[];
   visiblePois: Poi[];
-  selectedCategories: PoiCategory[];
-  availableCategories: PoiCategory[];
-  allCategoriesSelected: boolean;
+  filter: CategoryFilter;
   selectedPoiId: string | null;
   onToggleCategory: (category: PoiCategory) => void;
   onSelectOnlyCategory: (category: PoiCategory) => void;
@@ -72,14 +69,13 @@ export const Sidebar = ({
             <input
               type="checkbox"
               aria-label="All categories"
-              checked={allCategoriesSelected}
+              checked={filter.isAll}
               aria-describedby={`${categoriesId}-selection`}
               ref={(input) => {
-                if (input)
-                  input.indeterminate = !allCategoriesSelected && selectedCategories.length > 0;
+                if (input) input.indeterminate = !filter.isAll && filter.selected.length > 0;
               }}
               onChange={() => {
-                if (allCategoriesSelected) setExpanded(true);
+                if (filter.isAll) setExpanded(true);
                 onToggleAll();
               }}
               className="peer checked:border-accent indeterminate:border-accent focus-visible:outline-accent border-ink-subtle bg-surface size-4.5 shrink-0 cursor-pointer appearance-none rounded-sm border focus-visible:outline-2 focus-visible:outline-offset-2 forced-colors:appearance-auto"
@@ -108,21 +104,11 @@ export const Sidebar = ({
                 id={`${categoriesId}-selection`}
                 className="text-ink-subtle shrink-0 text-xs font-normal tabular-nums"
               >
-                {allCategoriesSelected
+                {filter.isAll
                   ? "All"
-                  : !selectedCategories.length
+                  : !filter.selected.length
                     ? "None"
-                    : `${
-                        selectedCategories.filter(
-                          (category) =>
-                            availableCategories.includes(category) &&
-                            !categoryDefinitions.some(
-                              (definition) =>
-                                definition.parent === category &&
-                                availableCategories.includes(definition.id),
-                            ),
-                        ).length
-                      } selected`}
+                    : `${filter.selectedCount} selected`}
               </span>
               <span className="text-ink-subtle flex size-7 shrink-0 items-center justify-center">
                 <ChevronDownIcon
@@ -152,8 +138,7 @@ export const Sidebar = ({
                   key={category.id}
                   category={category.id}
                   definitions={categoryDefinitions}
-                  pois={pois}
-                  selectedCategories={selectedCategories}
+                  filter={filter}
                   onToggleCategory={onToggleCategory}
                   onSelectOnlyCategory={onSelectOnlyCategory}
                 />
@@ -165,7 +150,7 @@ export const Sidebar = ({
         </h3>
         {!visiblePois.length && (
           <p className="text-ink-subtle mt-2 text-sm">
-            {selectedCategories.length
+            {filter.selected.length
               ? "No places match these categories. Try another category."
               : "Select a category to explore places."}
           </p>

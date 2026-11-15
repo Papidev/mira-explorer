@@ -8,13 +8,6 @@ import maplibregl, {
   type PointLike,
 } from "maplibre-gl";
 import type { Poi } from "@/types/Poi";
-import { categoryMarkerColors } from "@/app/components/categoryMarkerColors";
-import {
-  DEFAULT_POI_CATEGORY_DEFINITIONS,
-  matchesPoiCategory,
-  type PoiCategory,
-  type PoiCategoryDefinition,
-} from "@/types/PoiCategory";
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 import {
   loadMarkerImages,
@@ -62,14 +55,13 @@ export type MapPreview = {
   onOpenDetails: () => void;
 };
 
+/** A POI Marker to draw, in the color the Category Filter chose. */
+export type PoiMarker = { poi: Poi; color: string };
+
 export interface MapAdapter {
   mount: (container: HTMLDivElement) => void;
   updateView: (view: MapViewUpdate) => void;
-  updatePois: (
-    points: Poi[],
-    definitions?: PoiCategoryDefinition[],
-    selectedCategories?: PoiCategory[],
-  ) => void;
+  updatePois: (markers: PoiMarker[]) => void;
   updateSelectedPoi: (poiId: string | null) => void;
   focusPoi: (poi: Poi, coveredArea: CoveredArea) => void;
   getZoom: () => number | null;
@@ -82,7 +74,7 @@ export interface MapAdapter {
 
 export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let map: MapLibreMap | null = null;
-  let points: Poi[] = [];
+  let markers: PoiMarker[] = [];
   let poisById = new Map<string, Poi>();
   let hoveredPoiId: string | null = null;
   let selectedPoiId: string | null = null;
@@ -91,8 +83,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let activePreviewPoiId: string | null = null;
   let previewCloseTimeout: ReturnType<typeof setTimeout> | null = null;
   let unsubscribeFromTheme: (() => void) | null = null;
-  let categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS;
-  let selectedCategories: PoiCategory[] | undefined;
   let onZoomChange: ((zoom: number) => void) | null = null;
   let onOpenPoiDetails: ((poiId: string) => void) | null = null;
   let onMapClick: (() => void) | null = null;
@@ -237,41 +227,22 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     }
   };
 
-  const getMarkerColor = (poi: Poi) => {
-    const matchingColors = categoryMarkerColors.filter(({ category }) =>
-      matchesPoiCategory(poi.categories, category, categoryDefinitions),
-    );
-    return (
-      matchingColors.find(({ category }) =>
-        selectedCategories?.some(
-          (selected) =>
-            (selected === category ||
-              categoryDefinitions.some(
-                ({ id, parent }) => id === selected && parent === category,
-              )) &&
-            matchesPoiCategory(poi.categories, selected, categoryDefinitions),
-        ),
-      ) ?? matchingColors[0]
-    );
-  };
-
   /** Markers are drawn by the GPU, so moving the map never touches the DOM. */
   const renderPois = () => {
     const source = map?.getSource<GeoJSONSource>(POI_SOURCE);
     if (!source) return;
     source.setData({
       type: "FeatureCollection",
-      features: points.map((poi, index) => ({
+      features: markers.map(({ poi, color }, index) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [poi.coordinates.lng, poi.coordinates.lat] },
         properties: {
           id: poi.id,
           name: poi.name,
-          // Uncategorized places share the "Other places" color.
-          color: (getMarkerColor(poi) ?? categoryMarkerColors.at(-1))?.marker,
+          color,
           selected: poi.id === selectedPoiId,
           // Draw order, which hover and taps follow when markers overlap; selected on top.
-          order: poi.id === selectedPoiId ? points.length : index,
+          order: poi.id === selectedPoiId ? markers.length : index,
         },
       })),
     });
@@ -448,11 +419,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
       map.easeTo(nextView);
     },
-    updatePois(nextPoints, definitions = DEFAULT_POI_CATEGORY_DEFINITIONS, selection) {
-      categoryDefinitions = definitions;
-      selectedCategories = selection;
-      points = nextPoints;
-      poisById = new Map(nextPoints.map((poi) => [poi.id, poi]));
+    updatePois(nextMarkers) {
+      markers = nextMarkers;
+      poisById = new Map(nextMarkers.map(({ poi }) => [poi.id, poi]));
       if (activePreviewPoiId && !poisById.has(activePreviewPoiId)) closePreview();
       renderPois();
     },
@@ -504,7 +473,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       previewPopup = null;
       map?.remove();
       map = null;
-      points = [];
+      markers = [];
       poisById = new Map();
       hoveredPoiId = null;
     },
