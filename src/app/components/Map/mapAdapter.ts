@@ -1,6 +1,12 @@
 "use client";
 
-import maplibregl, { Map as MapLibreMap, Marker, type ExpressionSpecification } from "maplibre-gl";
+import maplibregl, {
+  Map as MapLibreMap,
+  type ExpressionSpecification,
+  type GeoJSONSource,
+  type MapMouseEvent,
+  type PointLike,
+} from "maplibre-gl";
 import type { Poi } from "@/types/Poi";
 import { categoryMarkerColors } from "@/app/components/categoryMarkerColors";
 import {
@@ -10,6 +16,14 @@ import {
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
+import {
+  loadPinImages,
+  PIN_HEIGHT,
+  PIN_POPUP_OFFSET,
+  PIN_TIP_OFFSET,
+  PIN_WIDTH,
+  SELECTED_PIN_SCALE,
+} from "./pinImages";
 
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
@@ -24,6 +38,10 @@ const brightenDarkLabels = (map: MapLibreMap) => {
   }
 };
 const PREVIEW_CLOSE_DELAY_MS = 180;
+const POI_SOURCE = "pois";
+const POI_LAYER = "poi-pins";
+/** Pins react a little beyond their outline, which keeps them easy to tap. */
+const PIN_HIT_SLOP = 8;
 
 export type MapView = {
   center: [number, number];
@@ -62,24 +80,17 @@ export interface MapAdapter {
   destroy: () => void;
 }
 
-type MarkerBinding = {
-  poi: Poi;
-  color: string | undefined;
-  marker: Marker;
-  removeListeners: () => void;
-};
-
 export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let map: MapLibreMap | null = null;
-  let markers: MarkerBinding[] = [];
+  let points: Poi[] = [];
+  let poisById = new Map<string, Poi>();
+  let hoveredPoiId: string | null = null;
   let selectedPoiId: string | null = null;
   let previewPopup: maplibregl.Popup | null = null;
   let previewContainer: HTMLDivElement | null = null;
   let activePreviewPoiId: string | null = null;
   let previewCloseTimeout: ReturnType<typeof setTimeout> | null = null;
-  let isLoaded = false;
   let unsubscribeFromTheme: (() => void) | null = null;
-  let pendingPois: Poi[] | null = null;
   let categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS;
   let selectedCategories: PoiCategory[] | undefined;
   let onZoomChange: ((zoom: number) => void) | null = null;
@@ -87,16 +98,52 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let onMapClick: (() => void) | null = null;
   let onPreviewChange: ((preview: MapPreview | null) => void) | null = null;
 
-  const handleMapClick = (event: MouseEvent) => {
-    if (event.target instanceof Element && event.target.closest(".maplibregl-ctrl")) return;
-    onMapClick?.();
+  const poiAt = ({ x, y }: { x: number; y: number }) => {
+    if (!map?.getLayer(POI_LAYER)) return undefined;
+    const box: [PointLike, PointLike] = [
+      [x - PIN_HIT_SLOP, y - PIN_HIT_SLOP],
+      [x + PIN_HIT_SLOP, y + PIN_HIT_SLOP],
+    ];
+    // Image boxes include the transparent shadow margin, so measure each drawn pin instead.
+    let best: { poi: Poi; distance: number; order: number } | undefined;
+    for (const { properties } of map.queryRenderedFeatures(box, { layers: [POI_LAYER] })) {
+      const poi = poisById.get(String(properties.id));
+      if (!poi) continue;
+      const tip = map.project([poi.coordinates.lng, poi.coordinates.lat]);
+      const scale = poi.id === selectedPoiId ? SELECTED_PIN_SCALE : 1;
+      const dx = Math.max(Math.abs(x - tip.x) - (PIN_WIDTH / 2) * scale, 0);
+      const dy = Math.max(tip.y - PIN_HEIGHT * scale - y, y - tip.y, 0);
+      const distance = Math.hypot(dx, dy);
+      const order = Number(properties.order);
+      // Pins under the pointer win, the one drawn on top first; otherwise the nearest.
+      if (
+        distance <= PIN_HIT_SLOP &&
+        (!best || distance < best.distance || (distance === best.distance && order > best.order))
+      ) {
+        best = { poi, distance, order };
+      }
+    }
+    return best?.poi;
   };
 
-  const updateMarkerSelection = () => {
-    markers.forEach(({ poi: { id: poiId }, marker }) => {
-      marker.getElement().classList.toggle("selected-poi-marker", poiId === selectedPoiId);
-      marker.getElement().setAttribute("aria-pressed", String(poiId === selectedPoiId));
-    });
+  const handleMapClick = (event: MapMouseEvent) => {
+    const poi = poiAt(event.point);
+    if (poi) openPoiDetails(poi.id);
+    else onMapClick?.();
+  };
+
+  const setHoveredPoi = (poi: Poi | undefined) => {
+    if (map) map.getCanvas().style.cursor = poi ? "pointer" : "";
+    if (poi) openPreview(poi);
+    else if (hoveredPoiId) schedulePreviewClose(hoveredPoiId);
+    hoveredPoiId = poi?.id ?? null;
+  };
+  const handleMouseMove = (event: MapMouseEvent) => setHoveredPoi(poiAt(event.point));
+  const handleMouseOut = ({ originalEvent }: MapMouseEvent) => {
+    // The preview covers its pin; the popup's own pointerleave closes it from there.
+    const to = originalEvent.relatedTarget;
+    if (to instanceof Node && previewPopup?.getElement()?.contains(to)) hoveredPoiId = null;
+    setHoveredPoi(undefined);
   };
 
   const cancelPreviewClose = () => {
@@ -190,17 +237,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     }
   };
 
-  const removeMarker = ({ marker, removeListeners }: MarkerBinding) => {
-    removeListeners();
-    marker.remove();
-  };
-
-  const removeMarkers = () => {
-    closePreview();
-    markers.forEach(removeMarker);
-    markers = [];
-  };
-
   const getMarkerColor = (poi: Poi) => {
     const matchingColors = categoryMarkerColors.filter(({ category }) =>
       matchesPoiCategory(poi.categories, category, categoryDefinitions),
@@ -219,124 +255,63 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     );
   };
 
-  const createMarker = (
-    initialPoi: Poi,
-    markerColor: (typeof categoryMarkerColors)[number] | undefined,
-  ): MarkerBinding => {
-    const marker = new maplibregl.Marker({ color: markerColor?.marker, scale: 1.15 })
-      .setLngLat([initialPoi.coordinates.lng, initialPoi.coordinates.lat])
-      .addTo(map as MapLibreMap);
-    const element = marker.getElement();
-    const markerCenter = element.querySelector('circle[fill="#FFFFFF"]');
-    if (markerCenter && markerColor) {
-      const icon = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      icon.setAttribute("href", markerColor.icon);
-      icon.setAttribute("x", "-2.5");
-      icon.setAttribute("y", "-2.5");
-      icon.setAttribute("width", "16");
-      icon.setAttribute("height", "16");
-      icon.setAttribute("aria-hidden", "true");
-      markerCenter.parentElement?.replaceChildren(icon);
-    }
-    let isTouchInteraction = false;
-
-    element.classList.add("poi-marker");
-    if (markerColor?.category === "Churches & cathedrals") {
-      // Scope styling to MapLibre’s generated marker; preserve its shape and shadow.
-      element.classList.add("religious-site-marker");
-    } else if (markerColor?.category === "Arts & Culture") {
-      element.classList.add("arts-culture-marker");
-    }
-    element.style.cursor = "pointer";
-    element.tabIndex = 0;
-    element.setAttribute("role", "button");
-    element.setAttribute("aria-label", `Open details for ${initialPoi.name}`);
-
-    // Reused markers receive updated place data, so handlers read it from the binding.
-    const handlePointerDown = (event: PointerEvent) => {
-      isTouchInteraction = event.pointerType === "touch";
-    };
-    const handlePointerEnter = (event: PointerEvent) => {
-      if (event.pointerType !== "touch") {
-        openPreview(binding.poi);
-      }
-    };
-    const handlePointerLeave = () => schedulePreviewClose(binding.poi.id);
-    const handleFocus = () => {
-      if (!isTouchInteraction) {
-        openPreview(binding.poi);
-      }
-    };
-    const handleBlur = () => {
-      isTouchInteraction = false;
-      schedulePreviewClose(binding.poi.id);
-    };
-    const handleClick = (event: MouseEvent) => {
-      event.stopPropagation();
-      isTouchInteraction = false;
-      openPoiDetails(binding.poi.id);
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Enter" && event.key !== " ") {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-      openPoiDetails(binding.poi.id);
-    };
-
-    element.addEventListener("pointerdown", handlePointerDown);
-    element.addEventListener("pointerenter", handlePointerEnter);
-    element.addEventListener("pointerleave", handlePointerLeave);
-    element.addEventListener("focus", handleFocus);
-    element.addEventListener("blur", handleBlur);
-    element.addEventListener("click", handleClick);
-    element.addEventListener("keydown", handleKeyDown);
-
-    const binding: MarkerBinding = {
-      poi: initialPoi,
-      color: markerColor?.marker,
-      marker,
-      removeListeners: () => {
-        element.removeEventListener("pointerdown", handlePointerDown);
-        element.removeEventListener("pointerenter", handlePointerEnter);
-        element.removeEventListener("pointerleave", handlePointerLeave);
-        element.removeEventListener("focus", handleFocus);
-        element.removeEventListener("blur", handleBlur);
-        element.removeEventListener("click", handleClick);
-        element.removeEventListener("keydown", handleKeyDown);
-      },
-    };
-    return binding;
+  /** Pins are drawn by the GPU, so moving the map never touches the DOM. */
+  const renderPois = () => {
+    const source = map?.getSource<GeoJSONSource>(POI_SOURCE);
+    if (!source) return;
+    source.setData({
+      type: "FeatureCollection",
+      features: points.map((poi, index) => ({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [poi.coordinates.lng, poi.coordinates.lat] },
+        properties: {
+          id: poi.id,
+          name: poi.name,
+          // Uncategorized places share the "Other places" color.
+          color: (getMarkerColor(poi) ?? categoryMarkerColors.at(-1))?.marker,
+          selected: poi.id === selectedPoiId,
+          // Draw order, which hover and taps follow when pins overlap; selected on top.
+          order: poi.id === selectedPoiId ? points.length : index,
+        },
+      })),
+    });
   };
 
-  /** Rebuilding every DOM marker blocks taps on phones, so keep the unchanged ones. */
-  const setMarkers = (points: Poi[]) => {
-    if (!map) {
-      return;
-    }
-
-    const previous = new Map(markers.map((binding) => [binding.poi.id, binding]));
-    markers = points.map((poi) => {
-      const markerColor = getMarkerColor(poi);
-      const existing = previous.get(poi.id);
-      if (
-        existing &&
-        existing.color === markerColor?.marker &&
-        existing.poi.name === poi.name &&
-        existing.poi.coordinates.lat === poi.coordinates.lat &&
-        existing.poi.coordinates.lng === poi.coordinates.lng
-      ) {
-        previous.delete(poi.id);
-        existing.poi = poi;
-        return existing;
-      }
-      return createMarker(poi, markerColor);
+  const addPoiLayer = () => {
+    if (!map || map.getSource(POI_SOURCE)) return;
+    map.addSource(POI_SOURCE, {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: [] },
     });
-    if (activePreviewPoiId && previous.has(activePreviewPoiId)) closePreview();
-    previous.forEach(removeMarker);
-    updateMarkerSelection();
+    const selected: ExpressionSpecification = ["get", "selected"];
+    map.addLayer({
+      id: POI_LAYER,
+      type: "symbol",
+      source: POI_SOURCE,
+      layout: {
+        // Matches pinImageId(color, selected).
+        "icon-image": ["concat", "poi-pin-", ["get", "color"], ["case", selected, "-selected", ""]],
+        "icon-size": ["case", selected, SELECTED_PIN_SCALE, 1],
+        "icon-anchor": "bottom",
+        "icon-offset": [0, PIN_TIP_OFFSET],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        // Hover and taps hit the pin itself, not a padded box over its neighbors.
+        "icon-padding": 0,
+        "symbol-sort-key": ["get", "order"],
+      },
+    });
+    renderPois();
+    const styledMap = map;
+    loadPinImages().then(
+      (images) => {
+        if (map !== styledMap || !map.getSource(POI_SOURCE)) return;
+        for (const { id, image, pixelRatio } of images) {
+          if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio });
+        }
+      },
+      () => {},
+    );
   };
 
   return {
@@ -358,10 +333,11 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         map.touchZoomRotate.disableRotation();
         map.touchPitch.disable();
       }
-      // Markers and the popup are DOM overlays, so they survive a style swap.
+      // A style swap drops the pins' source, layer and images; the popup is a DOM overlay.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {
         if (map && isDarkTheme()) brightenDarkLabels(map);
+        addPoiLayer();
       });
 
       const navigationControl = new maplibregl.NavigationControl();
@@ -396,7 +372,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         closeOnClick: false,
         focusAfterOpen: false,
         maxWidth: "calc(100vw - 2rem)",
-        offset: 16,
+        offset: PIN_POPUP_OFFSET,
       }).setDOMContent(previewContainer);
       map.on("zoomend", () => {
         if (!map || !onZoomChange) {
@@ -441,14 +417,10 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
             ],
           ]);
         }
-
-        isLoaded = true;
-        if (pendingPois) {
-          setMarkers(pendingPois);
-          pendingPois = null;
-        }
       });
-      map.getContainer().addEventListener("click", handleMapClick);
+      map.on("click", handleMapClick);
+      map.on("mousemove", handleMouseMove);
+      map.on("mouseout", handleMouseOut);
     },
     updateView(view) {
       if (!map) {
@@ -471,23 +443,17 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
 
       map.easeTo(nextView);
     },
-    updatePois(points, definitions = DEFAULT_POI_CATEGORY_DEFINITIONS, selection) {
+    updatePois(nextPoints, definitions = DEFAULT_POI_CATEGORY_DEFINITIONS, selection) {
       categoryDefinitions = definitions;
       selectedCategories = selection;
-      if (!map) {
-        return;
-      }
-
-      if (!isLoaded) {
-        pendingPois = points;
-        return;
-      }
-
-      setMarkers(points);
+      points = nextPoints;
+      poisById = new Map(nextPoints.map((poi) => [poi.id, poi]));
+      if (activePreviewPoiId && !poisById.has(activePreviewPoiId)) closePreview();
+      renderPois();
     },
     updateSelectedPoi(poiId) {
       selectedPoiId = poiId;
-      updateMarkerSelection();
+      renderPois();
     },
     focusPoi(poi, { left, right, bottom }) {
       if (!map) return;
@@ -525,8 +491,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     destroy() {
       unsubscribeFromTheme?.();
       unsubscribeFromTheme = null;
-      map?.getContainer().removeEventListener("click", handleMapClick);
-      removeMarkers();
+      closePreview();
       previewContainer?.removeEventListener("focusin", handlePreviewFocusIn);
       previewContainer?.removeEventListener("focusout", handlePreviewFocusOut);
       previewContainer = null;
@@ -534,8 +499,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       previewPopup = null;
       map?.remove();
       map = null;
-      pendingPois = null;
-      isLoaded = false;
+      points = [];
+      poisById = new Map();
+      hoveredPoiId = null;
     },
   };
 };

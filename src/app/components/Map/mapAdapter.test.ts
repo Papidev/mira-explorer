@@ -7,129 +7,22 @@ import { act, cleanup, render, screen, waitFor, within } from "@testing-library/
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Poi } from "@/types/Poi";
 
-const mapLibreFakes = vi.hoisted(() => ({
-  maps: [] as Array<{ container: HTMLDivElement; removed: boolean }>,
-  markers: [] as Array<{ element: HTMLDivElement; removed: boolean; color?: string }>,
-  popups: [] as Array<{
-    container: HTMLDivElement;
-    tip: HTMLDivElement;
-    element?: HTMLElement;
-    isOpen: boolean;
-    positions: string[];
-    additions: number;
-  }>,
-}));
-
-vi.mock("maplibre-gl", () => {
-  class Map {
-    container: HTMLDivElement;
-    removed = false;
-
-    constructor({ container }: { container: HTMLDivElement }) {
-      this.container = container;
-      mapLibreFakes.maps.push(this);
-    }
-
-    addControl() {}
-    easeTo() {}
-    getZoom() {
-      return 15;
-    }
-    getContainer() {
-      return this.container;
-    }
-    getStyle() {
-      return { layers: [] };
-    }
-    on() {}
-    once(event: string, handler: () => void) {
-      if (event === "load") {
-        handler();
-      }
-    }
-    remove() {
-      this.removed = true;
-    }
-  }
-
-  class Marker {
-    element = document.createElement("div");
-    removed = false;
-
-    color?: string;
-
-    constructor(options?: { color?: string }) {
-      this.color = options?.color;
-      mapLibreFakes.markers.push(this);
-    }
-
-    setLngLat() {
-      return this;
-    }
-    addTo(map: Map) {
-      map.getContainer().append(this.element);
-      return this;
-    }
-    getElement() {
-      return this.element;
-    }
-    remove() {
-      this.removed = true;
-      this.element.remove();
-    }
-  }
-
-  class Popup {
-    container = document.createElement("div");
-    tip = document.createElement("div");
-    content = document.createElement("div");
-    element?: HTMLElement;
-    isOpen = false;
-    positions: string[] = [];
-    additions = 0;
-
-    constructor() {
-      this.content.className = "maplibregl-popup-content";
-      this.container.append(this.tip, this.content);
-      mapLibreFakes.popups.push(this);
-    }
-
-    setDOMContent(element: HTMLElement) {
-      this.element = element;
-      this.content.append(element);
-      return this;
-    }
-    setLngLat() {
-      this.positions.push(this.element?.textContent ?? "");
-      return this;
-    }
-    addTo(map: Map) {
-      this.additions += 1;
-      map.getContainer().append(this.container);
-      this.isOpen = true;
-      return this;
-    }
-    getElement() {
-      return this.container;
-    }
-    remove() {
-      this.container.remove();
-      this.isOpen = false;
-      return this;
-    }
-  }
-
-  return {
-    default: { Map, Marker, NavigationControl: class NavigationControl {}, Popup },
-    Map,
-    Marker,
-    NavigationControl: class NavigationControl {},
-    Popup,
-  };
-});
+vi.mock("maplibre-gl", () => import("./maplibreFake"));
 
 import { createMapLibreAdapter } from "./mapAdapter";
 import { Map } from "./index";
+import {
+  clickMapPin,
+  fakeMaps,
+  fakePopups,
+  hoverMapPin,
+  leaveMap,
+  mapPinHead,
+  mapPinNames,
+  mapPins,
+  resetMapLibreFakes,
+  selectedMapPinName,
+} from "./maplibreFake";
 
 const pois: Poi[] = [
   {
@@ -159,12 +52,17 @@ const dispatchPointerEvent = (element: HTMLElement, type: string, pointerType: s
   act(() => element.dispatchEvent(event));
 };
 
+const mountAdapter = () => {
+  const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
+  const container = document.createElement("div");
+  document.body.append(container);
+  return { adapter, container };
+};
+
 describe("Map and its MapLibre adapter", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
-    mapLibreFakes.maps.length = 0;
-    mapLibreFakes.markers.length = 0;
-    mapLibreFakes.popups.length = 0;
+    resetMapLibreFakes();
   });
 
   afterEach(cleanup);
@@ -179,20 +77,16 @@ describe("Map and its MapLibre adapter", () => {
           createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }),
         ),
       );
-      dispatchPointerEvent(
-        screen.getByRole("button", { name: "Open details for Forum Boarium" }),
-        "pointerenter",
-        "mouse",
-      );
+      hoverMapPin("Forum Boarium");
       expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
 
       view.unmount();
 
       await waitFor(() => {
-        expect(mapLibreFakes.popups.every(({ element }) => !element?.hasChildNodes())).toBe(true);
+        expect(fakePopups.every(({ element }) => !element?.hasChildNodes())).toBe(true);
       });
-      expect(mapLibreFakes.maps.length).toBe(2);
-      expect(mapLibreFakes.maps.every(({ removed }) => removed)).toBe(true);
+      expect(fakeMaps.length).toBe(2);
+      expect(fakeMaps.every(({ removed }) => removed)).toBe(true);
       expect(consoleError.mock.calls.flat().join(" ")).not.toContain(
         "Attempted to synchronously unmount a root",
       );
@@ -201,125 +95,107 @@ describe("Map and its MapLibre adapter", () => {
     }
   });
 
-  it("keeps the selected Story open when clicking map controls", async () => {
-    const user = userEvent.setup();
+  it("reports clicks on empty map, but opens details when a pin is clicked", () => {
     const onMapClick = vi.fn();
-    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
-    const container = document.createElement("div");
-    document.body.append(container);
+    const onOpenPoiDetails = vi.fn();
+    const { adapter, container } = mountAdapter();
     adapter.setOnMapClick(onMapClick);
+    adapter.setOnOpenPoiDetails(onOpenPoiDetails);
     adapter.mount(container);
-    const controls = document.createElement("div");
-    controls.className = "maplibregl-ctrl";
-    const zoomIn = document.createElement("button");
-    zoomIn.textContent = "Zoom in";
-    controls.append(zoomIn);
-    container.append(controls);
+    adapter.updatePois(pois);
 
-    await user.click(screen.getByRole("button", { name: "Zoom in" }));
-    expect(onMapClick).not.toHaveBeenCalled();
+    clickMapPin(null);
+    expect(onMapClick).toHaveBeenCalledOnce();
 
-    await user.click(container);
+    clickMapPin("Forum Boarium");
+    expect(onOpenPoiDetails).toHaveBeenCalledExactlyOnceWith("forum-boarium");
     expect(onMapClick).toHaveBeenCalledOnce();
     adapter.destroy();
   });
 
-  it("retains selection when markers are created again and restores category styling when cleared", () => {
-    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
-    const container = document.createElement("div");
-    document.body.append(container);
+  it("draws every place as a pin without DOM markers and keeps the selection", () => {
+    const { adapter, container } = mountAdapter();
     adapter.updateSelectedPoi("forum-boarium");
     adapter.mount(container);
     adapter.updatePois(pois);
 
-    expect(
-      screen.getByRole("button", { name: "Open details for Forum Boarium", pressed: true }),
-    ).toHaveClass("selected-poi-marker");
+    expect(mapPinNames()).toEqual(["Forum Boarium", "Cloisters of Bramante"]);
+    expect(container.querySelector(".maplibregl-marker")).toBeNull();
+    expect(selectedMapPinName()).toBe("Forum Boarium");
     adapter.updateSelectedPoi("cloisters-of-bramante");
-    expect(
-      screen.getByRole("button", { name: "Open details for Forum Boarium", pressed: false }),
-    ).not.toHaveClass("selected-poi-marker");
-    expect(
-      screen.getByRole("button", { name: "Open details for Cloisters of Bramante", pressed: true }),
-    ).toHaveClass("selected-poi-marker", "religious-site-marker");
+    expect(selectedMapPinName()).toBe("Cloisters of Bramante");
 
     adapter.updatePois([pois[1]]);
-    expect(
-      screen.getByRole("button", { name: "Open details for Cloisters of Bramante", pressed: true }),
-    ).toHaveClass("selected-poi-marker");
+    expect(mapPinNames()).toEqual(["Cloisters of Bramante"]);
+    expect(selectedMapPinName()).toBe("Cloisters of Bramante");
     adapter.updateSelectedPoi(null);
-    expect(
-      screen.getByRole("button", {
-        name: "Open details for Cloisters of Bramante",
-        pressed: false,
-      }),
-    ).toHaveClass("religious-site-marker");
-    expect(
-      screen.getByRole("button", { name: "Open details for Cloisters of Bramante" }),
-    ).not.toHaveClass("selected-poi-marker");
-
+    expect(selectedMapPinName()).toBeUndefined();
     adapter.destroy();
   });
 
-  it("colors a place shared by two groups with the active group's color", () => {
-    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
-    const container = document.createElement("div");
-    document.body.append(container);
+  it("draws the pins again after the theme swaps the map style", () => {
+    const { adapter, container } = mountAdapter();
     adapter.mount(container);
+    adapter.updatePois(pois);
+    adapter.updateSelectedPoi("forum-boarium");
+
+    act(() => fakeMaps[0].setStyle("https://tiles.openfreemap.org/styles/fiord"));
+
+    expect(mapPinNames()).toEqual(["Forum Boarium", "Cloisters of Bramante"]);
+    expect(selectedMapPinName()).toBe("Forum Boarium");
+    adapter.destroy();
+  });
+
+  it("colors pins by category and a place shared by two groups with the active group's color", () => {
+    const { adapter, container } = mountAdapter();
+    adapter.mount(container);
+    adapter.updatePois(pois);
+    expect(mapPins().map(({ color }) => color)).toEqual(["#3FB1CE", "#facc15"]);
     const sharedPoi = { ...pois[1], categories: ["Museum", "Castle"] };
 
     adapter.updatePois([sharedPoi], undefined, ["Architecture", "Castle"]);
-    expect(mapLibreFakes.markers.at(-1)?.color).toBe("#ea580c");
+    expect(mapPins()[0].color).toBe("#ea580c");
 
     adapter.updatePois([sharedPoi], undefined, ["Arts & Culture", "Museum"]);
-    expect(mapLibreFakes.markers.at(-1)?.color).toBe("#10b981");
-
+    expect(mapPins()[0].color).toBe("#10b981");
     adapter.destroy();
   });
 
-  it("keeps unchanged markers and their open preview when places are sent again", async () => {
-    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
-    const container = document.createElement("div");
-    document.body.append(container);
+  it("keeps an open preview when places are sent again and closes it when its place goes", () => {
+    const { adapter, container } = mountAdapter();
     adapter.mount(container);
     adapter.updatePois(pois);
-    const forum = screen.getByRole("button", { name: "Open details for Forum Boarium" });
-    dispatchPointerEvent(forum, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
 
     adapter.updatePois(pois.map((poi) => ({ ...poi })));
-
-    expect(mapLibreFakes.markers).toHaveLength(2);
-    expect(screen.getByRole("button", { name: "Open details for Forum Boarium" })).toBe(forum);
-    expect(mapLibreFakes.popups[0].isOpen).toBe(true);
+    expect(fakePopups[0].isOpen).toBe(true);
+    expect(fakePopups[0].additions).toBe(1);
 
     adapter.updatePois([pois[1]]);
-    expect(forum).not.toBeInTheDocument();
-    expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+    expect(fakePopups[0].isOpen).toBe(false);
     adapter.destroy();
   });
 
-  it("shows the matching preview on mouse hover and keyboard focus", async () => {
+  it("shows the matching preview while the mouse is over a pin", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+    const canvas = fakeMaps[0].getCanvas();
 
-    expect(mapLibreFakes.markers[0].color).toBe("#3FB1CE");
-    expect(mapLibreFakes.markers[1].color).toBe("#facc15");
-    expect(mapLibreFakes.markers[1].element).toHaveClass("religious-site-marker");
-    expect(mapLibreFakes.markers[0].element).toHaveStyle({ cursor: "pointer" });
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
+    expect(canvas).toHaveStyle({ cursor: "pointer" });
 
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerleave", "mouse");
+    hoverMapPin(null);
+    expect(canvas.style.cursor).toBe("");
     expect(screen.getByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
     await waitFor(() =>
       expect(screen.queryByRole("heading", { name: "Forum Boarium" })).not.toBeInTheDocument(),
     );
 
-    act(() => mapLibreFakes.markers[1].element.focus());
+    hoverMapPin("Cloisters of Bramante");
     expect(
       await screen.findByRole("heading", { name: "Cloisters of Bramante" }),
     ).toBeInTheDocument();
-
-    act(() => mapLibreFakes.markers[1].element.blur());
+    leaveMap();
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: "Cloisters of Bramante" }),
@@ -327,34 +203,62 @@ describe("Map and its MapLibre adapter", () => {
     );
   });
 
-  it("updates preview content before positioning it at another marker", async () => {
+  it("previews and opens the pin drawn on top where pins overlap", () => {
+    const onOpenPoiDetails = vi.fn();
+    const { adapter, container } = mountAdapter();
+    adapter.setOnOpenPoiDetails(onOpenPoiDetails);
+    adapter.mount(container);
+    // Ten pixels apart: both pins cover a point between their tips.
+    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
+    adapter.updatePois([pois[0], neighbor]);
+    const forum = mapPinHead("Forum Boarium");
+    const overlap = { x: forum.x + 6, y: forum.y };
+
+    clickMapPin(overlap);
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("cloisters-of-bramante");
+
+    adapter.updateSelectedPoi("forum-boarium");
+    clickMapPin(overlap);
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+
+    adapter.updateSelectedPoi(null);
+    clickMapPin({ x: forum.x - 6, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+    // Just beside a pin still counts, so pins stay easy to tap.
+    clickMapPin({ x: forum.x - 20, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+    clickMapPin({ x: forum.x - 30, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenCalledTimes(4);
+    adapter.destroy();
+  });
+
+  it("updates preview content before positioning it at another pin", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
 
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
-    expect(mapLibreFakes.popups[0].positions.at(-1)).toContain("Forum Boarium");
+    expect(fakePopups[0].positions.at(-1)).toContain("Forum Boarium");
 
-    dispatchPointerEvent(mapLibreFakes.markers[1].element, "pointerenter", "mouse");
+    hoverMapPin("Cloisters of Bramante");
     expect(
       await screen.findByRole("heading", { name: "Cloisters of Bramante" }),
     ).toBeInTheDocument();
-    expect(mapLibreFakes.popups[0].positions.at(-1)).toContain("Cloisters of Bramante");
-    expect(mapLibreFakes.popups[0].positions.at(-1)).not.toContain("Forum Boarium");
+    expect(fakePopups[0].positions.at(-1)).toContain("Cloisters of Bramante");
+    expect(fakePopups[0].positions.at(-1)).not.toContain("Forum Boarium");
   });
 
-  it("keeps the same preview attached when its marker receives hover and focus again", async () => {
+  it("keeps the same preview attached when the mouse returns to its pin", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
-    const marker = mapLibreFakes.markers[0].element;
 
-    dispatchPointerEvent(marker, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
     const card = screen.getByRole("button", { name: /Main image of Forum Boarium/ });
-    dispatchPointerEvent(marker, "pointerleave", "mouse");
-    dispatchPointerEvent(marker, "pointerenter", "mouse");
-    act(() => marker.focus());
+    hoverMapPin(null);
+    hoverMapPin("Forum Boarium");
+    hoverMapPin("Forum Boarium");
 
     expect(screen.getByRole("button", { name: /Main image of Forum Boarium/ })).toBe(card);
-    expect(mapLibreFakes.popups[0].additions).toBe(1);
+    expect(fakePopups[0].additions).toBe(1);
   });
 
   it("keeps the preview open while moving to the card and opens details from it", async () => {
@@ -371,33 +275,48 @@ describe("Map and its MapLibre adapter", () => {
       }),
     );
 
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
     expect(await screen.findByRole("heading", { name: "Forum Boarium" })).toBeInTheDocument();
 
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerleave", "mouse");
-    dispatchPointerEvent(mapLibreFakes.popups[0].container, "pointerenter", "mouse");
+    hoverMapPin(null);
+    dispatchPointerEvent(fakePopups[0].container, "pointerenter", "mouse");
     await new Promise((resolve) => setTimeout(resolve, 220));
 
     await user.click(
-      within(mapLibreFakes.popups[0].element as HTMLElement).getByRole("button", {
+      within(fakePopups[0].element as HTMLElement).getByRole("button", {
         name: /Forum Boarium/,
       }),
     );
 
     expect(onOpenPoiDetails).toHaveBeenCalledWith("forum-boarium");
     expect(onMapClick).not.toHaveBeenCalled();
-    expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+    expect(fakePopups[0].isOpen).toBe(false);
+  });
+
+  it("keeps the preview open when the pointer leaves the pin for the popup covering it", async () => {
+    render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
+
+    hoverMapPin("Forum Boarium");
+    const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
+    const popup = fakePopups[0].container;
+    // Boundary events: the popup is entered before the map reports the pointer leaving.
+    dispatchPointerEvent(popup, "pointerenter", "mouse");
+    leaveMap(popup);
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    expect(heading).toBeInTheDocument();
+
+    dispatchPointerEvent(popup, "pointerleave", "mouse");
+    await waitFor(() => expect(heading).not.toBeInTheDocument());
   });
 
   it("keeps the preview open over its pointer and closes it after leaving the popup", async () => {
     render(createElement(Map, { coordinates: [12.481, 41.889], zoom: 15, pois }));
-    const marker = mapLibreFakes.markers[0].element;
 
-    dispatchPointerEvent(marker, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
     const heading = await screen.findByRole("heading", { name: "Forum Boarium" });
-    const popup = mapLibreFakes.popups[0].container;
+    const popup = fakePopups[0].container;
 
-    dispatchPointerEvent(marker, "pointerleave", "mouse");
+    hoverMapPin(null);
     dispatchPointerEvent(popup, "pointerenter", "mouse");
     await new Promise((resolve) => setTimeout(resolve, 220));
     expect(heading).toBeInTheDocument();
@@ -420,17 +339,16 @@ describe("Map and its MapLibre adapter", () => {
       }),
     );
 
-    dispatchPointerEvent(mapLibreFakes.markers[0].element, "pointerenter", "mouse");
-    dispatchPointerEvent(mapLibreFakes.markers[1].element, "pointerenter", "mouse");
+    hoverMapPin("Forum Boarium");
+    hoverMapPin("Cloisters of Bramante");
     await screen.findByRole("heading", { name: "Cloisters of Bramante" });
-    await user.click(mapLibreFakes.popups[0].tip);
+    await user.click(fakePopups[0].tip);
 
     expect(onOpenPoiDetails).toHaveBeenCalledExactlyOnceWith("cloisters-of-bramante");
     expect(onMapClick).not.toHaveBeenCalled();
   });
 
-  it("opens details directly on click, touch, Enter, and Space", async () => {
-    const user = userEvent.setup();
+  it("opens details directly when a pin is clicked or tapped", () => {
     const openedPoiIds: string[] = [];
     render(
       createElement(Map, {
@@ -440,44 +358,24 @@ describe("Map and its MapLibre adapter", () => {
         onOpenPoiDetails: (poiId) => openedPoiIds.push(poiId),
       }),
     );
-    const [firstMarker, secondMarker] = mapLibreFakes.markers;
 
-    await user.click(firstMarker.element);
-    dispatchPointerEvent(secondMarker.element, "pointerdown", "touch");
-    act(() => {
-      secondMarker.element.focus();
-      secondMarker.element.click();
-      firstMarker.element.focus();
-    });
-    await user.keyboard("{Enter}");
-    act(() => secondMarker.element.focus());
-    await user.keyboard(" ");
+    hoverMapPin("Forum Boarium");
+    clickMapPin("Forum Boarium");
+    clickMapPin("Cloisters of Bramante");
 
-    expect(openedPoiIds).toEqual([
-      "forum-boarium",
-      "cloisters-of-bramante",
-      "forum-boarium",
-      "cloisters-of-bramante",
-    ]);
-    expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+    expect(openedPoiIds).toEqual(["forum-boarium", "cloisters-of-bramante"]);
+    expect(fakePopups[0].isOpen).toBe(false);
   });
 
-  it("removes marker listeners and closes the popup when destroyed", () => {
-    const onOpenPoiDetails = vi.fn();
-    const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
-    const container = document.createElement("div");
-    document.body.append(container);
-    adapter.setOnOpenPoiDetails(onOpenPoiDetails);
+  it("removes the map and closes the popup when destroyed", () => {
+    const { adapter, container } = mountAdapter();
     adapter.mount(container);
     adapter.updatePois(pois);
-    const markerElements = mapLibreFakes.markers.map(({ element }) => element);
+    hoverMapPin("Forum Boarium");
 
     adapter.destroy();
-    markerElements[0].click();
 
-    expect(onOpenPoiDetails).not.toHaveBeenCalled();
-    expect(mapLibreFakes.markers.every(({ removed }) => removed)).toBe(true);
-    expect(mapLibreFakes.maps[0].removed).toBe(true);
-    expect(mapLibreFakes.popups[0].isOpen).toBe(false);
+    expect(fakeMaps[0].removed).toBe(true);
+    expect(fakePopups[0].isOpen).toBe(false);
   });
 });
