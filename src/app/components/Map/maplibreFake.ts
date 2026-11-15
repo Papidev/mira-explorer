@@ -4,8 +4,12 @@
 import { act } from "@testing-library/react";
 import type { EaseToOptions } from "maplibre-gl";
 
-type Feature = { properties: Record<string, unknown> };
-type Handler = (event: { point: { x: number; y: number }; originalEvent?: Event }) => void;
+type Point = { x: number; y: number };
+type Feature = {
+  geometry: { coordinates: [number, number] };
+  properties: Record<string, unknown>;
+};
+type Handler = (event: { point: Point; originalEvent?: Event }) => void;
 
 export const fakeMaps: FakeMap[] = [];
 export const fakePopups: FakePopup[] = [];
@@ -21,8 +25,8 @@ class FakeMap {
   layers = new Set<string>();
   images = new Set<string>();
   handlers = new Map<string, Handler[]>();
-  /** The place a test points at; queryRenderedFeatures returns it while it is drawn. */
-  pointedPoiId: string | null = null;
+  /** Where the mouse is, in pixels; pins are drawn at their projected positions. */
+  pointer: Point = { x: -1e9, y: -1e9 };
 
   constructor({
     container,
@@ -101,17 +105,22 @@ class FakeMap {
   addImage(id: string) {
     this.images.add(id);
   }
-  queryRenderedFeatures(_box: unknown, { layers }: { layers: string[] }) {
+  /** Like MapLibre, matches whole pin images, shadow margin included, in no particular order. */
+  queryRenderedFeatures(
+    [[left, top], [right, bottom]]: [[number, number], [number, number]],
+    { layers }: { layers: string[] },
+  ) {
     if (!layers.some((id) => this.layers.has(id))) return [];
-    return this.features().filter(({ properties }) => properties.id === this.pointedPoiId);
+    return this.features().filter(({ geometry }) => {
+      const tip = this.project(geometry.coordinates);
+      return tip.x - 25 <= right && tip.x + 25 >= left && tip.y - 55 <= bottom && tip.y + 10 >= top;
+    });
   }
   features() {
     return [...this.sources.values()].flatMap(({ data }) => data.features);
   }
   fire(type: string, originalEvent?: Event) {
-    this.handlers
-      .get(type)
-      ?.forEach((handler) => handler({ point: { x: 0, y: 0 }, originalEvent }));
+    this.handlers.get(type)?.forEach((handler) => handler({ point: this.pointer, originalEvent }));
   }
   remove() {
     this.removed = true;
@@ -185,18 +194,32 @@ export const mapPins = () =>
 export const mapPinNames = () => mapPins().map(({ name }) => name);
 export const selectedMapPinName = () => mapPins().find(({ selected }) => selected)?.name;
 
-const pointAt = (name: string | null) => {
+/** A point on the head of a place's pin. */
+export const mapPinHead = (name: string) => {
   const map = liveMap();
-  const pin = name === null ? undefined : mapPins().find((pin) => pin.name === name);
-  if (name !== null && !pin) throw new Error(`No pin for ${name}`);
-  map.pointedPoiId = pin?.id ?? null;
+  const feature = map.features().find(({ properties }) => properties.name === name);
+  if (!feature) throw new Error(`No pin for ${name}`);
+  const tip = map.project(feature.geometry.coordinates);
+  return { x: tip.x, y: tip.y - 25 };
+};
+
+const pointAt = (target: string | Point | null) => {
+  const map = liveMap();
+  map.pointer =
+    target === null
+      ? { x: -1e9, y: -1e9 }
+      : typeof target === "string"
+        ? mapPinHead(target)
+        : target;
   return map;
 };
 
-/** Moves the mouse over a place's pin, or over empty map with `null`. */
-export const hoverMapPin = (name: string | null) => act(() => pointAt(name).fire("mousemove"));
-/** Clicks or taps a place's pin, or empty map with `null`. */
-export const clickMapPin = (name: string | null) => act(() => pointAt(name).fire("click"));
+/** Moves the mouse over a place's pin, a point, or empty map with `null`. */
+export const hoverMapPin = (target: string | Point | null) =>
+  act(() => pointAt(target).fire("mousemove"));
+/** Clicks or taps a place's pin, a point, or empty map with `null`. */
+export const clickMapPin = (target: string | Point | null) =>
+  act(() => pointAt(target).fire("click"));
 /** Moves the mouse off the map, optionally onto `to` (such as the preview popup). */
 export const leaveMap = (to?: Element) =>
   act(() => pointAt(null).fire("mouseout", new MouseEvent("mouseout", { relatedTarget: to })));

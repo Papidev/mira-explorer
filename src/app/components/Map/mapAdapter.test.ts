@@ -17,6 +17,7 @@ import {
   fakePopups,
   hoverMapPin,
   leaveMap,
+  mapPinHead,
   mapPinNames,
   mapPins,
   resetMapLibreFakes,
@@ -200,6 +201,35 @@ describe("Map and its MapLibre adapter", () => {
         screen.queryByRole("heading", { name: "Cloisters of Bramante" }),
       ).not.toBeInTheDocument(),
     );
+  });
+
+  it("previews and opens the pin drawn on top where pins overlap", () => {
+    const onOpenPoiDetails = vi.fn();
+    const { adapter, container } = mountAdapter();
+    adapter.setOnOpenPoiDetails(onOpenPoiDetails);
+    adapter.mount(container);
+    // Ten pixels apart: both pins cover a point between their tips.
+    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
+    adapter.updatePois([pois[0], neighbor]);
+    const forum = mapPinHead("Forum Boarium");
+    const overlap = { x: forum.x + 6, y: forum.y };
+
+    clickMapPin(overlap);
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("cloisters-of-bramante");
+
+    adapter.updateSelectedPoi("forum-boarium");
+    clickMapPin(overlap);
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+
+    adapter.updateSelectedPoi(null);
+    clickMapPin({ x: forum.x - 6, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+    // Just beside a pin still counts, so pins stay easy to tap.
+    clickMapPin({ x: forum.x - 20, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenLastCalledWith("forum-boarium");
+    clickMapPin({ x: forum.x - 30, y: forum.y });
+    expect(onOpenPoiDetails).toHaveBeenCalledTimes(4);
+    adapter.destroy();
   });
 
   it("updates preview content before positioning it at another pin", async () => {

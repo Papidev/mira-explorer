@@ -1,3 +1,4 @@
+import type { PositionAnchor } from "maplibre-gl";
 import { categoryMarkerColors } from "@/app/components/categoryMarkerColors";
 
 // MapLibre's default marker silhouette; its tip sits at y = 35.25.
@@ -10,6 +11,25 @@ const PIN_SCALE = 1.15;
 export const SELECTED_PIN_SCALE = 1.6;
 /** Pixels from the image bottom up to the pin tip, so the tip marks the place. */
 export const PIN_TIP_OFFSET = PAD * PIN_SCALE;
+/** The drawn pin, in CSS pixels at icon-size 1, without its shadow margin. */
+export const PIN_WIDTH = 27 * PIN_SCALE;
+export const PIN_HEIGHT = 35.25 * PIN_SCALE;
+const PIN_GAP = 4;
+const pinTop = -(PIN_HEIGHT + PIN_GAP);
+const pinSide = PIN_WIDTH / 2 + PIN_GAP;
+const pinMiddle = -(35.25 - 13.5) * PIN_SCALE;
+/** Popup offsets from the pin tip that keep a preview clear of its own pin. */
+export const PIN_POPUP_OFFSET: Record<PositionAnchor, [number, number]> = {
+  center: [0, 0],
+  top: [0, PIN_GAP],
+  "top-left": [0, PIN_GAP],
+  "top-right": [0, PIN_GAP],
+  bottom: [0, pinTop],
+  "bottom-left": [0, pinTop],
+  "bottom-right": [0, pinTop],
+  left: [pinSide, pinMiddle],
+  right: [-pinSide, pinMiddle],
+};
 // --color-brand is inlined by Tailwind, so it is not readable at runtime.
 const BRAND_COLOR = "#ffda1a";
 

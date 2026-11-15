@@ -25,7 +25,13 @@ const pois: Poi[] = (
     { id: "both", name: "A Church Museum", categories: ["Church", "Museum"] },
     { id: "unknown", name: "An Unclassified Place", categories: [] },
   ] satisfies Array<Pick<Poi, "id" | "name" | "categories">>
-).map((poi) => ({ city: "Rome", coordinates: { lat: 41, lng: 12 }, funFacts: [], ...poi }));
+).map((poi, index) => ({
+  city: "Rome",
+  // Apart, so each pin can be hovered and clicked on its own.
+  coordinates: { lat: 41, lng: 12 + index * 0.01 },
+  funFacts: [],
+  ...poi,
+}));
 const server = setupServer(
   http.get("*/api/pois/rome/:id/dialog-content", () =>
     HttpResponse.json({
@@ -1034,7 +1040,7 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
-    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12, 41] });
+    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.01, 41] });
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });

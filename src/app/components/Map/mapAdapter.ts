@@ -16,7 +16,14 @@ import {
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
-import { loadPinImages, PIN_TIP_OFFSET, SELECTED_PIN_SCALE } from "./pinImages";
+import {
+  loadPinImages,
+  PIN_HEIGHT,
+  PIN_POPUP_OFFSET,
+  PIN_TIP_OFFSET,
+  PIN_WIDTH,
+  SELECTED_PIN_SCALE,
+} from "./pinImages";
 
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
@@ -97,8 +104,26 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       [x - PIN_HIT_SLOP, y - PIN_HIT_SLOP],
       [x + PIN_HIT_SLOP, y + PIN_HIT_SLOP],
     ];
-    const [feature] = map.queryRenderedFeatures(box, { layers: [POI_LAYER] });
-    return poisById.get(String(feature?.properties.id));
+    // Image boxes include the transparent shadow margin, so measure each drawn pin instead.
+    let best: { poi: Poi; distance: number; order: number } | undefined;
+    for (const { properties } of map.queryRenderedFeatures(box, { layers: [POI_LAYER] })) {
+      const poi = poisById.get(String(properties.id));
+      if (!poi) continue;
+      const tip = map.project([poi.coordinates.lng, poi.coordinates.lat]);
+      const scale = poi.id === selectedPoiId ? SELECTED_PIN_SCALE : 1;
+      const dx = Math.max(Math.abs(x - tip.x) - (PIN_WIDTH / 2) * scale, 0);
+      const dy = Math.max(tip.y - PIN_HEIGHT * scale - y, y - tip.y, 0);
+      const distance = Math.hypot(dx, dy);
+      const order = Number(properties.order);
+      // Pins under the pointer win, the one drawn on top first; otherwise the nearest.
+      if (
+        distance <= PIN_HIT_SLOP &&
+        (!best || distance < best.distance || (distance === best.distance && order > best.order))
+      ) {
+        best = { poi, distance, order };
+      }
+    }
+    return best?.poi;
   };
 
   const handleMapClick = (event: MapMouseEvent) => {
@@ -236,7 +261,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     if (!source) return;
     source.setData({
       type: "FeatureCollection",
-      features: points.map((poi) => ({
+      features: points.map((poi, index) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [poi.coordinates.lng, poi.coordinates.lat] },
         properties: {
@@ -245,6 +270,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
           // Uncategorized places share the "Other places" color.
           color: (getMarkerColor(poi) ?? categoryMarkerColors.at(-1))?.marker,
           selected: poi.id === selectedPoiId,
+          // Draw order, which hover and taps follow when pins overlap; selected on top.
+          order: poi.id === selectedPoiId ? points.length : index,
         },
       })),
     });
@@ -269,7 +296,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         "icon-offset": [0, PIN_TIP_OFFSET],
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
-        "symbol-sort-key": ["case", selected, 1, 0],
+        // Hover and taps hit the pin itself, not a padded box over its neighbors.
+        "icon-padding": 0,
+        "symbol-sort-key": ["get", "order"],
       },
     });
     renderPois();
@@ -343,7 +372,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         closeOnClick: false,
         focusAfterOpen: false,
         maxWidth: "calc(100vw - 2rem)",
-        offset: 16,
+        offset: PIN_POPUP_OFFSET,
       }).setDOMContent(previewContainer);
       map.on("zoomend", () => {
         if (!map || !onZoomChange) {
