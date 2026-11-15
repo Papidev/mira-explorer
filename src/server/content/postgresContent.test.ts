@@ -749,8 +749,9 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         expectedRevision: catalog.revision,
         revision,
       });
+      // A rename keeps the Wikidata identity, so the accepted types stay visible.
       await expect(repository.savePoiTypes(body)).rejects.toMatchObject({ reason: "obsolete" });
-      expect((await repository.getPoiTypes(body.poiId))?.acquisition).toBeNull();
+      expect((await repository.getPoiTypes(body.poiId))?.acquisition).toEqual(before?.acquisition);
       await repository.synchronizeCatalog({
         ...catalog,
         expectedRevision: revision,
@@ -1862,47 +1863,31 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       });
     });
 
-    it("displays English, then Italian Wikipedia titles and finally catalog names on every public read", async () => {
+    it("displays the stored catalog name on every public read without republishing", async () => {
       const write = example();
-      write.detail.name = '"Statua parlante" Abate Luigi';
       const catalog = await prepare([write]);
       await repository.saveStory(write);
-      const pages = [
-        {
-          language: "it",
-          pageId: 1102873,
-          title: "Abate Luigi",
-          url: "https://it.wikipedia.org/wiki/Abate_Luigi",
-        },
+      catalog.pois[0].name = "Abbot Luigi";
+      catalog.pois[0].wikipediaPages = [
         {
           language: "en",
           pageId: 16605182,
-          title: "Abbot Luigi",
-          url: "https://en.wikipedia.org/wiki/Abbot_Luigi",
+          title: "Teatro Olimpico (Roma)",
+          url: "https://en.wikipedia.org/wiki/Teatro_Olimpico_(Roma)",
         },
       ];
-      for (const [wikipediaPages, expected] of [
-        [pages, "Abbot Luigi"],
-        [pages.slice(0, 1), "Abate Luigi"],
-        [[{ ...pages[0], title: "Teatro Olimpico (Roma)" }], "Teatro Olimpico"],
-        [[{ ...pages[0], title: "(Roma)" }], "(Roma)"],
-        [[{ ...pages[1], wikidataId: "Q999" }], write.detail.name],
-        [[], write.detail.name],
-      ] as const) {
-        // Change only display metadata; the Story publication remains the original one.
-        await pool.query("UPDATE content.pois SET wikipedia_pages = $2::jsonb WHERE id = $1", [
-          write.detail.id,
-          JSON.stringify(wikipediaPages),
-        ]);
-        expect((await repository.getCity("rome")).pois[0].name).toBe(expected);
-        expect((await repository.getCityPreviews("rome")).pois[0].name).toBe(expected);
-        expect(await repository.getStory(write.detail.id)).toMatchObject({
-          name: expected,
-          publicationId: write.detail.publicationId,
-        });
-        expect((await repository.getPerson("vespasian"))?.linkedPois[0].name).toBe(expected);
-      }
-      expect((await repository.getPoiBaseline(write.detail.id))?.name).toBe(catalog.pois[0].name);
+      await repository.synchronizeCatalog({
+        ...catalog,
+        expectedRevision: catalog.revision,
+        revision: randomUUID(),
+      });
+      expect((await repository.getCity("rome")).pois[0].name).toBe("Abbot Luigi");
+      expect((await repository.getCityPreviews("rome")).pois[0].name).toBe("Abbot Luigi");
+      expect(await repository.getStory(write.detail.id)).toMatchObject({
+        name: "Abbot Luigi",
+        publicationId: write.detail.publicationId,
+      });
+      expect((await repository.getPerson("vespasian"))?.linkedPois[0].name).toBe("Abbot Luigi");
     });
 
     it("backfills existing identities without changing their content", async () => {
@@ -2170,7 +2155,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       expect((await repository.getPerson("vespasian"))?.linkedPois).toHaveLength(1);
     });
 
-    it("keeps previous public content after changed names/Sources and rejects obsolete results", async () => {
+    it("keeps the previous publication after changed names/Sources and rejects obsolete results", async () => {
       const write = example();
       const catalog = await prepare([write]);
       await repository.saveStory(write);
@@ -2192,7 +2177,10 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         ],
       });
       await expect(repository.saveStory(write)).rejects.toMatchObject({ reason: "obsolete" });
-      expect((await repository.getStory(write.detail.id))?.name).toBe("Colosseum");
+      expect(await repository.getStory(write.detail.id)).toMatchObject({
+        name: "Changed attraction",
+        publicationId: write.detail.publicationId,
+      });
     });
 
     it("preserves corrected coordinates and category assignments when a queued Story is saved", async () => {

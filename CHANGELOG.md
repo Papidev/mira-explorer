@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 62d9581: Keep the Rome map's category filter rules in one place. No visible change.
+- Show each place's stored catalog name everywhere, and keep its Wikidata types after a rename.
 
 ## 0.25.12
 
