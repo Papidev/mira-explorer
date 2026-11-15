@@ -13,19 +13,6 @@ import {
   publishedPoiSummarySchema,
 } from "./publishedContent";
 
-// Display names are resolved on reads so existing publications need no regeneration.
-// A trailing disambiguation group like "(Roma)" is dropped unless nothing would remain.
-const poiDisplayNameSql = String.raw`COALESCE((
-  SELECT COALESCE(NULLIF(regexp_replace(btrim(page->>'title'), '\s*\([^()]*\)$', ''), ''),
-    btrim(page->>'title'))
-  FROM jsonb_array_elements(identity.wikipedia_pages) page
-  WHERE page->>'language' IN ('en', 'it') AND NULLIF(btrim(page->>'title'), '') IS NOT NULL
-    AND (identity.wikidata_id IS NULL OR page->>'wikidataId' IS NULL
-      OR page->>'wikidataId' = identity.wikidata_id)
-  ORDER BY CASE page->>'language' WHEN 'en' THEN 0 ELSE 1 END
-  LIMIT 1
-), identity.name)`;
-
 const generationSchema = z
   .object({
     provider: z.string().trim().min(1),
@@ -294,7 +281,7 @@ const typeRulesQuery = `SELECT
 
 const poiTypesQuery = `SELECT p.id AS "poiId", p.city, p.name, p.wikidata_id AS "wikidataId",
   p.wikipedia_pages AS "wikipediaPages", p.input_revision AS "inputRevision", w.revision,
-  CASE WHEN w.input_revision = p.input_revision AND w.acquisition->>'wikidataId' IS NOT DISTINCT FROM p.wikidata_id
+  CASE WHEN w.acquisition->>'wikidataId' IS NOT DISTINCT FROM p.wikidata_id
     THEN w.acquisition ELSE NULL END AS acquisition
   FROM content.pois p LEFT JOIN content.poi_type_acquisitions w ON w.poi_id = p.id
   WHERE p.removed_at IS NULL`;
@@ -660,7 +647,7 @@ export const createPostgresContent = (pool: Pool) => ({
         throw new ContentWriteError("invalid", "Unknown rule category.");
       const { rows: affected } = await client.query(
         `SELECT p.id FROM content.pois p
-        JOIN content.poi_type_acquisitions a ON a.poi_id = p.id AND a.input_revision = p.input_revision
+        JOIN content.poi_type_acquisitions a ON a.poi_id = p.id
         WHERE p.removed_at IS NULL AND a.acquisition->>'wikidataId' IS NOT DISTINCT FROM p.wikidata_id
           AND a.acquisition->'types' @> $1::jsonb ORDER BY p.id FOR UPDATE OF p`,
         [JSON.stringify([{ id: input.typeId }])],
@@ -885,7 +872,7 @@ export const createPostgresContent = (pool: Pool) => ({
       if (changedTypes.length) {
         const { rows } = await client.query<{ id: string }>(
           `SELECT p.id FROM content.pois p
-          JOIN content.poi_type_acquisitions a ON a.poi_id = p.id AND a.input_revision = p.input_revision
+          JOIN content.poi_type_acquisitions a ON a.poi_id = p.id
           WHERE p.removed_at IS NULL AND a.acquisition->>'wikidataId' IS NOT DISTINCT FROM p.wikidata_id
           AND EXISTS (SELECT FROM jsonb_array_elements(a.acquisition->'types') t WHERE t->>'id' = ANY($1::text[]))
           ORDER BY p.id FOR UPDATE OF p`,
@@ -1016,7 +1003,7 @@ export const createPostgresContent = (pool: Pool) => ({
       if (changedTypes.length) {
         const { rows } = await client.query<{ id: string }>(
           `SELECT p.id FROM content.pois p
-          JOIN content.poi_type_acquisitions a ON a.poi_id = p.id AND a.input_revision = p.input_revision
+          JOIN content.poi_type_acquisitions a ON a.poi_id = p.id
           WHERE p.removed_at IS NULL AND a.acquisition->>'wikidataId' IS NOT DISTINCT FROM p.wikidata_id
           AND EXISTS (SELECT FROM jsonb_array_elements(a.acquisition->'types') t WHERE t->>'id' = ANY($1::text[]))
           ORDER BY p.id FOR UPDATE OF p`,
@@ -1375,12 +1362,13 @@ export const createPostgresContent = (pool: Pool) => ({
     return result ? personBaselineSchema.parse(result) : undefined;
   },
 
+  // Visitor reads take names from content.pois so catalog renames apply without republishing Stories.
   getCity: async (city: string) => {
     const {
       rows: [result],
     } = await pool.query(
       `SELECT
-      COALESCE((SELECT jsonb_agg(p.response || jsonb_build_object('name', ${poiDisplayNameSql}) ORDER BY p.id)
+      COALESCE((SELECT jsonb_agg(p.response || jsonb_build_object('name', identity.name) ORDER BY p.id)
         FROM content.visitor_pois p JOIN content.pois identity ON identity.id = p.id
         WHERE p.city = $1), '[]'::jsonb) AS pois,
       COALESCE((SELECT jsonb_agg(response ORDER BY id) FROM content.visitor_categories), '[]'::jsonb) AS categories`,
@@ -1400,7 +1388,7 @@ export const createPostgresContent = (pool: Pool) => ({
       COALESCE((SELECT jsonb_agg(p.response || jsonb_build_object(
         'slug', identity.slug,
         'wikidataId', identity.wikidata_id,
-        'name', ${poiDisplayNameSql},
+        'name', identity.name,
         'introduction', s.response #>> '{story,introduction,text}',
         'mainImage', (SELECT image FROM jsonb_array_elements(s.response->'gallery') image
           WHERE image->>'id' = s.response->>'mainImageId')
@@ -1429,7 +1417,7 @@ export const createPostgresContent = (pool: Pool) => ({
     const {
       rows: [result],
     } = await pool.query(
-      `SELECT p.response || jsonb_build_object('name', ${poiDisplayNameSql}) AS response
+      `SELECT p.response || jsonb_build_object('name', identity.name) AS response
        FROM content.visitor_stories p JOIN content.pois identity ON identity.id = p.id
        WHERE p.id = $1`,
       [z.uuid().parse(poiId)],
@@ -1441,7 +1429,7 @@ export const createPostgresContent = (pool: Pool) => ({
       rows: [result],
     } = await pool.query(
       `SELECT p.response || jsonb_strip_nulls(jsonb_build_object('slug', identity.slug, 'image', identity.image,
-         'linkedPois', (SELECT jsonb_agg(poi || jsonb_build_object('name', ${poiDisplayNameSql}) ORDER BY ord)
+         'linkedPois', (SELECT jsonb_agg(poi || jsonb_build_object('name', identity.name) ORDER BY ord)
            FROM jsonb_array_elements(p.response->'linkedPois') WITH ORDINALITY l(poi, ord)
            JOIN content.pois identity ON identity.id = (poi->>'id')::uuid))) AS response
        FROM content.visitor_people p JOIN content.people identity ON identity.id = p.id
