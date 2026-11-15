@@ -25,7 +25,7 @@ The interactive symbol representing a **POI** on the visitor map, from which vis
 _Avoid_: Pin, dot
 
 **POI Preview**:
-The compact summary associated with a **POI Marker**, showing the place's name, thumbnail, and short descriptor, with an action to open its **Story**. It appears when hovering over or focusing the marker.
+The compact summary associated with a **POI Marker**, showing the place's name, thumbnail, and short descriptor, with an action to open its **Story**. It appears when hovering over the marker. Markers are drawn on the map and cannot take keyboard focus; keyboard and screen-reader visitors reach every **POI** through the place list and search.
 _Avoid_: Tooltip, POI popup, Story
 
 **Geo Place**:
@@ -47,6 +47,10 @@ _Avoid_: POI Type, Wikidata category
 **POI Subcategory**:
 A **POI Category** nested directly under a broader parent **POI Category**. Its **POIs** also belong to the parent's discovery scope; Cathedral, Basilica, Church, Abbey, Baptistery, and Temple are subcategories of Religion; Museum, Library, Archive, and Academy belong to Arts & Culture; built structures such as Castle and Aqueduct belong to Architecture; Square, Street, Fountain, Garden, and Park belong to Public Spaces; Cemetery, Grave, Mausoleum, and Monument belong to Memorials. Categories without a clearer group belong to Other places. Cathedral, Basilica, and Church discovery scopes follow the place naming and precedence rules.
 _Avoid_: POI Type, Wikidata subclass
+
+**Category Filter**:
+The visitor's current choice of **POI Categories** in the **Visitor Experience**, and the rules that decide which **POIs** it shows and which color each **POI Marker** takes. It starts with every available category selected, which is the only state that also shows uncategorized **POIs**.
+_Avoid_: Category selection, filters state, active categories
 
 **POI Type Mapping**:
 A shared editorial rule assigning a **POI Type** to zero or more **POI Categories** across cities. An explicitly ignored type is distinct from a type that has not yet been mapped.

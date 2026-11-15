@@ -25,7 +25,7 @@ class FakeMap {
   layers = new Set<string>();
   images = new Set<string>();
   handlers = new Map<string, Handler[]>();
-  /** Where the mouse is, in pixels; pins are drawn at their projected positions. */
+  /** Where the mouse is, in pixels; markers are drawn at their projected positions. */
   pointer: Point = { x: -1e9, y: -1e9 };
 
   constructor({
@@ -105,7 +105,7 @@ class FakeMap {
   addImage(id: string) {
     this.images.add(id);
   }
-  /** Like MapLibre, matches whole pin images, shadow margin included, in no particular order. */
+  /** Like MapLibre, matches whole marker images, shadow margin included, in no particular order. */
   queryRenderedFeatures(
     [[left, top], [right, bottom]]: [[number, number], [number, number]],
     { layers }: { layers: string[] },
@@ -182,8 +182,8 @@ const liveMap = () => {
   return map;
 };
 
-/** Places currently drawn as pins, by name. */
-export const mapPins = () =>
+/** Places currently drawn as markers, by name. */
+export const mapMarkers = () =>
   liveMap()
     .features()
     .map(
@@ -191,14 +191,14 @@ export const mapPins = () =>
         properties as { id: string; name: string; color: string; selected: boolean },
     );
 
-export const mapPinNames = () => mapPins().map(({ name }) => name);
-export const selectedMapPinName = () => mapPins().find(({ selected }) => selected)?.name;
+export const mapMarkerNames = () => mapMarkers().map(({ name }) => name);
+export const selectedMapMarkerName = () => mapMarkers().find(({ selected }) => selected)?.name;
 
-/** A point on the head of a place's pin. */
-export const mapPinHead = (name: string) => {
+/** A point on the head of a place's marker. */
+export const mapMarkerHead = (name: string) => {
   const map = liveMap();
   const feature = map.features().find(({ properties }) => properties.name === name);
-  if (!feature) throw new Error(`No pin for ${name}`);
+  if (!feature) throw new Error(`No marker for ${name}`);
   const tip = map.project(feature.geometry.coordinates);
   return { x: tip.x, y: tip.y - 25 };
 };
@@ -209,16 +209,16 @@ const pointAt = (target: string | Point | null) => {
     target === null
       ? { x: -1e9, y: -1e9 }
       : typeof target === "string"
-        ? mapPinHead(target)
+        ? mapMarkerHead(target)
         : target;
   return map;
 };
 
-/** Moves the mouse over a place's pin, a point, or empty map with `null`. */
-export const hoverMapPin = (target: string | Point | null) =>
+/** Moves the mouse over a place's marker, a point, or empty map with `null`. */
+export const hoverMapMarker = (target: string | Point | null) =>
   act(() => pointAt(target).fire("mousemove"));
-/** Clicks or taps a place's pin, a point, or empty map with `null`. */
-export const clickMapPin = (target: string | Point | null) =>
+/** Clicks or taps a place's marker, a point, or empty map with `null`. */
+export const clickMapMarker = (target: string | Point | null) =>
   act(() => pointAt(target).fire("click"));
 /** Moves the mouse off the map, optionally onto `to` (such as the preview popup). */
 export const leaveMap = (to?: Element) =>

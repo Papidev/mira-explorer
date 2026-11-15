@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { CheckIcon, ChevronDownIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
-import { categoryMarkerColors } from "@/app/components/categoryMarkerColors";
+import { markerStyleFor } from "@/app/components/categoryMarkerColors";
 import {
   DEFAULT_POI_CATEGORY_DEFINITIONS,
   type PoiCategory,
@@ -34,7 +34,7 @@ export const CategoryOption = ({
 }) => {
   const inputId = useId();
   const definition = definitions.find((definition) => definition.id === category);
-  const markerColor = categoryMarkerColors.find(({ category: id }) => id === category);
+  const markerStyle = markerStyleFor(category);
   const label = definition?.label ?? definition?.name ?? category;
   const content = (
     <>
@@ -85,19 +85,13 @@ export const CategoryOption = ({
 
       {!definition?.parent && (
         <span aria-hidden="true" className="relative size-8 shrink-0">
-          <MapPinIcon
-            className={`size-8 drop-shadow-sm ${markerColor?.pinClass ?? "text-[#3FB1CE]"}`}
-          />
+          <MapPinIcon className={`size-8 drop-shadow-sm ${markerStyle.pinClass}`} />
           <span
-            className={`absolute top-[4px] left-[6px] flex size-5 items-center justify-center rounded-full bg-current ${markerColor?.pinClass ?? "text-[#3FB1CE]"}`}
+            className={`absolute top-[4px] left-[6px] flex size-5 items-center justify-center rounded-full bg-current ${markerStyle.pinClass}`}
           >
             {/* Static category SVG shared with MapLibre's generated markers. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={markerColor?.icon ?? "/icons/categories/other.svg"}
-              alt=""
-              className="size-4"
-            />
+            <img src={markerStyle.icon} alt="" className="size-4" />
           </span>
         </span>
       )}

@@ -49,3 +49,8 @@ export const categoryMarkerColors = [
     pinClass: "text-[#3FB1CE]",
   },
 ] as const;
+
+/** A category's marker style; uncategorized and unknown categories use "Other places". */
+export const markerStyleFor = (category: string | undefined) =>
+  categoryMarkerColors.find((style) => style.category === category) ??
+  categoryMarkerColors.find((style) => style.category === "Other places")!;

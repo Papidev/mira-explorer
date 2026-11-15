@@ -1,39 +1,34 @@
 import { useId, useState } from "react";
-import type { Poi } from "@/types/Poi";
 import {
   DEFAULT_POI_CATEGORY_DEFINITIONS,
-  matchesPoiCategory,
   type PoiCategory,
   type PoiCategoryDefinition,
 } from "@/types/PoiCategory";
+import type { CategoryFilter } from "@/types/PoiCategory/filter";
 import { CategoryOption } from "./CategoryOption";
 
 export const CategoryGroup = ({
   category,
   definitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
-  pois,
-  selectedCategories,
+  filter,
   onToggleCategory,
   onSelectOnlyCategory,
 }: {
   category: PoiCategory;
   definitions?: PoiCategoryDefinition[];
-  pois: Poi[];
-  selectedCategories: PoiCategory[];
+  filter: CategoryFilter;
   onToggleCategory: (category: PoiCategory) => void;
   onSelectOnlyCategory: (category: PoiCategory) => void;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const subcategoriesId = useId();
-  const count = pois.filter((poi) =>
-    matchesPoiCategory(poi.categories, category, definitions),
-  ).length;
+  const { checked, indeterminate, count } = filter.stateOf(category);
   const children = definitions
     .filter(({ parent }) => parent === category)
     .sort((a, b) => (a.label ?? a.name).localeCompare(b.label ?? b.name, "en"))
     .map(({ id }) => ({
       name: id,
-      count: pois.filter((poi) => matchesPoiCategory(poi.categories, id, definitions)).length,
+      count: filter.stateOf(id).count,
     }))
     .filter(({ count }) => count > 0);
   if (!count) return null;
@@ -44,11 +39,8 @@ export const CategoryGroup = ({
           category={category}
           definitions={definitions}
           count={count}
-          checked={selectedCategories.includes(category)}
-          indeterminate={
-            !selectedCategories.includes(category) &&
-            children.some(({ name }) => selectedCategories.includes(name))
-          }
+          checked={checked}
+          indeterminate={indeterminate}
           onToggle={() => onToggleCategory(category)}
           onSelectOnly={() => onSelectOnlyCategory(category)}
           disclosure={
@@ -76,7 +68,7 @@ export const CategoryGroup = ({
               category={name}
               definitions={definitions}
               count={count}
-              checked={selectedCategories.includes(name)}
+              checked={filter.stateOf(name).checked}
               onToggle={() => onToggleCategory(name)}
               onSelectOnly={() => onSelectOnlyCategory(name)}
             />

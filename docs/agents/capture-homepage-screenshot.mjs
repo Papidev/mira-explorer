@@ -94,8 +94,8 @@ try {
 
   await evaluate(`document.querySelector("nextjs-portal")?.remove()`);
   await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...NEUTRAL_POINTER });
-  // Pins are drawn on the canvas: hover the Ara Pacis pin body, 20px above its tip.
-  const pin = await evaluate(`(() => {
+  // Markers are drawn on the canvas: hover the Ara Pacis marker body, 20px above its tip.
+  const marker = await evaluate(`(() => {
     const world = (lng, lat) => {
       const size = 512 * 2 ** ${VIEW.zoom};
       const sin = Math.sin((lat * Math.PI) / 180);
@@ -106,7 +106,7 @@ try {
     const [px, py] = world(${ARA_PACIS.lng}, ${ARA_PACIS.lat});
     return { x: rect.left + rect.width / 2 + px - cx, y: rect.top + rect.height / 2 + py - cy - 20 };
   })()`);
-  await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...pin });
+  await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...marker });
   await waitFor(
     "the Ara Pacis preview",
     `document.querySelector(".poi-preview-popup")?.innerText.startsWith("Ara Pacis")`,
