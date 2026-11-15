@@ -1,48 +1,4 @@
-/* Recolor MapLibre's silhouette while preserving its native border and shadow. */
 @layer components {
-  .religious-site-marker svg g[fill="#facc15"] > path {
-    fill: var(--color-yellow-400);
-  }
-
-  .arts-culture-marker svg g[fill="#10b981"] > path {
-    fill: var(--color-emerald-500);
-  }
-
-  .selected-poi-marker {
-    z-index: 1;
-  }
-
-  .poi-marker::before {
-    content: "";
-    position: absolute;
-    inset: calc(var(--spacing) * -2);
-  }
-
-  .poi-marker > svg {
-    overflow: visible;
-    /* Scale around the tip so it keeps pointing at the same location. */
-    transform-origin: 50% 85%;
-    transition: scale 220ms ease-out;
-  }
-
-  .selected-poi-marker > svg {
-    scale: 1.6;
-    filter: drop-shadow(0 0 4px var(--color-brand)) drop-shadow(0 3px 5px rgb(0 0 0 / 45%));
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .poi-marker > svg {
-      transition: none;
-    }
-  }
-
-  .selected-poi-marker svg g[fill]:not([fill="#000000"]):not([fill="none"]) > path {
-    paint-order: stroke fill;
-    stroke: var(--color-white);
-    stroke-width: 3;
-    stroke-linejoin: round;
-  }
-
   .poi-preview-popup {
     z-index: 2;
   }
