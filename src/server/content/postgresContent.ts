@@ -14,8 +14,10 @@ import {
 } from "./publishedContent";
 
 // Display names are resolved on reads so existing publications need no regeneration.
-const poiDisplayNameSql = `COALESCE((
-  SELECT NULLIF(btrim(page->>'title'), '')
+// A trailing disambiguation group like "(Roma)" is dropped unless nothing would remain.
+const poiDisplayNameSql = String.raw`COALESCE((
+  SELECT COALESCE(NULLIF(regexp_replace(btrim(page->>'title'), '\s*\([^()]*\)$', ''), ''),
+    btrim(page->>'title'))
   FROM jsonb_array_elements(identity.wikipedia_pages) page
   WHERE page->>'language' IN ('en', 'it') AND NULLIF(btrim(page->>'title'), '') IS NOT NULL
     AND (identity.wikidata_id IS NULL OR page->>'wikidataId' IS NULL
@@ -1438,7 +1440,10 @@ export const createPostgresContent = (pool: Pool) => ({
     const {
       rows: [result],
     } = await pool.query(
-      `SELECT p.response || jsonb_strip_nulls(jsonb_build_object('slug', identity.slug, 'image', identity.image)) AS response
+      `SELECT p.response || jsonb_strip_nulls(jsonb_build_object('slug', identity.slug, 'image', identity.image,
+         'linkedPois', (SELECT jsonb_agg(poi || jsonb_build_object('name', ${poiDisplayNameSql}) ORDER BY ord)
+           FROM jsonb_array_elements(p.response->'linkedPois') WITH ORDINALITY l(poi, ord)
+           JOIN content.pois identity ON identity.id = (poi->>'id')::uuid))) AS response
        FROM content.visitor_people p JOIN content.people identity ON identity.id = p.id
        WHERE ${bySlug ? "identity.slug" : "p.id"} = $1`,
       [personId],

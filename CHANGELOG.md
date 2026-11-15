@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.11
+
+### Patch Changes
+
+- Drop trailing disambiguation suffixes such as "(Roma)" from POI names, and show the same name on Person pages.
+
 ## 0.25.10
 
 ### Patch Changes
