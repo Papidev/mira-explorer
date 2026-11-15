@@ -38,9 +38,7 @@ export const linkWikidata = async (
       throw new Error("Could not verify the conflicting Wikidata identities.");
     }
     if (isInvalidPoiIdentity(incoming))
-      throw new Error(
-        "A POI cannot be linked to a Wikimedia collection or generic concept.",
-      );
+      throw new Error("A POI cannot be linked to a Wikimedia collection or generic concept.");
     if (previous.id !== incoming.id && !isInvalidPoiIdentity(previous))
       throw new Error("The Wikipedia page has a conflicting Wikidata ID.");
     wikidataId = incoming.id;

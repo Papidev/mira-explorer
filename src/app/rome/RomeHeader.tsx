@@ -4,13 +4,13 @@ import Link from "next/link";
 import { MiraLogo } from "@/app/components/ui/MiraLogo";
 import { AppVersion } from "@/app/components/ui/AppVersion";
 import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
-import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgressNotice";
+import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgress";
 
 // The city leads as the page title; the Mira brand signs off on the right with the app
 // tools, so the two serif names never read as one title. On phones only Rome and the bird
 // remain, so the map gets the screen.
 export const RomeHeader = ({ counts }: { counts?: { places: number; people: number } }) => (
-  <header className="bg-atlas relative isolate overflow-hidden border-b border-white/15 text-white max-sm:border-brand max-sm:border-b-2">
+  <header className="bg-atlas max-sm:border-brand relative isolate overflow-hidden border-b border-white/15 text-white max-sm:border-b-2">
     <div
       aria-hidden="true"
       className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_72%_100%,var(--color-atlas-glow),transparent_65%),radial-gradient(circle_at_center,#ffffff28_1px,transparent_1px)] bg-size-[auto,16px_16px]"
@@ -29,15 +29,17 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           className="h-auto w-12 shrink-0 sm:w-16"
         />
         <div className="relative">
-          <p className="text-brand absolute bottom-full mb-1.5 text-[9px]/3 sm:mb-2 font-bold tracking-[0.24em] uppercase">
+          <p className="text-brand absolute bottom-full mb-1.5 text-[9px]/3 font-bold tracking-[0.24em] uppercase sm:mb-2">
             Italy
           </p>
-          <h1 className="font-serif text-4xl/none tracking-tight [text-box:trim-both_cap_alphabetic] sm:text-5xl/none">Rome</h1>
+          <h1 className="font-serif text-4xl/none tracking-tight [text-box:trim-both_cap_alphabetic] sm:text-5xl/none">
+            Rome
+          </h1>
         </div>
       </div>
       {/* Only where it fits on the header row; it never wraps onto a line of its own. */}
       <p className="hidden text-sm/5 text-white/90 [text-box:trim-both_cap_alphabetic] 2xl:mr-auto 2xl:block">
-        Ancient ruins, Baroque squares, and the stories between.
+        Every place worth knowing, in Rome and beyond its walls.
       </p>
       <div className="ml-auto flex items-center gap-4 2xl:ml-0">
         {counts && (
@@ -74,10 +76,8 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           </span>
         </div>
         <div className="hidden items-center gap-4 sm:flex">
-          {/* Below lg the map shows a one-time note instead, so this row stays on one line. */}
-          <span className="hidden lg:flex">
-            <WorkInProgressNotice tone="dark" />
-          </span>
+          {/* Below lg the map note takes over, so this row stays on one line. */}
+          <WorkInProgressNotice tone="dark" mapNoteBelowLg />
           <ThemeSwitch tone="dark" />
         </div>
       </div>

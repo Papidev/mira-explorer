@@ -15,7 +15,8 @@ export const Drawer = ({
 }: {
   open: boolean;
   side: "left" | "right";
-  width?: number;
+  /** Pixel width from md up; below md the drawer fills the screen. */
+  width: number;
   afterLeave?: () => void;
   children: ReactNode;
 } & Omit<HTMLAttributes<HTMLElement>, "children">) => (
@@ -25,7 +26,7 @@ export const Drawer = ({
     appear
     unmount={false}
     afterLeave={afterLeave}
-    style={width ? ({ "--panel-width": `${width}px` } as CSSProperties) : undefined}
+    style={{ "--panel-width": `${width}px` } as CSSProperties}
     className="contents"
   >
     <TransitionChild
@@ -39,7 +40,7 @@ export const Drawer = ({
         side === "left"
           ? "left-0 border-r data-closed:-translate-x-full"
           : "right-0 border-l data-closed:translate-x-full",
-        "w-full shadow-2xl md:w-[var(--panel-width,28rem)] md:max-w-[calc(100%-2rem)]",
+        "w-full shadow-2xl md:w-(--panel-width) md:max-w-[calc(100%-2rem)]",
         "absolute h-full",
         className,
       )}

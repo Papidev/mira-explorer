@@ -35,6 +35,9 @@ export type MapViewUpdate = {
   zoom?: number;
 };
 
+/** Map edges hidden by panels: left and right in pixels, bottom as a share of the map height. */
+export type CoveredArea = { left: number; right: number; bottom: number };
+
 export type MapPreview = {
   poi: Poi;
   container: HTMLDivElement;
@@ -50,7 +53,7 @@ export interface MapAdapter {
     selectedCategories?: PoiCategory[],
   ) => void;
   updateSelectedPoi: (poiId: string | null) => void;
-  focusPoi: (request: { poi: Poi; leftInset: number; rightInset: number }) => void;
+  focusPoi: (poi: Poi, coveredArea: CoveredArea) => void;
   getZoom: () => number | null;
   setOnZoomChange: (handler: ((zoom: number) => void) | null) => void;
   setOnOpenPoiDetails: (handler: ((poiId: string) => void) | null) => void;
@@ -60,7 +63,8 @@ export interface MapAdapter {
 }
 
 type MarkerBinding = {
-  poiId: string;
+  poi: Poi;
+  color: string | undefined;
   marker: Marker;
   removeListeners: () => void;
 };
@@ -89,7 +93,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   };
 
   const updateMarkerSelection = () => {
-    markers.forEach(({ poiId, marker }) => {
+    markers.forEach(({ poi: { id: poiId }, marker }) => {
       marker.getElement().classList.toggle("selected-poi-marker", poiId === selectedPoiId);
       marker.getElement().setAttribute("aria-pressed", String(poiId === selectedPoiId));
     });
@@ -186,120 +190,152 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     }
   };
 
+  const removeMarker = ({ marker, removeListeners }: MarkerBinding) => {
+    removeListeners();
+    marker.remove();
+  };
+
   const removeMarkers = () => {
     closePreview();
-    markers.forEach(({ marker, removeListeners }) => {
-      removeListeners();
-      marker.remove();
-    });
+    markers.forEach(removeMarker);
     markers = [];
   };
 
+  const getMarkerColor = (poi: Poi) => {
+    const matchingColors = categoryMarkerColors.filter(({ category }) =>
+      matchesPoiCategory(poi.categories, category, categoryDefinitions),
+    );
+    return (
+      matchingColors.find(({ category }) =>
+        selectedCategories?.some(
+          (selected) =>
+            (selected === category ||
+              categoryDefinitions.some(
+                ({ id, parent }) => id === selected && parent === category,
+              )) &&
+            matchesPoiCategory(poi.categories, selected, categoryDefinitions),
+        ),
+      ) ?? matchingColors[0]
+    );
+  };
+
+  const createMarker = (
+    initialPoi: Poi,
+    markerColor: (typeof categoryMarkerColors)[number] | undefined,
+  ): MarkerBinding => {
+    const marker = new maplibregl.Marker({ color: markerColor?.marker, scale: 1.15 })
+      .setLngLat([initialPoi.coordinates.lng, initialPoi.coordinates.lat])
+      .addTo(map as MapLibreMap);
+    const element = marker.getElement();
+    const markerCenter = element.querySelector('circle[fill="#FFFFFF"]');
+    if (markerCenter && markerColor) {
+      const icon = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      icon.setAttribute("href", markerColor.icon);
+      icon.setAttribute("x", "-2.5");
+      icon.setAttribute("y", "-2.5");
+      icon.setAttribute("width", "16");
+      icon.setAttribute("height", "16");
+      icon.setAttribute("aria-hidden", "true");
+      markerCenter.parentElement?.replaceChildren(icon);
+    }
+    let isTouchInteraction = false;
+
+    element.classList.add("poi-marker");
+    if (markerColor?.category === "Churches & cathedrals") {
+      // Scope styling to MapLibre’s generated marker; preserve its shape and shadow.
+      element.classList.add("religious-site-marker");
+    } else if (markerColor?.category === "Arts & Culture") {
+      element.classList.add("arts-culture-marker");
+    }
+    element.style.cursor = "pointer";
+    element.tabIndex = 0;
+    element.setAttribute("role", "button");
+    element.setAttribute("aria-label", `Open details for ${initialPoi.name}`);
+
+    // Reused markers receive updated place data, so handlers read it from the binding.
+    const handlePointerDown = (event: PointerEvent) => {
+      isTouchInteraction = event.pointerType === "touch";
+    };
+    const handlePointerEnter = (event: PointerEvent) => {
+      if (event.pointerType !== "touch") {
+        openPreview(binding.poi);
+      }
+    };
+    const handlePointerLeave = () => schedulePreviewClose(binding.poi.id);
+    const handleFocus = () => {
+      if (!isTouchInteraction) {
+        openPreview(binding.poi);
+      }
+    };
+    const handleBlur = () => {
+      isTouchInteraction = false;
+      schedulePreviewClose(binding.poi.id);
+    };
+    const handleClick = (event: MouseEvent) => {
+      event.stopPropagation();
+      isTouchInteraction = false;
+      openPoiDetails(binding.poi.id);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      openPoiDetails(binding.poi.id);
+    };
+
+    element.addEventListener("pointerdown", handlePointerDown);
+    element.addEventListener("pointerenter", handlePointerEnter);
+    element.addEventListener("pointerleave", handlePointerLeave);
+    element.addEventListener("focus", handleFocus);
+    element.addEventListener("blur", handleBlur);
+    element.addEventListener("click", handleClick);
+    element.addEventListener("keydown", handleKeyDown);
+
+    const binding: MarkerBinding = {
+      poi: initialPoi,
+      color: markerColor?.marker,
+      marker,
+      removeListeners: () => {
+        element.removeEventListener("pointerdown", handlePointerDown);
+        element.removeEventListener("pointerenter", handlePointerEnter);
+        element.removeEventListener("pointerleave", handlePointerLeave);
+        element.removeEventListener("focus", handleFocus);
+        element.removeEventListener("blur", handleBlur);
+        element.removeEventListener("click", handleClick);
+        element.removeEventListener("keydown", handleKeyDown);
+      },
+    };
+    return binding;
+  };
+
+  /** Rebuilding every DOM marker blocks taps on phones, so keep the unchanged ones. */
   const setMarkers = (points: Poi[]) => {
     if (!map) {
       return;
     }
 
-    removeMarkers();
+    const previous = new Map(markers.map((binding) => [binding.poi.id, binding]));
     markers = points.map((poi) => {
-      const matchingColors = categoryMarkerColors.filter(({ category }) =>
-        matchesPoiCategory(poi.categories, category, categoryDefinitions),
-      );
-      const markerColor =
-        matchingColors.find(({ category }) =>
-          selectedCategories?.some(
-            (selected) =>
-              (selected === category ||
-                categoryDefinitions.some(
-                  ({ id, parent }) => id === selected && parent === category,
-                )) &&
-              matchesPoiCategory(poi.categories, selected, categoryDefinitions),
-          ),
-        ) ?? matchingColors[0];
-      const marker = new maplibregl.Marker({ color: markerColor?.marker, scale: 1.15 })
-        .setLngLat([poi.coordinates.lng, poi.coordinates.lat])
-        .addTo(map as MapLibreMap);
-      const element = marker.getElement();
-      const markerCenter = element.querySelector('circle[fill="#FFFFFF"]');
-      if (markerCenter && markerColor) {
-        const icon = document.createElementNS("http://www.w3.org/2000/svg", "image");
-        icon.setAttribute("href", markerColor.icon);
-        icon.setAttribute("x", "-2.5");
-        icon.setAttribute("y", "-2.5");
-        icon.setAttribute("width", "16");
-        icon.setAttribute("height", "16");
-        icon.setAttribute("aria-hidden", "true");
-        markerCenter.parentElement?.replaceChildren(icon);
+      const markerColor = getMarkerColor(poi);
+      const existing = previous.get(poi.id);
+      if (
+        existing &&
+        existing.color === markerColor?.marker &&
+        existing.poi.name === poi.name &&
+        existing.poi.coordinates.lat === poi.coordinates.lat &&
+        existing.poi.coordinates.lng === poi.coordinates.lng
+      ) {
+        previous.delete(poi.id);
+        existing.poi = poi;
+        return existing;
       }
-      let isTouchInteraction = false;
-
-      element.classList.add("poi-marker");
-      if (markerColor?.category === "Churches & cathedrals") {
-        // Scope styling to MapLibre’s generated marker; preserve its shape and shadow.
-        element.classList.add("religious-site-marker");
-      } else if (markerColor?.category === "Arts & Culture") {
-        element.classList.add("arts-culture-marker");
-      }
-      element.style.cursor = "pointer";
-      element.tabIndex = 0;
-      element.setAttribute("role", "button");
-      element.setAttribute("aria-label", `Open details for ${poi.name}`);
-
-      const handlePointerDown = (event: PointerEvent) => {
-        isTouchInteraction = event.pointerType === "touch";
-      };
-      const handlePointerEnter = (event: PointerEvent) => {
-        if (event.pointerType !== "touch") {
-          openPreview(poi);
-        }
-      };
-      const handlePointerLeave = () => schedulePreviewClose(poi.id);
-      const handleFocus = () => {
-        if (!isTouchInteraction) {
-          openPreview(poi);
-        }
-      };
-      const handleBlur = () => {
-        isTouchInteraction = false;
-        schedulePreviewClose(poi.id);
-      };
-      const handleClick = (event: MouseEvent) => {
-        event.stopPropagation();
-        isTouchInteraction = false;
-        openPoiDetails(poi.id);
-      };
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key !== "Enter" && event.key !== " ") {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-        openPoiDetails(poi.id);
-      };
-
-      element.addEventListener("pointerdown", handlePointerDown);
-      element.addEventListener("pointerenter", handlePointerEnter);
-      element.addEventListener("pointerleave", handlePointerLeave);
-      element.addEventListener("focus", handleFocus);
-      element.addEventListener("blur", handleBlur);
-      element.addEventListener("click", handleClick);
-      element.addEventListener("keydown", handleKeyDown);
-
-      return {
-        poiId: poi.id,
-        marker,
-        removeListeners: () => {
-          element.removeEventListener("pointerdown", handlePointerDown);
-          element.removeEventListener("pointerenter", handlePointerEnter);
-          element.removeEventListener("pointerleave", handlePointerLeave);
-          element.removeEventListener("focus", handleFocus);
-          element.removeEventListener("blur", handleBlur);
-          element.removeEventListener("click", handleClick);
-          element.removeEventListener("keydown", handleKeyDown);
-        },
-      };
+      return createMarker(poi, markerColor);
     });
+    if (activePreviewPoiId && previous.has(activePreviewPoiId)) closePreview();
+    previous.forEach(removeMarker);
     updateMarkerSelection();
   };
 
@@ -453,20 +489,22 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       selectedPoiId = poiId;
       updateMarkerSelection();
     },
-    focusPoi({ poi, leftInset, rightInset }) {
+    focusPoi(poi, { left, right, bottom }) {
       if (!map) return;
       closePreview();
       const center: [number, number] = [poi.coordinates.lng, poi.coordinates.lat];
-      // Mobile Stories cover the map; keep the place centered for the return to it.
-      const offsetX = window.innerWidth >= 768 ? (leftInset - rightInset) / 2 : 0;
+      // An offset, unlike easeTo's padding, does not persist into later zooms.
+      const offsetX = (left - right) / 2;
+      const coveredBelow = bottom * map.getContainer().clientHeight;
+      const offsetY = coveredBelow ? -coveredBelow / 2 : 0;
       const target = map.project(center);
       const current = map.project(map.getCenter());
-      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y);
+      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y - offsetY);
       map.easeTo({
         center,
         duration: Math.min(1150, Math.max(600, distance * 1.1)),
         easing: (progress) => progress * progress * (3 - 2 * progress),
-        offset: [offsetX, 0],
+        offset: [offsetX, offsetY],
       });
     },
     getZoom() {

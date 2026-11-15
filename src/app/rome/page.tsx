@@ -1,6 +1,6 @@
 import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
 import { RomeMap } from "@/app/components/RomeMap";
-import { WorkInProgressNote } from "@/app/components/ui/WorkInProgressNote";
+import { WorkInProgressNote } from "@/app/components/ui/WorkInProgress";
 
 type Props = {
   searchParams: Promise<{

@@ -2,24 +2,24 @@ import { Bird } from "@/app/components/ui/MiraLogo/Bird";
 
 const points = [
   {
-    title: "Take your curiosity further.",
-    summary: "Places beyond the usual sightseeing lists.",
-    body: "The city continues beyond its celebrated centre. Mira helps you find places across its neighbourhoods, including those that rarely make the usual sightseeing lists.",
+    title: "At home or on the street",
+    summary: "Plan the trip, or explore as you walk.",
+    body: "Browse Rome from your sofa before the trip, or open the map mid-walk and find what lies two streets away.",
   },
   {
-    title: "There is a reason to stop.",
-    summary: "A small detail can change how you see it.",
-    body: "A place may have no famous masterpiece or obvious splendour. Its history, a surprising episode, or an easily missed detail can still change the way you see it.",
+    title: "Small places, big stories",
+    summary: "Every place has something worth knowing.",
+    body: "Some places hide their story in plain sight: an emperor’s tomb that became a papal fortress, an ancient cattle market where two of Rome’s oldest temples still stand.",
   },
   {
-    title: "Put a life to a name.",
-    summary: "Meet the people linked to each place.",
-    body: "Follow the people linked to a place into their own profiles. Get a quick sense of who they were, what shaped their lives, and why their names belong here.",
+    title: "The people behind each place",
+    summary: "Who they were, and why they matter here.",
+    body: "The architect behind a façade, the pope who paid for it, the saint above the altar. Follow a name to learn who they were and why they belong here.",
   },
   {
-    title: "A quick read can open a door.",
-    summary: "Short reads, with Wikipedia for more.",
-    body: "Stories and profiles are made for an easy first encounter. When something catches your imagination, the Wikipedia link is there to keep exploring.",
+    title: "Short reads, sharper eyes",
+    summary: "Spot what most visitors miss.",
+    body: "Each Story covers history, architecture, and art in a few short paragraphs. Enough to spot the details most visitors walk past.",
   },
 ];
 
@@ -38,7 +38,7 @@ export const HomeCuriosity = () => (
           <span className="text-story-emphasis italic">look closer.</span>
         </h2>
       </div>
-      <div className="bg-brand-soft text-ink-muted relative space-y-4 rounded-2xl p-6 text-base/7 sm:p-8">
+      <div className="bg-brand-soft text-ink-muted relative space-y-4 rounded-2xl p-6 text-base/7 sm:p-8 sm:text-lg/8">
         <div
           className="pointer-events-none absolute -top-10 right-3 -scale-x-100 text-7xl sm:right-6 sm:text-8xl"
           aria-hidden="true"
@@ -90,7 +90,7 @@ export const HomeCuriosity = () => (
 
     {/* Phones get the headlines with one-line summaries; the full paragraphs would fill
         several screens. */}
-    <ul className="text-ink-muted mt-8 space-y-3 text-sm/6 sm:hidden">
+    <ul className="text-ink-muted mt-8 space-y-3 text-base/7 sm:hidden">
       {points.map(({ title, summary }) => (
         <li key={title} className="border-brand border-l-2 pl-3">
           <strong className="text-story-emphasis block font-semibold">{title}</strong>
@@ -98,10 +98,11 @@ export const HomeCuriosity = () => (
         </li>
       ))}
     </ul>
-    <div className="text-ink-muted mt-10 grid gap-8 text-base/7 max-sm:hidden sm:grid-cols-2 lg:mt-12 lg:gap-x-16">
+    <div className="text-ink-muted mt-10 grid gap-8 text-base/7 max-sm:hidden sm:grid-cols-2 sm:text-lg/8 lg:mt-12 lg:gap-x-16">
       {points.map(({ title, body }) => (
         <p key={title} className="border-brand border-t-2 pt-4">
-          <strong className="text-story-emphasis font-semibold">{title}</strong> {body}
+          <strong className="text-story-emphasis block font-semibold">{title}</strong>
+          {body}
         </p>
       ))}
     </div>

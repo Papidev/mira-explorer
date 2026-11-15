@@ -1,10 +1,5 @@
 import { useId, useState } from "react";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  MinusIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronDownIcon, MinusIcon } from "@heroicons/react/24/outline";
 import type { Poi } from "@/types/Poi";
 import {
   DEFAULT_POI_CATEGORY_DEFINITIONS,
@@ -13,8 +8,8 @@ import {
 } from "@/types/PoiCategory";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { CategoryGroup } from "./CategoryGroup";
+import { PlaceRow } from "./PlaceRow";
 import { Search } from "./Search";
-import { usePhoneLayout } from "@/app/components/ui/BottomSheet";
 
 export const Sidebar = ({
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
@@ -42,11 +37,11 @@ export const Sidebar = ({
   onSelectOnlyCategory: (category: PoiCategory) => void;
   onToggleAll: () => void;
   onOpenPoi: (poiId: string) => void;
-  onSearchPoi: (poi: Poi) => void;
+  /** Omitted when search sits over the map instead. */
+  onSearchPoi?: (poi: Poi) => void;
   onClose: () => void;
 }) => {
   const [expanded, setExpanded] = useState(true);
-  const isPhone = usePhoneLayout();
   const categoriesId = useId();
   const placesHeadingId = useId();
   return (
@@ -59,11 +54,13 @@ export const Sidebar = ({
           <h2 className="font-serif text-2xl/7 tracking-tight">Explore the city</h2>
           <DrawerCloseButton label="Close filters" onClick={onClose} transparent />
         </div>
-        <p className="text-ink-muted text-xs/5">Big city, huh? But you can filter what you want.</p>
+        <p className="text-ink-muted text-xs/5">
+          Every place of interest in Rome and its surroundings, hidden corners included. Filter to
+          what interests you.
+        </p>
         <span aria-hidden="true" className="bg-brand mt-3 block h-1 w-10 rounded-full" />
       </div>
-      {/* Phones search from the bar over the map instead. */}
-      {!isPhone && (
+      {onSearchPoi && (
         <div className="shrink-0 px-4 pt-3 pb-2">
           <Search pois={pois} onSelect={onSearchPoi} />
         </div>
@@ -173,34 +170,23 @@ export const Sidebar = ({
               : "Select a category to explore places."}
           </p>
         )}
-        <ul aria-labelledby={placesHeadingId} className="mt-3 space-y-2">
+        <ul
+          aria-labelledby={placesHeadingId}
+          className="mt-3 space-y-2"
+          onClick={(event) => {
+            const poiId = (event.target as Element)
+              .closest<HTMLElement>("[data-poi-id]")
+              ?.getAttribute("data-poi-id");
+            if (poiId) onOpenPoi(poiId);
+          }}
+        >
           {visiblePois.map((poi) => (
-            <li key={poi.id}>
-              <button
-                type="button"
-                aria-label={poi.name}
-                aria-pressed={selectedPoiId === poi.id}
-                onClick={() => onOpenPoi(poi.id)}
-                className={`group focus-visible:outline-focus flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${selectedPoiId === poi.id ? "border-brand bg-brand-soft/50" : "hover:border-brand border-line bg-surface"}`}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block text-lg leading-snug font-medium">{poi.name}</span>
-                  <span className="text-ink-subtle mt-1.5 block text-xs/5">
-                    {poi.categories
-                      ?.map(
-                        (id) =>
-                          categoryDefinitions.find((category) => category.id === id)?.name ?? id,
-                      )
-                      .sort((a, b) => a.localeCompare(b, "en"))
-                      .join(" · ") || "Uncategorized"}
-                  </span>
-                </span>
-                <ChevronRightIcon
-                  aria-hidden="true"
-                  className="text-ink-subtle group-hover:text-ink size-5 shrink-0 transition-colors"
-                />
-              </button>
-            </li>
+            <PlaceRow
+              key={poi.id}
+              poi={poi}
+              selected={selectedPoiId === poi.id}
+              categoryDefinitions={categoryDefinitions}
+            />
           ))}
         </ul>
       </div>

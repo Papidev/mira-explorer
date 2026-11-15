@@ -1,5 +1,41 @@
 # mira-explorer
 
+## 0.25.10
+
+### Patch Changes
+
+- Make tapping places on the Rome map faster on phones.
+
+## 0.25.9
+
+### Patch Changes
+
+- 1cc67c4: Highlight that the Rome map covers every place of interest in the city and its surroundings, including lesser-known places most guides leave out. Rewrite the homepage curiosity and open-knowledge sections, explain how AI helps Mira cover and connect places, enlarge homepage body text, and use one highlight colour throughout.
+
+## 0.25.8
+
+### Patch Changes
+
+- Reorganize the Work in progress notice internally, with no visible changes.
+
+## 0.25.7
+
+### Patch Changes
+
+- Reorganize the place and Person details panel internally, with no visible changes.
+
+## 0.25.6
+
+### Patch Changes
+
+- Keep the selected place visible above the details sheet on phones.
+
+## 0.25.5
+
+### Patch Changes
+
+- Format the source files with Prettier and check formatting on every pull request. No visible change.
+
 ## 0.25.4
 
 ### Patch Changes

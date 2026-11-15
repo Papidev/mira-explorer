@@ -60,7 +60,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
         <span className="text-ink mt-2 block font-serif text-2xl/7 tracking-tight">
           From mausoleum to fortress
         </span>
-        <span className="text-ink-muted mt-2 block text-sm/6">
+        <span className="text-ink-muted mt-2 block text-base/7">
           Built for Hadrian, the castle later became a papal refuge connected to the Vatican by a
           fortified passage.
         </span>

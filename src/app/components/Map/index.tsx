@@ -10,7 +10,14 @@ import {
 } from "@/types/PoiCategory";
 import "./markers.css";
 import "./controls.css";
-import { createMapLibreAdapter, type MapAdapter, type MapPreview } from "./mapAdapter";
+import {
+  createMapLibreAdapter,
+  type CoveredArea,
+  type MapAdapter,
+  type MapPreview,
+} from "./mapAdapter";
+
+export type { CoveredArea };
 import { PoiPreviewCard } from "./PoiPreviewCard";
 
 type Props = {
@@ -23,9 +30,9 @@ type Props = {
   onZoomChange?: (zoom: number) => void;
   onOpenPoiDetails?: (poiId: string) => void;
   onMapClick?: () => void;
-  controlsRightInset?: number;
-  hideControlsOnMobile?: boolean;
-  focusRequest?: { poi: Poi; requestId: number; leftInset: number; rightInset: number };
+  /** Parts of the map hidden by panels; a focused place is centred in what remains. */
+  coveredArea?: CoveredArea;
+  focusRequest?: { poi: Poi; requestId: number };
 };
 
 type MapHandlers = {
@@ -46,8 +53,7 @@ export const Map = ({
   onZoomChange,
   onOpenPoiDetails,
   onMapClick,
-  controlsRightInset = 0,
-  hideControlsOnMobile = false,
+  coveredArea = { left: 0, right: 0, bottom: 0 },
   focusRequest,
 }: Props) => {
   const [preview, setPreview] = useState<MapPreview | null>(null);
@@ -137,7 +143,7 @@ export const Map = ({
   }, [selectedPoiId]);
 
   const focusSelectedPoi = useEffectEvent(() => {
-    if (focusRequest) adapterRef.current?.focusPoi(focusRequest);
+    if (focusRequest) adapterRef.current?.focusPoi(focusRequest.poi, coveredArea);
   });
   const focusPoiId = focusRequest?.poi.id;
   const focusRequestId = focusRequest?.requestId;
@@ -150,8 +156,8 @@ export const Map = ({
       <div
         ref={containerRef}
         className="city-map h-full w-full"
-        data-controls-covered={hideControlsOnMobile}
-        style={{ "--map-controls-right-inset": `${controlsRightInset}px` } as CSSProperties}
+        data-controls-covered={Object.values(coveredArea).some(Boolean)}
+        style={{ "--map-controls-right-inset": `${coveredArea.right}px` } as CSSProperties}
       />
       {preview &&
         createPortal(

@@ -24,14 +24,17 @@ export const transformRawPoiFeature = (
   { poiId, wikidataId }: { poiId: string; wikidataId?: string },
 ) => {
   const properties = feature.properties ?? {};
-  const transformedProperties = SINGLE_POI_PROPERTY_KEYS.reduce<Record<string, unknown>>((acc, key) => {
-    const value = properties[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      acc[key] = value;
-    }
+  const transformedProperties = SINGLE_POI_PROPERTY_KEYS.reduce<Record<string, unknown>>(
+    (acc, key) => {
+      const value = properties[key];
+      if (typeof value === "string" && value.trim().length > 0) {
+        acc[key] = value;
+      }
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    {},
+  );
 
   return {
     id: poiId,

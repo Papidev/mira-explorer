@@ -75,10 +75,7 @@ export type StoryWorkflowErrorCode =
   | "persistence-failed";
 
 export type StoryWorkflowErrorStage =
-  | "sources"
-  | "mainImageCandidates"
-  | "storyContent"
-  | "persistence";
+  "sources" | "mainImageCandidates" | "storyContent" | "persistence";
 
 export class StoryWorkflowError extends Error {
   readonly code: StoryWorkflowErrorCode;

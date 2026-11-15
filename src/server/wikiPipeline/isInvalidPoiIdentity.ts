@@ -11,8 +11,10 @@ export const isInvalidPoiIdentity = (entity?: {
     (claim) =>
       claim.rank !== "deprecated" &&
       ["Q13406463", "Q4167410", "Q4167836"].includes(claim.mainsnak?.datavalue?.value?.id ?? ""),
-  ) ?? false) ||
+  ) ??
+    false) ||
   // A subclass is a kind of thing, not the individual place represented by a POI.
   (entity?.claims?.P279?.some(
     (claim) => claim.rank !== "deprecated" && claim.mainsnak?.datavalue !== undefined,
-  ) ?? false);
+  ) ??
+    false);

@@ -12,15 +12,15 @@ Frozen logo alternatives A and the original C are preserved in `artifacts/logo-s
 
 Typography uses two bundled families: Inter (`font-sans`) for body text and controls, and local Fraunces (`font-serif`) for the wordmark and display titles. Both are configured once in the root layout. Public screens share these roles using standard Tailwind utilities:
 
-| Role | Utilities |
-| --- | --- |
-| Section title | `font-serif text-3xl tracking-tight sm:text-4xl` |
-| Card, panel, and detail title | `font-serif text-2xl/7 tracking-tight` |
-| Map popover title | `font-serif text-xl/6 tracking-tight` |
-| Body and Story text | `text-base/7` |
-| Supporting copy and metadata | `text-sm/6` |
-| Caption | `text-xs/5` |
-| Section label | `text-xs/5 font-semibold tracking-[0.2em] uppercase` |
+| Role                          | Utilities                                            |
+| ----------------------------- | ---------------------------------------------------- |
+| Section title                 | `font-serif text-3xl tracking-tight sm:text-4xl`     |
+| Card, panel, and detail title | `font-serif text-2xl/7 tracking-tight`               |
+| Map popover title             | `font-serif text-xl/6 tracking-tight`                |
+| Body and Story text           | `text-base/7`                                        |
+| Supporting copy and metadata  | `text-sm/6`                                          |
+| Caption                       | `text-xs/5`                                          |
+| Section label                 | `text-xs/5 font-semibold tracking-[0.2em] uppercase` |
 
 The home hero and wordmark keep their larger display sizes. Controls retain Inter and their compact sizing.
 
@@ -41,11 +41,11 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000). Installation activates Husky: staged files are formatted with Prettier and staged JS/TS checked/fixed with ESLint. Select checks according to [Testing & Verification](AGENTS.md#testing--verification).
 
-| Route              | Purpose                              |
-| ------------------ | ------------------------------------ |
-| `/`                | Project home.                        |
-| `/rome`            | Visitor map.                         |
-| `/rome?poiId=<id>` | Map with POI detail open.            |
+| Route              | Purpose                   |
+| ------------------ | ------------------------- |
+| `/`                | Project home.             |
+| `/rome`            | Visitor map.              |
+| `/rome?poiId=<id>` | Map with POI detail open. |
 
 | Script                    | Purpose                                            |
 | ------------------------- | -------------------------------------------------- |
@@ -259,7 +259,6 @@ Accepted Wikidata type acquisitions have authenticated single-POI and city reloa
 endpoints. They persist empty and skipped results independently of categories and
 visitor publication. Apply the additive acquisition schema separately before API
 and Admin deployment; see the [acquisition API extension](docs/admin-content-api.md#poi-wikidata-acquisitions-v1-additive-extension).
-
 
 Automatic editorial rule writes on the authenticated content API accept an automatic
 origin, classification reason and optional new top-level definitions. The rule writer

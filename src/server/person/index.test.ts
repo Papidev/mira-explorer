@@ -567,8 +567,7 @@ describe("People", () => {
     vi.stubEnv("CLOUD_AI_PROVIDER", "ollama");
     const repository = createRepository();
     let generationConfig:
-      | { mode: "local" | "cloud"; provider: "ollama" | "gemini"; model: string }
-      | undefined;
+      { mode: "local" | "cloud"; provider: "ollama" | "gemini"; model: string } | undefined;
     const people = createPeople({
       acquireSources: async ({ initialSource }) => ({ sources: [initialSource!], warnings: [] }),
       repository,
