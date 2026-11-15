@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.13
+
+### Patch Changes
+
+- 62d9581: Keep the Rome map's category filter rules in one place. No visible change.
+
 ## 0.25.12
 
 ### Patch Changes
