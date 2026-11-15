@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.25.13
+
+### Patch Changes
+
+- Show each place's stored catalog name everywhere, and keep its Wikidata types after a rename.
+
 ## 0.25.12
 
 ### Patch Changes
