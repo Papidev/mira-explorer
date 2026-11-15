@@ -1884,6 +1884,8 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       for (const [wikipediaPages, expected] of [
         [pages, "Abbot Luigi"],
         [pages.slice(0, 1), "Abate Luigi"],
+        [[{ ...pages[0], title: "Teatro Olimpico (Roma)" }], "Teatro Olimpico"],
+        [[{ ...pages[0], title: "(Roma)" }], "(Roma)"],
         [[{ ...pages[1], wikidataId: "Q999" }], write.detail.name],
         [[], write.detail.name],
       ] as const) {
@@ -1898,6 +1900,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
           name: expected,
           publicationId: write.detail.publicationId,
         });
+        expect((await repository.getPerson("vespasian"))?.linkedPois[0].name).toBe(expected);
       }
       expect((await repository.getPoiBaseline(write.detail.id))?.name).toBe(catalog.pois[0].name);
     });
