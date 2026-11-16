@@ -12,7 +12,6 @@ import maplibregl, {
 import type { Poi } from "@/types/Poi";
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 import {
-  BRAND_COLOR,
   loadMarkerImages,
   MARKER_HEIGHT,
   MARKER_POPUP_OFFSET,
@@ -49,7 +48,15 @@ const POI_LAYERS = [POI_LAYER, SELECTED_POI_LAYER];
 const CLUSTER_RADIUS = 34;
 const CLUSTER_MIN_POINTS = 3;
 const CLUSTER_MAX_ZOOM = 16;
-const CLUSTER_TEXT_COLOR = "#1f2937";
+/**
+ * The header's atlas blue (--color-atlas) ties bubbles to the app palette;
+ * on the dark map it moves to the ink so the bubble itself stays light.
+ */
+const ATLAS_COLOR = "#345568";
+const clusterColors = (isDark: boolean) =>
+  isDark
+    ? { fill: "#fafafa" /* light --canvas, zinc-50 */, ink: ATLAS_COLOR }
+    : { fill: ATLAS_COLOR, ink: "#fff" };
 /** Markers react a little beyond their outline, which keeps them easy to tap. */
 const MARKER_HIT_SLOP = 8;
 
@@ -297,6 +304,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   const addPoiLayer = () => {
     if (!map || map.getSource(POI_SOURCE)) return;
     const empty = { type: "FeatureCollection" as const, features: [] };
+    const clusters = clusterColors(isDarkTheme());
     // Nearby places merge into count bubbles until they have room to stand apart.
     map.addSource(POI_SOURCE, {
       type: "geojson",
@@ -339,12 +347,12 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       source: POI_SOURCE,
       filter: isCluster,
       paint: {
-        // Light bubbles hint at more places without outweighing the markers.
-        "circle-color": "#fff",
+        // Small bubbles hint at more places without outweighing the markers.
+        "circle-color": clusters.fill,
         "circle-opacity": 0.95,
         "circle-radius": ["step", ["get", "point_count"], 13, 10, 16, 30, 20],
-        "circle-stroke-color": BRAND_COLOR,
-        "circle-stroke-width": 3,
+        "circle-stroke-color": clusters.ink,
+        "circle-stroke-width": 2,
       },
     });
     map.addLayer({
@@ -360,7 +368,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         "text-allow-overlap": true,
         "text-ignore-placement": true,
       },
-      paint: { "text-color": CLUSTER_TEXT_COLOR },
+      paint: { "text-color": clusters.ink },
     });
     map.addLayer(pinLayer(SELECTED_POI_LAYER, SELECTED_POI_SOURCE));
     renderPois();
