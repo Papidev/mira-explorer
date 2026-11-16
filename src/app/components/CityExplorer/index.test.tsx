@@ -671,8 +671,21 @@ const treeDefinitions = [
 ];
 const treePois: Poi[] = [
   ...pois,
-  { ...pois[0], id: "culture", name: "A Cultural Place", categories: ["Culture"] },
-  { ...pois[0], id: "monument", name: "A Monument", categories: ["Monument"] },
+  // Apart from the others, so no marker hides in a count bubble.
+  {
+    ...pois[0],
+    id: "culture",
+    name: "A Cultural Place",
+    categories: ["Culture"],
+    coordinates: { lat: 41, lng: 12.1 },
+  },
+  {
+    ...pois[0],
+    id: "monument",
+    name: "A Monument",
+    categories: ["Monument"],
+    coordinates: { lat: 41, lng: 12.11 },
+  },
 ];
 
 describe("category filter tree", () => {

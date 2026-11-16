@@ -17,6 +17,7 @@ import {
   fakePopups,
   hoverMapMarker,
   leaveMap,
+  mapClusters,
   mapMarkerHead,
   mapMarkerNames,
   mapMarkers,
@@ -54,8 +55,8 @@ const dispatchPointerEvent = (element: HTMLElement, type: string, pointerType: s
 
 const markersOf = (places: Poi[]) => places.map((poi) => ({ poi, color: "#3FB1CE" }));
 
-const mountAdapter = () => {
-  const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom: 15 });
+const mountAdapter = (zoom = 15) => {
+  const adapter = createMapLibreAdapter({ center: [12.481, 41.889], zoom });
   const container = document.createElement("div");
   document.body.append(container);
   return { adapter, container };
@@ -121,7 +122,7 @@ describe("Map and its MapLibre adapter", () => {
     adapter.mount(container);
     adapter.updatePois(markersOf(pois));
 
-    expect(mapMarkerNames()).toEqual(["Forum Boarium", "Cloisters of Bramante"]);
+    expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
     expect(container.querySelector(".maplibregl-marker")).toBeNull();
     expect(selectedMapMarkerName()).toBe("Forum Boarium");
     adapter.updateSelectedPoi("cloisters-of-bramante");
@@ -143,7 +144,7 @@ describe("Map and its MapLibre adapter", () => {
 
     act(() => fakeMaps[0].setStyle("https://tiles.openfreemap.org/styles/fiord"));
 
-    expect(mapMarkerNames()).toEqual(["Forum Boarium", "Cloisters of Bramante"]);
+    expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
     expect(selectedMapMarkerName()).toBe("Forum Boarium");
     adapter.destroy();
   });
@@ -205,7 +206,8 @@ describe("Map and its MapLibre adapter", () => {
 
   it("previews and opens the marker drawn on top where markers overlap", () => {
     const onOpenPoiDetails = vi.fn();
-    const { adapter, container } = mountAdapter();
+    // Zoomed in past the count bubbles, where nearby markers can still overlap.
+    const { adapter, container } = mountAdapter(18);
     adapter.setOnOpenPoiDetails(onOpenPoiDetails);
     adapter.mount(container);
     // Ten pixels apart: both markers cover a point between their tips.
@@ -373,6 +375,45 @@ describe("Map and its MapLibre adapter", () => {
 
     expect(openedPoiIds).toEqual(["forum-boarium", "cloisters-of-bramante"]);
     expect(fakePopups[0].isOpen).toBe(false);
+  });
+
+  it("groups nearby places into a count bubble that zooms in when clicked", async () => {
+    const onMapClick = vi.fn();
+    const onOpenPoiDetails = vi.fn();
+    const { adapter, container } = mountAdapter();
+    adapter.setOnMapClick(onMapClick);
+    adapter.setOnOpenPoiDetails(onOpenPoiDetails);
+    adapter.mount(container);
+    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
+    adapter.updatePois(markersOf([pois[0], neighbor]));
+
+    expect(mapMarkerNames()).toEqual([]);
+    const [bubble] = mapClusters();
+    expect(bubble.count).toBe(2);
+
+    clickMapMarker(bubble.point);
+    await waitFor(() =>
+      expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]),
+    );
+    expect(onMapClick).not.toHaveBeenCalled();
+    expect(onOpenPoiDetails).not.toHaveBeenCalled();
+    adapter.destroy();
+  });
+
+  it("keeps the selected place out of count bubbles", () => {
+    const { adapter, container } = mountAdapter();
+    adapter.mount(container);
+    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
+    adapter.updatePois(markersOf([pois[0], neighbor]));
+
+    adapter.updateSelectedPoi("forum-boarium");
+    expect(selectedMapMarkerName()).toBe("Forum Boarium");
+    expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
+
+    adapter.updateSelectedPoi(null);
+    expect(mapMarkerNames()).toEqual([]);
+    expect(mapClusters()).toHaveLength(1);
+    adapter.destroy();
   });
 
   it("removes the map and closes the popup when destroyed", () => {

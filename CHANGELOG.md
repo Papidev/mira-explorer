@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.0
+
+### Minor Changes
+
+- Group nearby places on the Rome map into count bubbles when zoomed out; clicking a bubble zooms in until its places separate. The selected place always stays visible as its own marker.
+
 ## 0.25.14
 
 ### Patch Changes
