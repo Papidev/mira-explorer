@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.2
+
+### Patch Changes
+
+- Show map preview images immediately on hover by preloading the images of visible places once the map settles, and keep optimized images cached for 31 days.
+
 ## 0.26.1
 
 ### Patch Changes
