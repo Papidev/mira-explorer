@@ -19,6 +19,7 @@ import {
   MARKER_WIDTH,
   SELECTED_MARKER_SCALE,
 } from "./markerImages";
+import { preloadPreviewImage } from "./PoiPreviewCard";
 
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
@@ -57,6 +58,8 @@ const clusterColors = (isDark: boolean) =>
   isDark
     ? { fill: "#fafafa" /* light --canvas, zinc-50 */, ink: ATLAS_COLOR }
     : { fill: ATLAS_COLOR, ink: "#fff" };
+/** Bubbles open no preview, so only single pins on screen are warmed, nearest to the center first. */
+const PRELOAD_IMAGE_LIMIT = 20;
 /** Markers react a little beyond their outline, which keeps them easy to tap. */
 const MARKER_HIT_SLOP = 8;
 
@@ -269,6 +272,22 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       popupContent.style.boxShadow = "var(--shadow-xl)";
       popupContent.style.pointerEvents = "auto";
     }
+  };
+
+  const preloadVisiblePreviewImages = () => {
+    const current = map;
+    if (!current?.getLayer(POI_LAYER)) return;
+    const center = current.project(current.getCenter());
+    const distanceToCenter = ({ coordinates }: Poi) => {
+      const { x, y } = current.project([coordinates.lng, coordinates.lat]);
+      return Math.hypot(x - center.x, y - center.y);
+    };
+    current
+      .queryRenderedFeatures({ layers: [POI_LAYER] })
+      .flatMap(({ properties }) => poisById.get(String(properties.id)) ?? [])
+      .sort((a, b) => distanceToCenter(a) - distanceToCenter(b))
+      .slice(0, PRELOAD_IMAGE_LIMIT)
+      .forEach(preloadPreviewImage);
   };
 
   /** Markers are drawn by the GPU, so moving the map never touches the DOM. */
@@ -490,6 +509,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       });
       map.on("click", handleMapClick);
       map.on("mousemove", handleMouseMove);
+      // idle fires once the map settles, so panning and zooming never start downloads.
+      map.on("idle", preloadVisiblePreviewImages);
       map.on("mouseout", handleMouseOut);
     },
     updateView(view) {

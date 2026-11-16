@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
   },
   reactCompiler: true,
   images: {
+    // Wikimedia sends no Cache-Control; keep optimized copies 31 days. A new upload of the same
+    // file keeps its URL, so it shows up to 31 days later.
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       {
         protocol: "https",
