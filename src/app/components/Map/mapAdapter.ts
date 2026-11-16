@@ -4,12 +4,15 @@ import maplibregl, {
   Map as MapLibreMap,
   type ExpressionSpecification,
   type GeoJSONSource,
+  type MapGeoJSONFeature,
   type MapMouseEvent,
   type PointLike,
+  type SymbolLayerSpecification,
 } from "maplibre-gl";
 import type { Poi } from "@/types/Poi";
 import { isDarkTheme, subscribeToDarkTheme } from "@/app/theme";
 import {
+  BRAND_COLOR,
   loadMarkerImages,
   MARKER_HEIGHT,
   MARKER_POPUP_OFFSET,
@@ -33,6 +36,16 @@ const brightenDarkLabels = (map: MapLibreMap) => {
 const PREVIEW_CLOSE_DELAY_MS = 180;
 const POI_SOURCE = "pois";
 const POI_LAYER = "poi-markers";
+/** The selected place stays out of clusters, so focusing it never hides it in a bubble. */
+const SELECTED_POI_SOURCE = "selected-poi";
+const SELECTED_POI_LAYER = "selected-poi-marker";
+const CLUSTER_LAYER = "poi-clusters";
+const CLUSTER_COUNT_LAYER = "poi-cluster-counts";
+const POI_LAYERS = [POI_LAYER, SELECTED_POI_LAYER];
+/** Pixels within which places share a bubble, and the zoom from which they all stand apart. */
+const CLUSTER_RADIUS = 44;
+const CLUSTER_MAX_ZOOM = 17;
+const CLUSTER_COLOR = "#1f2937";
 /** Markers react a little beyond their outline, which keeps them easy to tap. */
 const MARKER_HIT_SLOP = 8;
 
@@ -89,14 +102,15 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let onPreviewChange: ((preview: MapPreview | null) => void) | null = null;
 
   const poiAt = ({ x, y }: { x: number; y: number }) => {
-    if (!map?.getLayer(POI_LAYER)) return undefined;
+    const layers = POI_LAYERS.filter((id) => map?.getLayer(id));
+    if (!map || !layers.length) return undefined;
     const box: [PointLike, PointLike] = [
       [x - MARKER_HIT_SLOP, y - MARKER_HIT_SLOP],
       [x + MARKER_HIT_SLOP, y + MARKER_HIT_SLOP],
     ];
     // Image boxes include the transparent shadow margin, so measure each drawn marker instead.
     let best: { poi: Poi; distance: number; order: number } | undefined;
-    for (const { properties } of map.queryRenderedFeatures(box, { layers: [POI_LAYER] })) {
+    for (const { properties } of map.queryRenderedFeatures(box, { layers })) {
       const poi = poisById.get(String(properties.id));
       if (!poi) continue;
       const tip = map.project([poi.coordinates.lng, poi.coordinates.lat]);
@@ -116,9 +130,24 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     return best?.poi;
   };
 
+  const clusterAt = (point: PointLike) =>
+    map?.getLayer(CLUSTER_LAYER)
+      ? map.queryRenderedFeatures(point, { layers: [CLUSTER_LAYER] })[0]
+      : undefined;
+
+  /** Zooms just far enough for the bubble's places to separate. */
+  const expandCluster = async (cluster: MapGeoJSONFeature) => {
+    const source = map?.getSource<GeoJSONSource>(POI_SOURCE);
+    if (!source || cluster.geometry.type !== "Point") return;
+    const zoom = await source.getClusterExpansionZoom(Number(cluster.properties.cluster_id));
+    map?.easeTo({ center: cluster.geometry.coordinates as [number, number], zoom });
+  };
+
   const handleMapClick = (event: MapMouseEvent) => {
     const poi = poiAt(event.point);
+    const cluster = poi ? undefined : clusterAt(event.point);
     if (poi) openPoiDetails(poi.id);
+    else if (cluster) void expandCluster(cluster);
     else onMapClick?.();
   };
 
@@ -128,7 +157,11 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     else if (hoveredPoiId) schedulePreviewClose(hoveredPoiId);
     hoveredPoiId = poi?.id ?? null;
   };
-  const handleMouseMove = (event: MapMouseEvent) => setHoveredPoi(poiAt(event.point));
+  const handleMouseMove = (event: MapMouseEvent) => {
+    const poi = poiAt(event.point);
+    setHoveredPoi(poi);
+    if (map && !poi && clusterAt(event.point)) map.getCanvas().style.cursor = "pointer";
+  };
   const handleMouseOut = ({ originalEvent }: MapMouseEvent) => {
     // The preview covers its marker; the popup's own pointerleave closes it from there.
     const to = originalEvent.relatedTarget;
@@ -230,35 +263,52 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   /** Markers are drawn by the GPU, so moving the map never touches the DOM. */
   const renderPois = () => {
     const source = map?.getSource<GeoJSONSource>(POI_SOURCE);
-    if (!source) return;
+    const selectedSource = map?.getSource<GeoJSONSource>(SELECTED_POI_SOURCE);
+    if (!source || !selectedSource) return;
+    const features = markers.map(({ poi, color }, index) => ({
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: [poi.coordinates.lng, poi.coordinates.lat],
+      },
+      properties: {
+        id: poi.id,
+        name: poi.name,
+        color,
+        selected: poi.id === selectedPoiId,
+        // Draw order, which hover and taps follow when markers overlap; selected on top.
+        order: poi.id === selectedPoiId ? markers.length : index,
+      },
+    }));
     source.setData({
       type: "FeatureCollection",
-      features: markers.map(({ poi, color }, index) => ({
-        type: "Feature",
-        geometry: { type: "Point", coordinates: [poi.coordinates.lng, poi.coordinates.lat] },
-        properties: {
-          id: poi.id,
-          name: poi.name,
-          color,
-          selected: poi.id === selectedPoiId,
-          // Draw order, which hover and taps follow when markers overlap; selected on top.
-          order: poi.id === selectedPoiId ? markers.length : index,
-        },
-      })),
+      features: features.filter(({ properties }) => !properties.selected),
+    });
+    selectedSource.setData({
+      type: "FeatureCollection",
+      features: features.filter(({ properties }) => properties.selected),
     });
   };
 
   const addPoiLayer = () => {
     if (!map || map.getSource(POI_SOURCE)) return;
+    const empty = { type: "FeatureCollection" as const, features: [] };
+    // Nearby places merge into count bubbles until they have room to stand apart.
     map.addSource(POI_SOURCE, {
       type: "geojson",
-      data: { type: "FeatureCollection", features: [] },
+      data: empty,
+      cluster: true,
+      clusterRadius: CLUSTER_RADIUS,
+      clusterMaxZoom: CLUSTER_MAX_ZOOM,
     });
+    map.addSource(SELECTED_POI_SOURCE, { type: "geojson", data: empty });
     const selected: ExpressionSpecification = ["get", "selected"];
-    map.addLayer({
-      id: POI_LAYER,
+    const isCluster: ExpressionSpecification = ["has", "point_count"];
+    const pinLayer = (id: string, source: string): SymbolLayerSpecification => ({
+      id,
       type: "symbol",
-      source: POI_SOURCE,
+      source,
+      filter: ["!", isCluster],
       layout: {
         // Matches markerImageId(color, selected).
         "icon-image": [
@@ -277,6 +327,36 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         "symbol-sort-key": ["get", "order"],
       },
     });
+    map.addLayer(pinLayer(POI_LAYER, POI_SOURCE));
+    map.addLayer({
+      id: CLUSTER_LAYER,
+      type: "circle",
+      source: POI_SOURCE,
+      filter: isCluster,
+      paint: {
+        "circle-color": CLUSTER_COLOR,
+        "circle-opacity": 0.92,
+        "circle-radius": ["step", ["get", "point_count"], 15, 10, 19, 30, 24],
+        "circle-stroke-color": BRAND_COLOR,
+        "circle-stroke-width": 2.5,
+      },
+    });
+    map.addLayer({
+      id: CLUSTER_COUNT_LAYER,
+      type: "symbol",
+      source: POI_SOURCE,
+      filter: isCluster,
+      layout: {
+        "text-field": ["get", "point_count_abbreviated"],
+        // Both map styles serve this font.
+        "text-font": ["Noto Sans Regular"],
+        "text-size": 13,
+        "text-allow-overlap": true,
+        "text-ignore-placement": true,
+      },
+      paint: { "text-color": "#fff" },
+    });
+    map.addLayer(pinLayer(SELECTED_POI_LAYER, SELECTED_POI_SOURCE));
     renderPois();
     const styledMap = map;
     loadMarkerImages().then(

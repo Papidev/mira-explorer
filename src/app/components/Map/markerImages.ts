@@ -31,7 +31,7 @@ export const MARKER_POPUP_OFFSET: Record<PositionAnchor, [number, number]> = {
   right: [-markerSide, markerMiddle],
 };
 // --color-brand is inlined by Tailwind, so it is not readable at runtime.
-const BRAND_COLOR = "#ffda1a";
+export const BRAND_COLOR = "#ffda1a";
 
 const markerImageId = (color: string, selected: boolean) =>
   `poi-marker-${color}${selected ? "-selected" : ""}`;
