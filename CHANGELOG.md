@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.1
+
+### Patch Changes
+
+- Calm the Rome map's opening view: count bubbles now group only three or more nearby places, cover a smaller area, separate one zoom level sooner, and use the app's atlas blue (near-white on the dark map).
+
 ## 0.26.0
 
 ### Minor Changes
