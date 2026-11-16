@@ -47,6 +47,15 @@ const pois: Poi[] = [
   },
 ];
 
+/** Places beside Forum Boarium, close enough to share a bubble with it. */
+const neighbor: Poi = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
+const otherNeighbor: Poi = {
+  ...pois[1],
+  id: "mouth-of-truth",
+  name: "Mouth of Truth",
+  coordinates: { lat: 41.8892, lng: 12.4812 },
+};
+
 const dispatchPointerEvent = (element: HTMLElement, type: string, pointerType: string) => {
   const event = new Event(type);
   Object.defineProperty(event, "pointerType", { value: pointerType });
@@ -377,6 +386,16 @@ describe("Map and its MapLibre adapter", () => {
     expect(fakePopups[0].isOpen).toBe(false);
   });
 
+  it("keeps a pair of nearby places as separate markers", () => {
+    const { adapter, container } = mountAdapter();
+    adapter.mount(container);
+    adapter.updatePois(markersOf([pois[0], neighbor]));
+
+    expect(mapClusters()).toEqual([]);
+    expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
+    adapter.destroy();
+  });
+
   it("groups nearby places into a count bubble that zooms in when clicked", async () => {
     const onMapClick = vi.fn();
     const onOpenPoiDetails = vi.fn();
@@ -384,16 +403,19 @@ describe("Map and its MapLibre adapter", () => {
     adapter.setOnMapClick(onMapClick);
     adapter.setOnOpenPoiDetails(onOpenPoiDetails);
     adapter.mount(container);
-    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
-    adapter.updatePois(markersOf([pois[0], neighbor]));
+    adapter.updatePois(markersOf([pois[0], neighbor, otherNeighbor]));
 
     expect(mapMarkerNames()).toEqual([]);
     const [bubble] = mapClusters();
-    expect(bubble.count).toBe(2);
+    expect(bubble.count).toBe(3);
 
     clickMapMarker(bubble.point);
     await waitFor(() =>
-      expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]),
+      expect(mapMarkerNames().toSorted()).toEqual([
+        "Cloisters of Bramante",
+        "Forum Boarium",
+        "Mouth of Truth",
+      ]),
     );
     expect(onMapClick).not.toHaveBeenCalled();
     expect(onOpenPoiDetails).not.toHaveBeenCalled();
@@ -403,12 +425,15 @@ describe("Map and its MapLibre adapter", () => {
   it("keeps the selected place out of count bubbles", () => {
     const { adapter, container } = mountAdapter();
     adapter.mount(container);
-    const neighbor = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
-    adapter.updatePois(markersOf([pois[0], neighbor]));
+    adapter.updatePois(markersOf([pois[0], neighbor, otherNeighbor]));
 
     adapter.updateSelectedPoi("forum-boarium");
     expect(selectedMapMarkerName()).toBe("Forum Boarium");
-    expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
+    expect(mapMarkerNames().toSorted()).toEqual([
+      "Cloisters of Bramante",
+      "Forum Boarium",
+      "Mouth of Truth",
+    ]);
 
     adapter.updateSelectedPoi(null);
     expect(mapMarkerNames()).toEqual([]);
