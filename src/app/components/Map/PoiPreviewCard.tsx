@@ -1,9 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { ArrowLongRightIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import type { Poi } from "@/types/Poi";
+
+const IMAGE_SIZES = "288px";
+const preloadedImageUrls = new Set<string>();
+
+/** Fetches the exact optimized image the card will request, so hovering shows it from cache. */
+export const preloadPreviewImage = ({ mainImageUrl }: Poi) => {
+  if (!mainImageUrl || preloadedImageUrls.has(mainImageUrl)) return;
+  preloadedImageUrls.add(mainImageUrl);
+  const { srcSet, sizes, src } = getImageProps({
+    src: mainImageUrl,
+    alt: "",
+    fill: true,
+    sizes: IMAGE_SIZES,
+  }).props;
+  const image = document.createElement("img");
+  image.fetchPriority = "low";
+  if (sizes) image.sizes = sizes;
+  if (srcSet) image.srcset = srcSet;
+  image.src = src;
+};
 
 type Props = {
   poi: Poi;
@@ -29,7 +49,8 @@ export const PoiPreviewCard = ({ poi, onOpenDetails }: Props) => {
             src={poi.mainImageUrl}
             alt={`Main image of ${poi.name}`}
             fill
-            sizes="288px"
+            sizes={IMAGE_SIZES}
+            loading="eager"
             className="object-cover"
             onError={() => setHasImageError(true)}
           />
