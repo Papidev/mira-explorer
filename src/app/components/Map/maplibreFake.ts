@@ -25,7 +25,10 @@ class FakeMap {
   styleUrl: string;
   sources = new Map<
     string,
-    { data: { features: Feature[] }; cluster?: { radius: number; maxZoom: number } }
+    {
+      data: { features: Feature[] };
+      cluster?: { radius: number; minPoints: number; maxZoom: number };
+    }
   >();
   /** Layer ids, with whether each draws bubbles rather than single places. */
   layers = new Map<string, { drawsClusters: boolean }>();
@@ -102,17 +105,21 @@ class FakeMap {
       data,
       cluster,
       clusterRadius = 50,
+      clusterMinPoints = 2,
       clusterMaxZoom = 14,
     }: {
       data: { features: Feature[] };
       cluster?: boolean;
       clusterRadius?: number;
+      clusterMinPoints?: number;
       clusterMaxZoom?: number;
     },
   ) {
     this.sources.set(id, {
       data,
-      cluster: cluster ? { radius: clusterRadius, maxZoom: clusterMaxZoom } : undefined,
+      cluster: cluster
+        ? { radius: clusterRadius, minPoints: clusterMinPoints, maxZoom: clusterMaxZoom }
+        : undefined,
     });
   }
   getSource(id: string) {
@@ -173,9 +180,9 @@ class FakeMap {
         if (group) group.push(feature);
         else groups.push([feature]);
       }
-      return groups.map((group, index) =>
-        group.length === 1
-          ? group[0]
+      return groups.flatMap((group, index) =>
+        group.length < cluster.minPoints
+          ? group
           : {
               geometry: group[0].geometry,
               properties: { cluster_id: index, point_count: group.length },

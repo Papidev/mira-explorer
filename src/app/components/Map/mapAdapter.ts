@@ -42,10 +42,14 @@ const SELECTED_POI_LAYER = "selected-poi-marker";
 const CLUSTER_LAYER = "poi-clusters";
 const CLUSTER_COUNT_LAYER = "poi-cluster-counts";
 const POI_LAYERS = [POI_LAYER, SELECTED_POI_LAYER];
-/** Pixels within which places share a bubble, and the zoom from which they all stand apart. */
-const CLUSTER_RADIUS = 44;
-const CLUSTER_MAX_ZOOM = 17;
-const CLUSTER_COLOR = "#1f2937";
+/**
+ * Pixels within which places share a bubble, the fewest places a bubble holds,
+ * and the zoom from which they all stand apart.
+ */
+const CLUSTER_RADIUS = 34;
+const CLUSTER_MIN_POINTS = 3;
+const CLUSTER_MAX_ZOOM = 16;
+const CLUSTER_TEXT_COLOR = "#1f2937";
 /** Markers react a little beyond their outline, which keeps them easy to tap. */
 const MARKER_HIT_SLOP = 8;
 
@@ -299,6 +303,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       data: empty,
       cluster: true,
       clusterRadius: CLUSTER_RADIUS,
+      clusterMinPoints: CLUSTER_MIN_POINTS,
       clusterMaxZoom: CLUSTER_MAX_ZOOM,
     });
     map.addSource(SELECTED_POI_SOURCE, { type: "geojson", data: empty });
@@ -334,11 +339,12 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       source: POI_SOURCE,
       filter: isCluster,
       paint: {
-        "circle-color": CLUSTER_COLOR,
-        "circle-opacity": 0.92,
-        "circle-radius": ["step", ["get", "point_count"], 15, 10, 19, 30, 24],
+        // Light bubbles hint at more places without outweighing the markers.
+        "circle-color": "#fff",
+        "circle-opacity": 0.95,
+        "circle-radius": ["step", ["get", "point_count"], 13, 10, 16, 30, 20],
         "circle-stroke-color": BRAND_COLOR,
-        "circle-stroke-width": 2.5,
+        "circle-stroke-width": 3,
       },
     });
     map.addLayer({
@@ -354,7 +360,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         "text-allow-overlap": true,
         "text-ignore-placement": true,
       },
-      paint: { "text-color": "#fff" },
+      paint: { "text-color": CLUSTER_TEXT_COLOR },
     });
     map.addLayer(pinLayer(SELECTED_POI_LAYER, SELECTED_POI_SOURCE));
     renderPois();
