@@ -46,8 +46,6 @@ describe("createPoisForCity", () => {
       poiId === "forum-boarium"
         ? {
             poiId,
-            sources: [],
-            mainImageCandidates: [],
             draftMainImage: {
               commonsFileName: "forum-boarium.jpg",
               commonsPageUrl: "https://commons.wikimedia.org/wiki/File:forum-boarium.jpg",
@@ -58,7 +56,6 @@ describe("createPoisForCity", () => {
               discoveredVia: "wikidata-p18",
               isProposed: true,
             },
-            generation: {},
           }
         : undefined,
     );

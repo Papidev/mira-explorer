@@ -1,5 +1,5 @@
 import type { PhrasingContent, RootContent } from "mdast";
-import type { PublicStoryContent } from "@/server/storyWorkflow";
+import type { PublicStoryContent } from "@/server/storyWorkflow/storyContent";
 import { createTextTree } from "./textTree";
 
 export const useStoryText = (

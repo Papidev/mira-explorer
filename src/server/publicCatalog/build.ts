@@ -26,9 +26,6 @@ export const buildPublicCatalog = async () => {
       poiId,
       storyContent: parseStoryContent(storyContent),
       draftMainImage,
-      mainImageCandidates: [],
-      sources: [],
-      generation: {},
     };
     snapshots.set(poiId, snapshot);
     return snapshot;

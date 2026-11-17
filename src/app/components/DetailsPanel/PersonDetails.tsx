@@ -1,5 +1,5 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import type { PublicPerson } from "@/server/person";
+import type { PublicPerson } from "@/server/person/types";
 import { Person } from "@/app/components/Person";
 import { Heading } from "./Heading";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { PublicPerson } from "@/server/person";
+import type { PublicPerson } from "@/server/person/types";
 
 export const usePerson = (personId?: string, city?: string, poiId?: string, bySlug = false) => {
   const [state, setState] = useState<{

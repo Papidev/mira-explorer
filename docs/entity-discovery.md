@@ -37,8 +37,6 @@ Story regeneration must not redefine filter values. Prefer structured facts over
 | LLM               | Source-grounded extraction when deterministic data is insufficient, using Story Workflow providers. |
 | Jev               | Unadopted candidate for independent ordering; evaluate before integration.                          |
 
-Check existing `wtf_wikipedia` plugins before implementing parsing or enrichment, as required by repository guidance.
-
 ## Ranking boundary
 
 Rank by historical or cultural significance of the connection to this POI, not fame, mention count, or semantic similarity. Inputs are the POI, valid entities from one category, and connection evidence. Output must be a permutation of those entities: no additions, omissions, duplicates, or content changes. Discovery validates candidates before ranking.
