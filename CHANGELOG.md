@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.6
+
+### Patch Changes
+
+- Make footpaths and park outlines visible on the dark Rome map.
+
 ## 0.26.5
 
 ### Patch Changes
