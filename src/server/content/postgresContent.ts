@@ -1,5 +1,9 @@
 // Adapted from Papidev/mira-admin, commit 2b7b203cb2ba35dadd5a36d6b0ea6eb1bf971b1d.
-import { adminSavedStorySchema } from "./adminReads";
+import {
+  adminPeopleIdsSchema,
+  adminPersonProfileSchema,
+  adminSavedStorySchema,
+} from "./adminReads";
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { derivePoiCategories, expandCategorySelection } from "./categoryInterpretation";
@@ -1312,16 +1316,12 @@ export const createPostgresContent = (pool: Pool) => ({
     return adminInventorySchema.parse({ city, ...result });
   },
 
+  // PostgreSQL pushes a constant id filter into a security_barrier view, but builds a view joined
+  // on a column whole for every outer row (see tests). Stories filter visitor_stories by id; People
+  // are built from the tables because visitor_people joins visitor_pois for each Person's links.
   getAdminStories: async (city: string, ids: string[]) => {
     const { rows } = await pool.query(
-      `SELECT jsonb_build_object('detail', story.response, 'generation', saved.generation,
-         'people', COALESCE((SELECT jsonb_agg(jsonb_build_object('personId', person.id,
-           'wikidataId', person.wikidata_id, 'profileVersion', person.profile_version,
-           'person', profile.response || jsonb_strip_nulls(jsonb_build_object('image', person.image)),
-           'generation', person.generation) ORDER BY relation.position)
-           FROM content.poi_people relation JOIN content.people person ON person.id = relation.person_id
-           JOIN content.visitor_people profile ON profile.id = person.id
-           WHERE relation.poi_id = story.id), '[]'::jsonb)) AS response
+      `SELECT jsonb_build_object('detail', story.response, 'generation', saved.generation) AS response
        FROM content.visitor_stories story JOIN content.published_stories saved ON saved.poi_id = story.id
        WHERE story.city = $1 AND story.id = ANY($2::uuid[]) ORDER BY story.id`,
       [
@@ -1330,6 +1330,27 @@ export const createPostgresContent = (pool: Pool) => ({
       ],
     );
     return rows.map(({ response }) => adminSavedStorySchema.parse(response));
+  },
+
+  getAdminPeople: async (ids: string[]) => {
+    const { rows } = await pool.query(
+      `SELECT jsonb_build_object('personId', p.id, 'wikidataId', p.wikidata_id,
+         'profileVersion', p.profile_version, 'generation', p.generation,
+         'person', jsonb_strip_nulls(jsonb_build_object('image', p.image)) || jsonb_build_object(
+           'id', p.id, 'name', p.name, 'textFormat', 'markdown', 'content', p.content, 'sources', p.sources,
+           'updatedAt', to_char(p.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
+           'linkedPois', linked.pois)) AS response
+       FROM content.people p CROSS JOIN LATERAL (
+         SELECT jsonb_agg(jsonb_build_object('id', poi.id, 'city', poi.city, 'name', s.name,
+           'coordinates', jsonb_build_object('lat', poi.latitude, 'lng', poi.longitude),
+           'categoryIds', COALESCE((SELECT jsonb_agg(c.category_id ORDER BY c.category_id)
+             FROM content.poi_categories c WHERE c.poi_id = poi.id), '[]'::jsonb)) ORDER BY poi.city, poi.id) AS pois
+         FROM content.poi_people r JOIN content.pois poi ON poi.id = r.poi_id AND poi.removed_at IS NULL
+         JOIN content.published_stories s ON s.poi_id = poi.id WHERE r.person_id = p.id) linked
+       WHERE p.id = ANY($1::text[]) AND linked.pois IS NOT NULL ORDER BY p.id`,
+      [adminPeopleIdsSchema.parse(ids)],
+    );
+    return rows.map(({ response }) => adminPersonProfileSchema.parse(response));
   },
 
   getPoiBaseline: async (poiId: string) => {

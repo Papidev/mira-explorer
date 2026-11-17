@@ -449,5 +449,7 @@ describe("private Admin read validation", () => {
   it("rejects missing IDs before accessing the database", async () => {
     vi.stubEnv("CONTENT_API_TOKEN", token);
     expect((await request(["catalogs", "rome", "stories"]).response).status).toBe(400);
+    expect((await request(["people"]).response).status).toBe(400);
+    expect((await request(["people"], undefined, { headers: {} }).response).status).toBe(401);
   });
 });

@@ -139,10 +139,11 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       expect(stories[0]).toMatchObject({
         detail: { id: saved.detail.id, story: saved.detail.story },
         generation: saved.generation,
-        people: [
-          { person: { id: saved.people[0].person.id }, generation: saved.people[0].generation },
-        ],
       });
+      expect(stories[0]).not.toHaveProperty("people");
+      expect(await repository.getAdminPeople([saved.people[0].person.id, "unknown"])).toMatchObject(
+        [{ person: { id: saved.people[0].person.id }, generation: saved.people[0].generation }],
+      );
       expect(await repository.getAdminStories("milan", [saved.detail.id])).toEqual([]);
       expect((await repository.getCity("rome")).pois.map(({ id }) => id)).toEqual([
         saved.detail.id,
@@ -173,9 +174,9 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         publicationId: saved.detail.publicationId,
         relatedPeople: [{ profileVersion }],
       });
-      expect(
-        (await repository.getAdminStories("rome", [saved.detail.id]))[0].people[0].profileVersion,
-      ).toBe(profileVersion);
+      expect((await repository.getAdminPeople([saved.people[0].person.id]))[0].profileVersion).toBe(
+        profileVersion,
+      );
     });
 
     it("authenticates private inventory and bounded Story reads with no-store responses", async () => {
@@ -198,25 +199,143 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
           params: Promise.resolve({ segments: ["catalogs", "rome", action] }),
         });
       };
-      for (const action of ["inventory", "stories"]) {
-        const query = action === "stories" ? `?ids=${saved.detail.id}` : "";
-        expect((await read(action, query, "")).status).toBe(401);
-        const response = await read(action, query);
+      const readPeople = (
+        query: string,
+        authorization = "Bearer integration-test-token-with-at-least-32-bytes",
+      ) =>
+        handle(
+          new Request(`http://localhost/api/admin/content/v1/people${query}`, {
+            headers: authorization ? { authorization } : {},
+          }),
+          { params: Promise.resolve({ segments: ["people"] }) },
+        );
+      const personId = saved.people[0].person.id;
+      for (const [send, query, key] of [
+        [read.bind(null, "inventory"), "", "pois"],
+        [read.bind(null, "stories"), `?ids=${saved.detail.id}&people=omit`, "stories"],
+        [readPeople, `?ids=${personId}`, "people"],
+      ] as const) {
+        expect((await send(query, "")).status).toBe(401);
+        const response = await send(query);
         expect(response.status).toBe(200);
         expect(response.headers.get("cache-control")).toBe("no-store");
-        const value = await response.json();
-        expect(action === "inventory" ? value.pois : value.stories).toHaveLength(1);
+        expect((await response.json())[key]).toHaveLength(1);
       }
+      // Admin clients that predate the People read still receive embedded profiles.
+      const [legacy] = (await (await read("stories", `?ids=${saved.detail.id}`)).json()).stories;
+      expect(legacy.people).toMatchObject([
+        { personId, profileVersion: saved.people[0].profileVersion, person: { id: personId } },
+      ]);
+      const [omitted] = (
+        await (await read("stories", `?ids=${saved.detail.id}&people=omit`)).json()
+      ).stories;
+      expect(omitted).not.toHaveProperty("people");
+      expect(omitted.detail.story.relatedPeople).toMatchObject([{ personId }]);
       for (const query of [
         "",
         "?ids=bad",
         `?ids=${saved.detail.id},${saved.detail.id}`,
         `?ids=${saved.detail.id}&extra=1`,
         `?ids=${saved.detail.id}&ids=${saved.detail.id}`,
+        `?ids=${saved.detail.id}&people=all`,
+        `?ids=${saved.detail.id}&people=omit&people=omit`,
         `?ids=${Array.from({ length: 26 }, () => randomUUID()).join(",")}`,
       ])
         expect((await read("stories", query)).status).toBe(400);
+      for (const query of [
+        "",
+        "?ids=Bad",
+        `?ids=${personId},${personId}`,
+        `?ids=${personId}&extra=1`,
+        `?ids=${Array.from({ length: 101 }, (_, index) => `p${index}`).join(",")}`,
+      ])
+        expect((await readPeople(query)).status).toBe(400);
     });
+
+    it("reads a page of Admin Stories and their People without building every visitor view row", async () => {
+      // ~1,000 Stories and ~2,000 People, each Story linking four People.
+      await pool.query(`
+        INSERT INTO content.city_catalogs(city) VALUES ('rome');
+        INSERT INTO content.pois(id, city, name, latitude, longitude, wikipedia_pages, input_revision, input_digest)
+          SELECT ('00000000-0000-4000-8000-' || lpad(i::text, 12, '0'))::uuid, 'rome', 'POI ' || i,
+            41.9, 12.5, '[]', gen_random_uuid(), 'digest' FROM generate_series(1, 1000) i;
+        INSERT INTO content.published_stories(poi_id, publication_id, name, input_revision, content,
+            sources, gallery, generation, request_digest)
+          SELECT id, gen_random_uuid(), name, input_revision, jsonb_build_object('text', repeat('story ', 800)),
+            '[{"id":"s"}]', '[]', '{}', 'digest' FROM content.pois;
+        INSERT INTO content.people(id, wikidata_id, profile_version, name, content, sources, generation, request_digest)
+          SELECT 'person-' || i, 'Q' || i, gen_random_uuid(), 'Person ' || i,
+            jsonb_build_object('text', repeat('person ', 500)), '[{"id":"s"}]', '{}', 'digest'
+          FROM generate_series(1, 2000) i;
+        INSERT INTO content.poi_people(poi_id, person_id, name, position, source_ids)
+          SELECT ('00000000-0000-4000-8000-' || lpad(i::text, 12, '0'))::uuid,
+            'person-' || ((i * 2 + k) % 2000 + 1), 'Person', k, '{s}'
+          FROM generate_series(1, 1000) i, generate_series(0, 3) k;
+        ANALYZE;`);
+      const queries: Array<{ text: string; values: unknown[] }> = [];
+      const recorder = createPostgresContent({
+        query: async (text: string, values: unknown[]) => {
+          queries.push({ text, values });
+          return { rows: [] };
+        },
+      } as unknown as Pool);
+      const storyIds = Array.from(
+        { length: 25 },
+        (_, index) => `00000000-0000-4000-8000-${String(index * 40 + 1).padStart(12, "0")}`,
+      );
+      const { rows: people } = await pool.query(
+        "SELECT DISTINCT person_id FROM content.poi_people WHERE poi_id = ANY($1::uuid[])",
+        [storyIds],
+      );
+      await recorder.getAdminStories("rome", storyIds);
+      await recorder.getAdminPeople(people.map(({ person_id }) => person_id));
+      const explain = async (text: string, values: unknown[]) => {
+        const {
+          rows: [
+            {
+              "QUERY PLAN": [plan],
+            },
+          ],
+        } = await pool.query(`EXPLAIN (ANALYZE, FORMAT JSON) ${text}`, values);
+        return plan["Execution Time"] as number;
+      };
+      // The query before this change embedded profiles by joining visitor_people per Story.
+      const before = await explain(
+        `SELECT jsonb_build_object('detail', story.response, 'generation', saved.generation,
+           'people', COALESCE((SELECT jsonb_agg(jsonb_build_object('personId', person.id,
+             'wikidataId', person.wikidata_id, 'profileVersion', person.profile_version,
+             'person', profile.response || jsonb_strip_nulls(jsonb_build_object('image', person.image)),
+             'generation', person.generation) ORDER BY relation.position)
+             FROM content.poi_people relation JOIN content.people person ON person.id = relation.person_id
+             JOIN content.visitor_people profile ON profile.id = person.id
+             WHERE relation.poi_id = story.id), '[]'::jsonb)) AS response
+         FROM content.visitor_stories story JOIN content.published_stories saved ON saved.poi_id = story.id
+         WHERE story.city = $1 AND story.id = ANY($2::uuid[]) ORDER BY story.id`,
+        ["rome", storyIds],
+      );
+      const stories = await explain(queries[0].text, queries[0].values);
+      const profiles = await explain(queries[1].text, queries[1].values);
+      console.info(
+        `Admin page of 25 Stories and ${people.length} People: ${before.toFixed(1)} ms before, ` +
+          `${stories.toFixed(1)} ms Stories + ${profiles.toFixed(1)} ms People after.`,
+      );
+      expect(stories + profiles).toBeLessThan(before / 10);
+      // The Admin profile is the visitor profile with its image.
+      await pool.query(
+        "INSERT INTO content.categories(id, name) VALUES ('arena', 'Arena'); INSERT INTO content.poi_categories SELECT id, 'arena' FROM content.pois LIMIT 50",
+      );
+      const { rows: read } = await pool.query(queries[1].text, queries[1].values);
+      const { rows: visitor } = await pool.query(
+        `SELECT profile.response || jsonb_strip_nulls(jsonb_build_object('image', person.image)) AS response
+         FROM content.visitor_people profile JOIN content.people person ON person.id = profile.id
+         WHERE profile.id = ANY($1::text[]) ORDER BY profile.id`,
+        [people.map(({ person_id }) => person_id)],
+      );
+      expect(visitor).toHaveLength(100);
+      expect(read.map(({ response }) => response.person)).toEqual(
+        visitor.map(({ response }) => response),
+      );
+    }, 120_000);
 
     it("persists automatic origin, reason and new definitions atomically with multi-POI assignments", async () => {
       const writes = [example(), example()];

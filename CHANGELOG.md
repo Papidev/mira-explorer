@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.0
+
+### Minor Changes
+
+- Add a private Admin read for Person profiles by id, and let the private Admin Story read omit embedded profiles. Both read only the requested rows, so a page of 25 Stories and their 100 People takes milliseconds instead of seconds.
+
 ## 0.26.8
 
 ### Patch Changes

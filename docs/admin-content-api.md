@@ -341,7 +341,22 @@ publication eligibility, schema or content.
   `{ stories: [...] }` for complete published Stories in that city, with their
   saved generation provenance, Source references, gallery and canonical linked
   Person profiles/provenance. Request 1–25 distinct UUIDs. Missing or unpublished
-  IDs are absent from the result; IDs from another city return no content.
+  IDs are absent from the result; IDs from another city return no content. With
+  `&people=omit`, Stories carry no `people`: each lists its People in
+  `detail.story.relatedPeople`, and clients read their profiles separately. The
+  embedded form remains the default only for Admin clients that predate this
+  option; remove it once every Admin sends `people=omit`.
+- `GET /api/admin/content/v1/people?ids=<person-id>,<person-id>` returns
+  `{ people: [...] }` with each Person's identity, profile version, generation
+  provenance and canonical profile (the visitor profile plus its image). Request
+  1–100 distinct Person IDs. People that are unknown or not linked to a visible
+  POI are absent.
+
+Both reads select only the requested rows. The visitor views are
+`security_barrier`, so PostgreSQL cannot push a join condition into them: the
+earlier Story read rebuilt every visitor Person profile, with its linked POIs, for
+each Story. On a seeded test database (1,000 Stories, 2,000 People) one page of 25
+Stories took ~4.9 s that way, and ~5 ms as two reads.
 
 These responses contain saved domain content and Source metadata, not local raw
 Wikipedia archives, unlinked working People or incomplete Draft stages. A Person
