@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { PublicStoryContent } from "@/server/storyWorkflow";
+import type { PublicStoryContent } from "@/server/storyWorkflow/storyContent";
 import type { PublishedPoiDetail } from "@/server/content/publishedContent";
 
 type StoryContentState = {

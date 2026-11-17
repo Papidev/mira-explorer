@@ -158,7 +158,7 @@ Deploy through Vercel's GitHub integration with production branch `main`. Branch
 
 Versioned Stories, People, POIs, and categories live under `data/`. The build generates a snapshot in `data/public/` for the homepage and the Rome map. The map merges that snapshot with online publications. Builds use the versioned files and run without database or AI credentials.
 
-The shared legacy workspace defaults to `~/.local/share/historical-explorer`. Set `HISTORICAL_EXPLORER_LOCAL_DATA_DIR` to point legacy tools at another existing workspace. Source snapshots, acquired Types, checkpoints, and logs from the retired Explorer Admin can still be found there. Current generation and its diagnostics are documented in [Mira Admin](https://github.com/Papidev/mira-admin).
+Explorer only reads these files. Generation and its diagnostics live in [Mira Admin](https://github.com/Papidev/mira-admin).
 
 | Artifact                           | Location                                                 |
 | ---------------------------------- | -------------------------------------------------------- |
@@ -166,12 +166,9 @@ The shared legacy workspace defaults to `~/.local/share/historical-explorer`. Se
 | App-ready POIs                     | `data/<city>/pois/pois.geojson`                          |
 | POI categories                     | `data/<city>/pois/categories.json`                       |
 | Story Content and image candidates | `data/<city>/stories/<poi-id>/story.json`, `images.json` |
-| Wikipedia text/source metadata     | `<local-data>/<city>/generated/wikipedia/`               |
-| Acquired Wikidata Types            | `<local-data>/<city>/generated/wikidata/`                |
-| Pipeline checkpoints/timings       | `<local-data>/<city>/generated/generation-metadata.json` |
 | Canonical People                   | `data/people/<person-id>/person.json`                    |
 
-POI IDs are stable and app-owned; external IDs such as `wikidataId` are optional. `geoPlaceId` preserves the original feature identity, enabling regeneration without Wikidata. Legacy records recover it only from a unique exact name/geometry match.
+POI IDs are stable and app-owned; external IDs such as `wikidataId` are optional. `geoPlaceId` preserves the original feature identity.
 
 Person records and Main Image Candidate artifacts are validated with Zod when read. Invalid files report their path and validation errors; empty candidate lists and missing image selections remain valid workflow states. Selected images must reference an available candidate, and Person IDs must match their directory names.
 

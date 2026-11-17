@@ -1,4 +1,4 @@
-import type { PublicPerson } from "@/server/person";
+import type { PublicPerson } from "@/server/person/types";
 import Image from "next/image";
 import { WikipediaLinks } from "@/app/components/WikipediaLinks";
 import { StoryText } from "@/app/components/StoryText";

@@ -1,4 +1,4 @@
-import type { HistoryInsight, PublicStoryContent } from "@/server/storyWorkflow";
+import type { HistoryInsight, PublicStoryContent } from "@/server/storyWorkflow/storyContent";
 import { Topic } from "@/app/components/Topic/Topic";
 import { useStoryText } from "@/app/components/StoryText/useStoryText";
 import { StoryText } from "@/app/components/StoryText";

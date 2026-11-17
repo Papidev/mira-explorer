@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.4
+
+### Patch Changes
+
+- Remove the legacy local Story, Person and Wikipedia generation code and its shared local data directory. Explorer keeps reading the saved local Stories, People and images, so the built catalog is unchanged.
+
 ## 0.26.3
 
 ### Patch Changes

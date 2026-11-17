@@ -34,7 +34,7 @@ Read `docs/agents/domain.md` before domain exploration.
 
 ## Worktree Lifecycle
 
-- When creating a worktree, copy environment files, uncommitted versioned content under `data/`, `.tailwind-plus/`, Catalyst references, and other local libraries/assets. The app accesses generated local data directly in the shared external directory; keep those files outside worktrees and `data/public/` local to each checkout. See [Data layout](README.md#data-layout) for configuration and shared-data behavior. Verify the local resources before starting work.
+- When creating a worktree, copy environment files, uncommitted versioned content under `data/`, `.tailwind-plus/`, Catalyst references, and other local libraries/assets. Keep `data/public/` local to each checkout. See [Data layout](README.md#data-layout). Verify the local resources before starting work.
 - After the task is complete and its PR is confirmed merged, stop processes started from that worktree, including child processes. Leave processes from other checkouts running. Keep the worktree in place for automatic cleanup.
 - Worktree cleanup does not require separate backups of local resources or generated data. Do not create `.worktree-backups/` or other backup directories inside the repository.
 
@@ -82,10 +82,6 @@ Read `docs/agents/domain.md` before domain exploration.
 - When a feature is stable enough (behavior/API unlikely to change soon), update documentation accordingly: `README.md` for user/developer usage and `AGENTS.md` for implementation guidance/process updates.
 
 Update `AGENTS.md` only with important stuff that cannot be clearly/quickly derived from an exploration of the codebase.
-
-## Wikipedia Pipeline Notes
-
-- Before implementing Wikipedia parsing, enrichment, conversion, or output logic, check whether `wtf_wikipedia` already has an external plugin that covers the need. Potentially useful plugins include `markdown` for conversion experiments, `image` for richer detail panels, `classify` for category filtering, `summary` for short descriptions, and `i18n` if ingesting non-English articles directly.
 
 ## Testing & Verification
 

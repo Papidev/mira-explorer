@@ -1,9 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { personRepository } from "@/server/person/filesystemRepository";
-import { createStoryWorkflowForCity } from "@/server/storyWorkflow";
-import type { DraftStorySnapshot } from "@/server/storyWorkflow";
-import { toPublicStoryContent } from "@/server/storyWorkflow/storyContent";
+import type { DraftStorySnapshot } from "@/server/storyWorkflow/types";
 import { readPoiCategories } from "@/server/poiCategories";
 import type { Poi } from "@/types/Poi";
 
@@ -38,25 +35,6 @@ const toCitySlug = (city: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-
-export const getPoiStoryContent = async (city: string, poiId?: string) => {
-  if (!poiId) {
-    return undefined;
-  }
-
-  const storyContent = (await createStoryWorkflowForCity(city).draftStory.get({ poiId }))
-    ?.storyContent;
-  return storyContent
-    ? toPublicStoryContent({
-        ...storyContent,
-        relatedPeople: storyContent.relatedPeople.map((person) =>
-          person.personId && personRepository.get(person.personId)
-            ? person
-            : { name: person.name, sourceIds: person.sourceIds },
-        ),
-      })
-    : undefined;
-};
 
 const asPoi = (feature: GeoJsonFeature, index: number, fallbackCity: string): Poi | null => {
   if (feature.geometry?.type !== "Point") {
@@ -145,21 +123,18 @@ const loadGeoJsonForCity = (city: string): GeoJson => {
 
 export const createPoisForCity = async (
   city: string,
-  getDraftStory?: (poiId: string) => Promise<DraftStorySnapshot | undefined>,
+  getDraftStory: (poiId: string) => Promise<DraftStorySnapshot | undefined>,
   getCategories?: () => Record<string, string[]>,
 ): Promise<Poi[]> => {
   const features = loadGeoJsonForCity(city).features ?? [];
   const categories = getCategories ? getCategories() : readPoiCategories(toCitySlug(city));
   const pois = features.map((feature, index) => asPoi(feature, index, city));
-  const storyWorkflow = createStoryWorkflowForCity(city);
 
   return Promise.all(
     pois
       .filter((poi): poi is Poi => Boolean(poi))
       .map(async (poi) => {
-        const draftStory = await (getDraftStory
-          ? getDraftStory(poi.id)
-          : storyWorkflow.draftStory.get({ poiId: poi.id }));
+        const draftStory = await getDraftStory(poi.id);
         const mainImageUrl = draftStory?.draftMainImage?.thumbnailUrl;
         const previewDescription =
           poi.shortDescription ?? draftStory?.storyContent?.introduction.text;
