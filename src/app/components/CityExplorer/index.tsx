@@ -18,10 +18,14 @@ import type { Poi } from "@/types/Poi";
 import { Map, type CoveredArea } from "@/app/components/Map";
 import { DETAILS_PANEL_WIDTH, DetailsPanel } from "@/app/components/DetailsPanel";
 import { BOTTOM_SHEET_PEEK_RATIO } from "@/app/components/ui/BottomSheet";
-import { useViewport } from "@/app/viewport";
+import { useViewport, useViewportWidth } from "@/app/viewport";
 
 /** Default width of the filters drawer, before the visitor resizes it. */
 const SIDEBAR_WIDTH = 352;
+/** Widest share of the screen the place details drawer may take. */
+const DETAILS_MAX_SHARE = 0.45;
+/** Least share of the screen width the map keeps beside the filters and an open place. */
+const MAP_MIN_SHARE = 0.4;
 
 type Props = {
   citySlug: string;
@@ -51,10 +55,9 @@ export const CityExplorer = ({
   );
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   const { detailsAsSheet, sidebarBesideMap } = useViewport();
-  const sidebarVisible = sidebarOpen ?? sidebarBesideMap;
+  const viewportWidth = useViewportWidth();
   // A closed sidebar still holds ~1,000 place rows; drop them once it has slid away.
-  const [placesListed, setPlacesListed] = useState(sidebarVisible);
-  if (sidebarVisible && !placesListed) setPlacesListed(true);
+  const [placesListed, setPlacesListed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
   const [detailsWidth, setDetailsWidth] = useState(DETAILS_PANEL_WIDTH);
   const openFiltersSwipe = useFilterSwipe("right", () => setSidebarOpen(true));
@@ -110,10 +113,17 @@ export const CityExplorer = ({
     openPoi(poi.id);
   };
   const detailsOpen = Boolean(selectedPoi || selectedPersonSlug);
+  const shownDetailsWidth = Math.min(detailsWidth, Math.round(viewportWidth * DETAILS_MAX_SHARE));
+  // From lg the filters stay beside the map, unless they and an open place would leave it too
+  // little room; they come back when the place closes. A visitor's own choice still wins.
+  const roomBesidePlace =
+    viewportWidth - sidebarWidth - shownDetailsWidth >= viewportWidth * MAP_MIN_SHARE;
+  const sidebarVisible = sidebarOpen ?? (sidebarBesideMap && (!detailsOpen || roomBesidePlace));
+  if (sidebarVisible && !placesListed) setPlacesListed(true);
   // Below lg, opening a place closes the filters, so they only ever cover the map beside it.
   const coveredArea: CoveredArea = {
     left: sidebarVisible ? sidebarWidth : 0,
-    right: detailsOpen && !detailsAsSheet ? detailsWidth : 0,
+    right: detailsOpen && !detailsAsSheet ? shownDetailsWidth : 0,
     bottom: detailsOpen && detailsAsSheet ? BOTTOM_SHEET_PEEK_RATIO : 0,
   };
 
@@ -179,7 +189,7 @@ export const CityExplorer = ({
           openRequestId={openRequestId}
           poi={selectedPoi}
           excludedByFilters={searchExcluded}
-          width={detailsWidth}
+          width={shownDetailsWidth}
           onResize={setDetailsWidth}
           onClose={() => selectPoi(null)}
         />
