@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { createPoiCategoriesForCity } from "@/server/poiCategories";
+import { readPoiCategories } from "@/server/poiCategories";
 import { createPoisForCity } from ".";
 import { buildPublicCatalog } from "@/server/publicCatalog/build";
 import { createPublicCatalog } from "@/server/publicCatalog";
@@ -25,7 +25,7 @@ describe("createPoisForCity", () => {
       const pois = await createPoisForCity(
         "rome",
         async () => undefined,
-        createPoiCategoriesForCity("rome", directory).getAll,
+        () => readPoiCategories("rome", directory),
       );
       expect(
         pois.find(({ id }) => id === "basilica-costantiniana-di-s-agnese")?.categories,

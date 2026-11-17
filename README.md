@@ -47,14 +47,13 @@ Open [http://localhost:3000](http://localhost:3000). Installation activates Husk
 | `/rome`            | Visitor map.              |
 | `/rome?poiId=<id>` | Map with POI detail open. |
 
-| Script                    | Purpose                                            |
-| ------------------------- | -------------------------------------------------- |
-| `pnpm dev`                | Local server; generate the public snapshot first.  |
-| `pnpm build`              | Generate the snapshot and production build.        |
-| `pnpm catalog:build`      | Rebuild the snapshot independently.                |
-| `pnpm start`              | Run the production server.                         |
-| `pnpm lint`               | ESLint.                                            |
-| `pnpm categories:rebuild` | Apply category rules to local city type snapshots. |
+| Script               | Purpose                                           |
+| -------------------- | ------------------------------------------------- |
+| `pnpm dev`           | Local server; generate the public snapshot first. |
+| `pnpm build`         | Generate the snapshot and production build.       |
+| `pnpm catalog:build` | Rebuild the snapshot independently.               |
+| `pnpm start`         | Run the production server.                        |
+| `pnpm lint`          | ESLint.                                           |
 
 ## Publication and deployment
 
@@ -159,7 +158,7 @@ Deploy through Vercel's GitHub integration with production branch `main`. Branch
 
 Versioned Stories, People, POIs, and categories live under `data/`. The build generates a snapshot in `data/public/` for the homepage and the Rome map. The map merges that snapshot with online publications. Builds use the versioned files and run without database or AI credentials.
 
-The shared legacy workspace defaults to `~/.local/share/historical-explorer`. Set `HISTORICAL_EXPLORER_LOCAL_DATA_DIR` to point legacy tools such as `pnpm categories:rebuild` at another existing workspace. Source snapshots, acquired Types, checkpoints, and logs from the retired Explorer Admin can still be found there. Current generation and its diagnostics are documented in [Mira Admin](https://github.com/Papidev/mira-admin).
+The shared legacy workspace defaults to `~/.local/share/historical-explorer`. Set `HISTORICAL_EXPLORER_LOCAL_DATA_DIR` to point legacy tools at another existing workspace. Source snapshots, acquired Types, checkpoints, and logs from the retired Explorer Admin can still be found there. Current generation and its diagnostics are documented in [Mira Admin](https://github.com/Papidev/mira-admin).
 
 | Artifact                           | Location                                                 |
 | ---------------------------------- | -------------------------------------------------------- |
