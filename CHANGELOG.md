@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.9
+
+### Patch Changes
+
+- Keep the place name in view when a Story opens on a phone held sideways, by capping the main image height on short screens.
+
 ## 0.26.8
 
 ### Patch Changes
