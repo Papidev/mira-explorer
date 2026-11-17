@@ -13,8 +13,6 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { getLocalDataDirectory } from "./localData";
 import { readGenerationMetadata, replaceGenerationCheckpoint } from "./generationMetadata";
 import { readGenerationRuns, writeGenerationLogEntry } from "./generationRunLog";
-import { createPoiCategoriesForCity } from "./poiCategories";
-import { createPoiTypeMappings } from "./poiTypeMappings";
 import { getDefaultInputPath, getDefaultOutputDir } from "./wikiPipeline/io";
 
 const originalWorkingDirectory = process.cwd();
@@ -48,14 +46,9 @@ it("uses the same external default regardless of the checkout", () => {
   );
 });
 
-it("shares Sources, Types, checkpoints and logs without links while keeping POIs and categories in each branch", () => {
+it("shares Sources, checkpoints and logs without links while keeping POIs in each branch", () => {
   mkdirSync(getDefaultOutputDir("rome"), { recursive: true });
   writeFileSync(path.join(getDefaultOutputDir("rome"), "tower.txt"), "Shared Wikipedia Source");
-  mkdirSync(path.join(getLocalDataDirectory(), "rome", "generated", "wikidata"));
-  writeFileSync(
-    path.join(getLocalDataDirectory(), "rome", "generated", "wikidata", "tower.json"),
-    JSON.stringify({ types: [{ id: "Q1", label: "Tower" }] }),
-  );
   replaceGenerationCheckpoint("rome", "tower", "wiki", {
     durationMs: 1,
     completedAt: "2026-10-14T00:00:00.000Z",
@@ -85,23 +78,12 @@ it("shares Sources, Types, checkpoints and logs without links while keeping POIs
         ],
       }),
     );
-    writeFileSync(
-      path.join("data", "poi-type-category-map.json"),
-      JSON.stringify({ version: 1, mappings: { Q1: ["Tower"] } }),
-    );
-    writeFileSync(
-      path.join("data", "poi-category-catalog.json"),
-      JSON.stringify({ version: 1, categories: [{ id: "Tower", name: "Tower" }] }),
-    );
 
     expect(readFileSync(path.join(getDefaultOutputDir("rome"), "tower.txt"), "utf8")).toBe(
       "Shared Wikipedia Source",
     );
     expect(readGenerationMetadata("rome").tower.wiki?.durationMs).toBe(1);
     expect(readGenerationRuns("rome")[0].runId).toBe("shared-run");
-    expect(createPoiTypeMappings().getCatalog().types[0].pois[0].name).toBe(checkout);
-    createPoiCategoriesForCity("rome").rebuild();
-    expect(createPoiCategoriesForCity("rome").getAll().tower).toEqual(["Tower"]);
     expect(existsSync(path.join("data", "rome", "generated"))).toBe(false);
     expect(existsSync(path.join("data", "generated"))).toBe(false);
     expect(getDefaultInputPath("rome")).toBe(

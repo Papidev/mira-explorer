@@ -78,12 +78,11 @@ Use exceptions for source types describing an encompassing complex rather than t
 | Artifact                       | Location                           |
 | ------------------------------ | ---------------------------------- |
 | Shared category definitions    | `data/poi-category-catalog.json`   |
-| Versioned direct-type rules    | `data/poi-type-category-map.json`  |
 | Persisted categories by POI ID | `data/<city>/pois/categories.json` |
 | Defaults for older catalogs    | `src/types/PoiCategory/`           |
 
 Definitions contain stable `id`, singular `name`, optional visitor `label`, top-level `parent`, and `supersedes`. Shared configuration drives grouping, counts, and filtering without Basilica-specific browser logic.
 
-Run `pnpm categories:rebuild` to recalculate legacy categories from versioned rules and local type snapshots. The build combines the saved categories, category definitions, and POI catalog. The browser filters the published values.
+Saved local categories are frozen: Explorer no longer derives them from POI Types. Online categories are recalculated from the shared POI Type Mappings in Postgres. The build combines the saved categories, category definitions, and POI catalog. The browser filters the published values.
 
 See #38, the [glossary](../CONTEXT.md), and GitHub issue #104 for category/Story consistency review.
