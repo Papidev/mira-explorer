@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.5
+
+### Patch Changes
+
+- Make the Story and Person panel close button a round floating button, so text scrolling under it no longer looks cut off.
+
 ## 0.26.4
 
 ### Patch Changes
