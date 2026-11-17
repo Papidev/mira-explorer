@@ -24,14 +24,17 @@ import { preloadPreviewImage } from "./PoiPreviewCard";
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
 
-/** Fiord's street and place names are too faint; lift every label to near-white. */
-const brightenDarkLabels = (map: MapLibreMap) => {
+/** Fiord's labels and path lines are too faint; lift them above the dark background. */
+const brightenDarkStyle = (map: MapLibreMap) => {
   for (const layer of map.getStyle().layers) {
     if (layer.type !== "symbol" || !layer.layout?.["text-field"]) continue;
     map.setPaintProperty(layer.id, "text-color", "hsl(210, 30%, 88%)");
     map.setPaintProperty(layer.id, "text-halo-color", "hsl(222, 35%, 14%)");
     map.setPaintProperty(layer.id, "text-halo-width", 1.5);
   }
+  // Fiord draws footpaths and park outlines darker than its background; lift them above it.
+  map.setPaintProperty("highway_path", "line-color", "hsl(212, 25%, 50%)");
+  map.setPaintProperty("park_outline", "line-color", "hsl(205, 30%, 46%)");
 };
 const PREVIEW_CLOSE_DELAY_MS = 180;
 const POI_SOURCE = "pois";
@@ -425,7 +428,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       // A style swap drops the markers' source, layer and images; the popup is a DOM overlay.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {
-        if (map && isDarkTheme()) brightenDarkLabels(map);
+        if (map && isDarkTheme()) brightenDarkStyle(map);
         addPoiLayer();
       });
 
