@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.8
+
+### Patch Changes
+
+- Show the theme switch on the Rome map at phone width: the Mira bird moves to the left edge of the header, facing Rome, and the switch takes the right edge.
+
 ## 0.26.7
 
 ### Patch Changes

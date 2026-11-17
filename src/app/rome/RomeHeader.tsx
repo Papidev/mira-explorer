@@ -7,8 +7,8 @@ import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
 import { WorkInProgressNotice } from "@/app/components/ui/WorkInProgress";
 
 // The city leads as the page title; the Mira brand signs off on the right with the app
-// tools, so the two serif names never read as one title. On phones only Rome and the bird
-// remain, so the map gets the screen.
+// tools, so the two serif names never read as one title. On phones only Rome, the bird and
+// the theme switch remain, so the map gets the screen.
 export const RomeHeader = ({ counts }: { counts?: { places: number; people: number } }) => (
   <header className="bg-atlas max-sm:border-brand relative isolate overflow-hidden border-b border-white/15 text-white max-sm:border-b-2">
     <div
@@ -19,8 +19,8 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
         baseline so flex centres the letters, not the font's line box. The right inset
         centres the theme switch over the map's zoom controls. */}
     <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-7 pr-4 pb-4 pl-4 sm:gap-x-6 sm:py-5 sm:pl-7">
-      {/* On phones the left padding mirrors the bird so Rome sits at the true centre. */}
-      <div className="flex items-center gap-2 max-sm:flex-1 max-sm:justify-center max-sm:pl-12 sm:gap-3">
+      {/* On phones the bird and the theme switch frame Rome, which sits at the centre. */}
+      <div className="flex items-center gap-2 max-sm:flex-1 max-sm:justify-center sm:gap-3">
         <Image
           src="/icons/cities/rome.svg"
           alt=""
@@ -41,7 +41,8 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
       <p className="hidden text-sm/5 text-white/90 [text-box:trim-both_cap_alphabetic] 2xl:mr-auto 2xl:block">
         Every place worth knowing, in Rome and beyond its walls.
       </p>
-      <div className="ml-auto flex items-center gap-4 2xl:ml-0">
+      {/* On phones this group dissolves into the row, so the bird can move to the left edge. */}
+      <div className="ml-auto flex items-center gap-4 max-sm:contents 2xl:ml-0">
         {counts && (
           <div className="hidden shrink-0 items-baseline gap-3 rounded-md bg-white/10 px-3 py-1.5 text-sm/5 tabular-nums sm:flex">
             <span className="flex items-baseline gap-1.5">
@@ -58,14 +59,14 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           </div>
         )}
         <span aria-hidden="true" className="hidden h-8 w-px bg-white/20 sm:block" />
-        {/* On phones the bird stands alone at the right edge, so it turns to face Rome. The bird
+        {/* On phones the bird stands alone at the left edge, facing Rome. The bird
             stands taller than the wordmark: lift the logo so "mira" is centred
             like the other text (cap height to baseline), whatever the logo size. */}
-        <div className="flex items-start gap-0.5">
+        <div className="flex items-start gap-0.5 max-sm:order-first">
           <Link
             href="/"
             aria-label="Mira home"
-            className="focus-visible:outline-brand relative flex rounded-sm after:absolute after:-inset-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 max-sm:[&_svg]:-scale-x-100 [&>[role=img]]:-translate-y-[0.11em] [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
+            className="focus-visible:outline-brand relative flex rounded-sm after:absolute after:-inset-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 [&>[role=img]]:-translate-y-[0.11em] [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
           >
             <MiraLogo size="small" tone="dark" birdOnlyOnMobile />
           </Link>
@@ -75,7 +76,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
             <AppVersion />
           </span>
         </div>
-        <div className="hidden items-center gap-4 sm:flex">
+        <div className="flex items-center gap-4 max-sm:-my-0.5">
           {/* Below lg the map note takes over, so this row stays on one line. */}
           <WorkInProgressNotice tone="dark" mapNoteBelowLg />
           <ThemeSwitch tone="dark" />
