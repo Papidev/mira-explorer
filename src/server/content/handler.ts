@@ -12,6 +12,7 @@ import {
   typeCategoryRuleWriteSchema,
 } from "./postgresContent";
 import { publishedCategorySchema, publishedPoiSummarySchema } from "./publishedContent";
+import { adminPeopleIdsSchema } from "./adminReads";
 import {
   authenticateContentRequest,
   contentErrorResponse,
@@ -30,9 +31,10 @@ export const createContentHandler =
       const { segments } = await context.params;
       const [resource, identity, action] = segments;
       if (
-        resource === "catalogs" &&
-        segments.length === 3 &&
-        ["inventory", "stories"].includes(action)
+        (resource === "catalogs" &&
+          segments.length === 3 &&
+          ["inventory", "stories"].includes(action)) ||
+        (resource === "people" && segments.length === 1 && request.method === "GET")
       ) {
         if (request.method !== "GET")
           return contentJson(
@@ -40,24 +42,63 @@ export const createContentHandler =
             405,
             { Allow: "GET" },
           );
+        const parameters = new URL(request.url).searchParams;
+        const readIds = <T>(schema: z.ZodType<T>, optional: string[] = []) => {
+          if (
+            [...parameters.keys()].some((key) => key !== "ids" && !optional.includes(key)) ||
+            [...parameters.keys(), "ids"].some((key) => parameters.getAll(key).length > 1) ||
+            !parameters.has("ids")
+          )
+            throw new ContentHttpError(400, "invalid", "Expected one ids query parameter.");
+          return parseContentInput(schema, parameters.get("ids")!.split(","));
+        };
+        if (resource === "people") {
+          const ids = readIds(adminPeopleIdsSchema);
+          return contentJson({ people: await getRepository().getAdminPeople(ids) });
+        }
         const city = parseContentInput(publishedPoiSummarySchema.shape.city, identity);
         if (action === "inventory")
           return contentJson(await getRepository().getAdminInventory(city));
-        const parameters = new URL(request.url).searchParams;
-        const ids = parseContentInput(
+        const ids = readIds(
           z
             .array(z.uuid())
             .min(1)
             .max(25)
             .refine((values) => new Set(values).size === values.length),
-          parameters.get("ids")?.split(","),
+          ["people"],
         );
-        if (
-          [...parameters.keys()].some((key) => key !== "ids") ||
-          parameters.getAll("ids").length !== 1
-        )
-          throw new ContentHttpError(400, "invalid", "Expected one ids query parameter.");
-        return contentJson({ stories: await getRepository().getAdminStories(city, ids) });
+        const people = parameters.get("people");
+        if (people !== null && people !== "omit")
+          throw new ContentHttpError(400, "invalid", "Expected people=omit.");
+        const repository = getRepository();
+        const stories = await repository.getAdminStories(city, ids);
+        if (people === "omit") return contentJson({ stories });
+        // Admin clients that predate the People read expect each Story's profiles embedded.
+        // ponytail: remove this branch (and require people=omit) once every Admin reads People separately.
+        const personIds = [
+          ...new Set(
+            stories.flatMap(({ detail }) =>
+              detail.story.relatedPeople.map(({ personId }) => personId),
+            ),
+          ),
+        ];
+        const profiles = new Map<
+          string,
+          Awaited<ReturnType<typeof repository.getAdminPeople>>[number]
+        >();
+        for (let start = 0; start < personIds.length; start += 100)
+          for (const profile of await repository.getAdminPeople(
+            personIds.slice(start, start + 100),
+          ))
+            profiles.set(profile.personId, profile);
+        return contentJson({
+          stories: stories.map((story) => ({
+            ...story,
+            people: story.detail.story.relatedPeople.flatMap(({ personId }) =>
+              profiles.has(personId) ? [profiles.get(personId)!] : [],
+            ),
+          })),
+        });
       }
       if (resource === "type-rules" && segments.length === 1) {
         if (request.method === "GET")
