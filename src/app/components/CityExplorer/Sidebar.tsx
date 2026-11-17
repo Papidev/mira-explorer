@@ -66,7 +66,14 @@ export const Sidebar = ({
         <fieldset className="border-line bg-surface space-y-2 rounded-xl border px-3 py-1">
           <legend className="sr-only">Category filters</legend>
           <div className="relative flex items-center gap-2">
+            {/* Widens the small checkbox's touch target without changing how it looks. */}
+            <label
+              htmlFor={`${categoriesId}-all`}
+              aria-hidden="true"
+              className="absolute inset-y-0 -left-3.25 z-10 w-11 cursor-pointer"
+            />
             <input
+              id={`${categoriesId}-all`}
               type="checkbox"
               aria-label="All categories"
               checked={filter.isAll}
@@ -123,7 +130,8 @@ export const Sidebar = ({
             hidden={!expanded}
             className="border-line ml-1 space-y-2 border-l pl-2.5"
           >
-            <p className="text-ink-subtle py-1 text-xs">
+            {/* Double-click needs a mouse; touch gets its own shortcut in #257. */}
+            <p className="text-ink-subtle py-1 text-xs pointer-coarse:hidden">
               Double-click a category to show only that one.
             </p>
             {categoryDefinitions

@@ -166,7 +166,7 @@ export const StoryContent = ({
                   <button
                     type="button"
                     onClick={() => onOpenPerson(personId)}
-                    className="text-link decoration-link-line hover:text-link-hover cursor-pointer font-semibold underline underline-offset-4"
+                    className="text-link decoration-link-line hover:text-link-hover relative cursor-pointer font-semibold underline underline-offset-4 after:absolute after:inset-x-0 after:-inset-y-1.5"
                   >
                     {name}
                   </button>

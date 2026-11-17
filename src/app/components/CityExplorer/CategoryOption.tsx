@@ -58,8 +58,14 @@ export const CategoryOption = ({
   return (
     <div
       onDoubleClick={onSelectOnly}
-      className={`relative flex flex-1 items-center gap-2 ${definition?.parent ? "text-[15px]" : "text-sm"}`}
+      className={`relative flex flex-1 items-center gap-2 pointer-coarse:min-h-11 ${definition?.parent ? "text-[15px]" : "text-sm"}`}
     >
+      {/* Widens the small checkbox's touch target without changing how it looks. */}
+      <label
+        htmlFor={inputId}
+        aria-hidden="true"
+        className="absolute inset-y-0 -left-3.25 z-10 w-11 cursor-pointer"
+      />
       <input
         id={inputId}
         type="checkbox"
@@ -102,7 +108,7 @@ export const CategoryOption = ({
           aria-expanded={disclosure.expanded}
           aria-controls={disclosure.controls}
           onClick={disclosure.onToggle}
-          className="focus-visible:outline-focus flex min-h-7 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded text-left text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="focus-visible:outline-focus flex min-h-7 min-w-0 flex-1 cursor-pointer items-center gap-2 self-stretch rounded text-left text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {content}
           <span className="text-ink-subtle flex size-7 shrink-0 items-center justify-center">
@@ -113,7 +119,10 @@ export const CategoryOption = ({
           </span>
         </button>
       ) : (
-        <label htmlFor={inputId} className="flex flex-1 cursor-pointer items-center gap-2">
+        <label
+          htmlFor={inputId}
+          className="flex flex-1 cursor-pointer items-center gap-2 self-stretch"
+        >
           {content}
         </label>
       )}

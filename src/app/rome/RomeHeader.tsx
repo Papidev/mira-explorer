@@ -65,7 +65,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           <Link
             href="/"
             aria-label="Mira home"
-            className="focus-visible:outline-brand flex rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 max-sm:[&_svg]:-scale-x-100 [&>[role=img]]:-translate-y-[0.11em] [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
+            className="focus-visible:outline-brand relative flex rounded-sm after:absolute after:-inset-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 max-sm:[&_svg]:-scale-x-100 [&>[role=img]]:-translate-y-[0.11em] [&>[role=img]]:text-[1.875rem]/none sm:[&>[role=img]]:text-[2.25rem]/none"
           >
             <MiraLogo size="small" tone="dark" birdOnlyOnMobile />
           </Link>

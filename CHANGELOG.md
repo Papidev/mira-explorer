@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.7
+
+### Patch Changes
+
+- Make map filters and Story links easier to tap on phones: filter checkboxes and rows get 44 px touch targets, and the double-click hint is hidden on touch screens.
+
 ## 0.26.6
 
 ### Patch Changes
