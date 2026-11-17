@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.26.3
+
+### Patch Changes
+
+- Remove the legacy local POI Category derivation and the `categories:rebuild` script. Local-only places keep their saved categories; online categories are still recalculated from the shared type rules.
+
 ## 0.26.2
 
 ### Patch Changes
