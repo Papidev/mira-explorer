@@ -1,6 +1,12 @@
+import { preconnect, prefetchDNS } from "react-dom";
+
 import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
 import { RomeMap } from "@/app/components/RomeMap";
 import { WorkInProgressNote } from "@/app/components/ui/WorkInProgress";
+
+// Serves the street map style, tiles, labels and icons (see `mapStyleUrl` in mapAdapter).
+// MapLibre fetches them with CORS and no credentials, hence the anonymous preconnect.
+const mapServerOrigin = "https://tiles.openfreemap.org";
 
 type Props = {
   searchParams: Promise<{
@@ -11,6 +17,8 @@ type Props = {
 };
 
 const RomePage = async ({ searchParams }: Props) => {
+  preconnect(mapServerOrigin, { crossOrigin: "anonymous" });
+  prefetchDNS(mapServerOrigin);
   const query = await searchParams;
 
   return (

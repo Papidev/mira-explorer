@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.9
+
+### Patch Changes
+
+- Connect to the street map server while the Rome map page is still loading, so the map's first downloads start sooner.
+
 ## 0.27.8
 
 ### Patch Changes
