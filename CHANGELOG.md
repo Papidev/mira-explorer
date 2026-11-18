@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.8
+
+### Patch Changes
+
+- Load a smaller heading font so the Rome map starts sooner on slow connections.
+
 ## 0.27.7
 
 ### Patch Changes
