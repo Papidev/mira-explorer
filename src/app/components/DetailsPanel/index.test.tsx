@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
@@ -142,6 +142,40 @@ describe("POI details person navigation", () => {
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Back to Forum Boarium" }));
     expect(screen.getByText("A visitor-facing introduction.")).toBeInTheDocument();
+  });
+
+  it("moves focus to the opened heading and returns to the Story where the visitor left it", async () => {
+    useStoryResponse();
+    server.use(
+      http.get("*/api/people/by-slug/hercules", () =>
+        HttpResponse.json({
+          person: { id: "hercules", name: "Hercules", description: [], curiosities: [] },
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    const { rerender } = render(<Panel citySlug="rome" onClose={() => {}} />);
+    rerender(<Panel citySlug="rome" poi={poi} onClose={() => {}} />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Forum Boarium" })).toHaveFocus(),
+    );
+    // jsdom has no layout, so the visitor's scrolling is simulated on the panel's scroller.
+    const scroller = screen
+      .getByRole("heading", { name: "Forum Boarium" })
+      .closest<HTMLElement>("[class*='overflow-y-auto']")!;
+    scroller.scrollTop = 600;
+    fireEvent.scroll(scroller);
+
+    await user.click(await screen.findByRole("button", { name: "Hercules" }));
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Hercules" })).toHaveFocus());
+    expect(scroller.scrollTop).toBe(0);
+
+    await user.click(screen.getByRole("button", { name: "Back to Forum Boarium" }));
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: "Forum Boarium" })).toHaveFocus(),
+    );
+    expect(scroller.scrollTop).toBe(600);
   });
 });
 
