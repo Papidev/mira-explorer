@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.7
+
+### Patch Changes
+
+- Upgrade the map library to MapLibre GL JS 6, which fixes a critical security advisory in how it cleans map credits, with no visible change to the Rome map.
+
 ## 0.27.6
 
 ### Patch Changes
