@@ -33,6 +33,9 @@ const getSnapshot = () =>
 export const useViewport = () =>
   useSyncExternalStore(subscribe, getSnapshot, () => layouts.drawers);
 
+/** Phones and tablets without a mouse or trackpad: they never hover, so they get no preview card. */
+export const isTouchOnly = () => window.matchMedia?.("(hover: none) and (pointer: coarse)").matches;
+
 const subscribeToResize = (onChange: () => void) => {
   window.addEventListener("resize", onChange);
   return () => window.removeEventListener("resize", onChange);

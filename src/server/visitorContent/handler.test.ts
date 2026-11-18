@@ -189,6 +189,7 @@ describe("local-only POI fallback", () => {
           city: "rome",
           coordinates: { lat: 41.89, lng: 12.49 },
           funFacts: [],
+          mainImageUrl: "https://example.com/image.jpg",
         },
         storyContent: localStory,
         mainImage: {
@@ -214,7 +215,7 @@ describe("local-only POI fallback", () => {
   };
   const city: PublishedCityPreview = { city: "rome", pois: [], categoryDefinitions: [] };
 
-  it("serves the local Story and local People when the POI is not published online", async () => {
+  it("serves the local Story, main image and People when the POI is not published online", async () => {
     const handler = createVisitorHandler(
       { getCity: async () => city, getStory: async () => null, getPerson: async () => null },
       local,
@@ -225,6 +226,7 @@ describe("local-only POI fallback", () => {
         relatedPeople: [{ ...localStory.relatedPeople[0], slug: "vespasian" }],
       },
       detail: null,
+      mainImageUrl: "https://example.com/image.jpg",
     });
     expect(await (await handler.getPerson("vespasian", "rome", "colosseum")).json()).toEqual({
       person: { ...localPerson, slug: "vespasian" },

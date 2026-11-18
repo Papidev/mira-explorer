@@ -22,7 +22,11 @@ export const createVisitorHandler = (
   const getStory = async (
     city: string,
     poiId: string,
-  ): Promise<{ storyContent: PublicStoryContent; detail: PublishedPoiDetail | null } | null> => {
+  ): Promise<{
+    storyContent: PublicStoryContent;
+    detail: PublishedPoiDetail | null;
+    mainImageUrl?: string;
+  } | null> => {
     const localPoi = local?.getPois(city).find(({ id }) => id === poiId);
     if (localPoi) {
       // Establish online ownership before considering the local version. Failures never select it.
@@ -32,7 +36,10 @@ export const createVisitorHandler = (
       const published = online.pois.find((candidate) => matchesPoiIdentity(localPoi, candidate));
       if (!published) {
         const storyContent = local?.getStoryContent(city, poiId);
-        return storyContent ? { storyContent, detail: null } : null;
+        // The map's previews data is skipped on touch phones, so the panel's image comes from here.
+        return storyContent
+          ? { storyContent, detail: null, mainImageUrl: localPoi.mainImageUrl }
+          : null;
       }
       poiId = published.id;
     }

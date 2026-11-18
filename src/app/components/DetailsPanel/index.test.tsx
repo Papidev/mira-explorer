@@ -179,6 +179,21 @@ describe("POI details person navigation", () => {
   });
 });
 
+describe("local-only Story details", () => {
+  it("shows the main image from the Story response, without the map's previews", async () => {
+    server.use(
+      http.get("*/api/pois/rome/forum-boarium/dialog-content", () =>
+        HttpResponse.json({ storyContent, mainImageUrl: "https://upload.wikimedia.org/Local.jpg" }),
+      ),
+    );
+    render(<Panel citySlug="rome" poi={poi} onClose={() => {}} />);
+    expect(await screen.findByAltText("Main image of Forum Boarium")).toHaveAttribute(
+      "src",
+      expect.stringContaining("Local.jpg"),
+    );
+  });
+});
+
 describe("online Story details", () => {
   it("shows an image placeholder, online Markdown and a linked Person", async () => {
     const detail = exampleStoryWrite().detail;

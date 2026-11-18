@@ -7,6 +7,8 @@ import type { PublishedPoiDetail } from "@/server/content/publishedContent";
 type StoryContentState = {
   content: PublicStoryContent | null;
   detail?: PublishedPoiDetail | null;
+  /** A local-only place's main image; online places carry theirs in `detail`. */
+  mainImageUrl?: string;
   isLoading: boolean;
   showLoading: boolean;
   poiId: string | null;
@@ -49,10 +51,12 @@ export const usePoiStoryContent = ({ citySlug, poiId }: { citySlug: string; poiI
         const payload = (await response.json()) as {
           storyContent?: PublicStoryContent | null;
           detail?: PublishedPoiDetail;
+          mainImageUrl?: string;
         };
         setState({
           content: payload.storyContent ?? null,
           detail: payload.detail ?? null,
+          mainImageUrl: payload.mainImageUrl,
           isLoading: false,
           showLoading: false,
           poiId,
@@ -77,6 +81,7 @@ export const usePoiStoryContent = ({ citySlug, poiId }: { citySlug: string; poiI
   return {
     content: state.poiId === poiId ? state.content : null,
     detail: state.poiId === poiId ? state.detail : null,
+    mainImageUrl: state.poiId === poiId ? state.mainImageUrl : undefined,
     isLoading: Boolean(poiId) && (state.poiId !== poiId || state.isLoading),
     showLoading: state.poiId === poiId && state.showLoading,
   };

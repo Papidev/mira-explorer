@@ -18,7 +18,7 @@ import type { Poi } from "@/types/Poi";
 import { Map, type CoveredArea } from "@/app/components/Map";
 import { DETAILS_PANEL_WIDTH, DetailsPanel } from "@/app/components/DetailsPanel";
 import { BOTTOM_SHEET_PEEK_RATIO } from "@/app/components/ui/BottomSheet";
-import { useViewport, useViewportWidth } from "@/app/viewport";
+import { isTouchOnly, useViewport, useViewportWidth } from "@/app/viewport";
 
 /** Default width of the filters drawer, before the visitor resizes it. */
 const SIDEBAR_WIDTH = 352;
@@ -54,7 +54,9 @@ export const CityExplorer = ({
     [catalogPois, previews],
   );
   // Preview text and images wait for the map, so they never compete with its downloads.
+  // Only the hover card uses them, which touch-only screens never show.
   const loadPreviews = () => {
+    if (isTouchOnly()) return;
     fetch(`/api/pois/${citySlug}/previews`)
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {

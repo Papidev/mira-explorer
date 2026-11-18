@@ -23,6 +23,7 @@ import {
   SELECTED_MARKER_SCALE,
 } from "./markerImages";
 import { preloadPreviewImage } from "./PoiPreviewCard";
+import { isTouchOnly } from "@/app/viewport";
 
 // MapLibre 6 ships its worker as a separate module; Next emits it as a hashed asset.
 setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
@@ -430,7 +431,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         maxZoom: 21,
       });
       // Without the compass button on touch screens, a rotated map could not be reset to north.
-      if (window.matchMedia?.("(hover: none) and (pointer: coarse)").matches) {
+      const touchOnly = isTouchOnly();
+      if (touchOnly) {
         map.touchZoomRotate.disableRotation();
         map.touchPitch.disable();
       }
@@ -523,7 +525,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       map.on("click", handleMapClick);
       map.on("mousemove", handleMouseMove);
       // idle fires once the map settles, so panning and zooming never start downloads.
-      map.on("idle", preloadVisiblePreviewImages);
+      // Touch-only screens never show the hover card, so they skip its images.
+      if (!touchOnly) map.on("idle", preloadVisiblePreviewImages);
       map.on("mouseout", handleMouseOut);
     },
     updateView(view) {

@@ -73,6 +73,27 @@ describe("map start-up", () => {
     finishMapLoad();
     expect(await screen.findByText("A quiet nave.")).toBeInTheDocument();
   });
+
+  it("skips the hover previews on touch-only phones", async () => {
+    const requestedUrls: string[] = [];
+    const recordRequest = ({ request }: { request: Request }) => requestedUrls.push(request.url);
+    server.events.on("request:start", recordRequest);
+    const matchMedia = window.matchMedia;
+    window.matchMedia = (query) =>
+      query === "(hover: none) and (pointer: coarse)"
+        ? ({ matches: true } as MediaQueryList)
+        : matchMedia(query);
+    try {
+      window.innerWidth = 390;
+      render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+      clickMapMarker("A Church");
+      expect(await screen.findByText("A real story response.")).toBeInTheDocument();
+      expect(requestedUrls.some((url) => url.endsWith("/previews"))).toBe(false);
+    } finally {
+      window.matchMedia = matchMedia;
+      server.events.removeListener("request:start", recordRequest);
+    }
+  });
 });
 
 const getListedPlaces = () =>

@@ -15,7 +15,7 @@ type StoryState = ReturnType<typeof usePoiStoryContent>;
 /** A place's cover image, title and Story. */
 export const PlaceDetails = ({
   poi,
-  story: { content, detail, isLoading },
+  story: { content, detail, mainImageUrl: localMainImageUrl, isLoading },
   galleryKey,
   width,
   excludedByFilters,
@@ -32,7 +32,7 @@ export const PlaceDetails = ({
   const [failedMainImageUrl, setFailedMainImageUrl] = useState<string | null>(null);
   const [loadedWideImageUrl, setLoadedWideImageUrl] = useState<string | null>(null);
   const mainImage = detail?.gallery.find(({ id }) => id === detail.mainImageId);
-  const mainImageUrl = detail ? mainImage?.thumbnailUrl : content ? poi.mainImageUrl : undefined;
+  const mainImageUrl = detail ? mainImage?.thumbnailUrl : content ? localMainImageUrl : undefined;
   const isWideImage =
     mainImage?.width && mainImage.height ? mainImage.width >= mainImage.height : null;
 
