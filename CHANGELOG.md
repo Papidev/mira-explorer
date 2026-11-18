@@ -1,10 +1,16 @@
 # mira-explorer
 
-## 0.26.9
+## 0.27.1
 
 ### Patch Changes
 
 - Keep the map usable when a place opens: the Story panel takes at most 45% of the screen width, the filters step aside while an open place would leave the map less than 40% of the width, and on short screens such as a phone held sideways the main image is capped so the place name stays in view.
+
+## 0.27.0
+
+### Minor Changes
+
+- Add a private Admin read for Person profiles by id, and let the private Admin Story read omit embedded profiles. Both read only the requested rows, so a page of 25 Stories and their 100 People takes milliseconds instead of seconds.
 
 ## 0.26.8
 
