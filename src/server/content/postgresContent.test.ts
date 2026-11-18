@@ -221,16 +221,11 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         expect(response.headers.get("cache-control")).toBe("no-store");
         expect((await response.json())[key]).toHaveLength(1);
       }
-      // Admin clients that predate the People read still receive embedded profiles.
-      const [legacy] = (await (await read("stories", `?ids=${saved.detail.id}`)).json()).stories;
-      expect(legacy.people).toMatchObject([
-        { personId, profileVersion: saved.people[0].profileVersion, person: { id: personId } },
-      ]);
-      const [omitted] = (
-        await (await read("stories", `?ids=${saved.detail.id}&people=omit`)).json()
-      ).stories;
-      expect(omitted).not.toHaveProperty("people");
-      expect(omitted.detail.story.relatedPeople).toMatchObject([{ personId }]);
+      for (const query of [`?ids=${saved.detail.id}`, `?ids=${saved.detail.id}&people=omit`]) {
+        const [story] = (await (await read("stories", query)).json()).stories;
+        expect(story).not.toHaveProperty("people");
+        expect(story.detail.story.relatedPeople).toMatchObject([{ personId }]);
+      }
       for (const query of [
         "",
         "?ids=bad",

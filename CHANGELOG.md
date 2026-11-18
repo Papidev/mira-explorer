@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.3
+
+### Patch Changes
+
+- Return private Admin Story reads without embedded Person profiles; clients read People separately.
+
 ## 0.27.2
 
 ### Patch Changes
