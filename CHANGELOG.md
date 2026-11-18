@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.2
+
+### Patch Changes
+
+- Move keyboard focus to the heading when a place or a Person opens in the details panel, and return to the Story where the visitor left it after going back from a Person.
+
 ## 0.27.1
 
 ### Patch Changes

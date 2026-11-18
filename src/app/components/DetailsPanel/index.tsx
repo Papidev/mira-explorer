@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { Poi } from "@/types/Poi";
 import { Drawer } from "@/app/components/ui/Drawer";
 import { BottomSheet } from "@/app/components/ui/BottomSheet";
@@ -59,6 +59,34 @@ export const DetailsPanel = ({
   const isLoading = personSlug ? isPersonLoading : story.isLoading && story.showLoading;
   const backToPlace = personSlug && selectedPoi ? () => onSelectPerson(null) : undefined;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Where the visitor left the Story, kept while a Person covers it.
+  const storyScrollTop = useRef(0);
+  // A closed drawer cannot take focus until its transition starts showing it.
+  const focusPending = useRef(false);
+  const focusHeading = () => {
+    const heading = scrollRef.current?.querySelector<HTMLElement>("h2");
+    heading?.focus({ preventScroll: true });
+    focusPending.current = Boolean(heading) && document.activeElement !== heading;
+  };
+  const shown = useRef({ poiId: poi?.id, personSlug, openRequestId });
+  useLayoutEffect(() => {
+    const previous = shown.current;
+    shown.current = { poiId: poi?.id, personSlug, openRequestId };
+    if (previous.poiId !== poi?.id) storyScrollTop.current = 0;
+    const container = scrollRef.current;
+    // A page load keeps the browser's focus; only a visitor's choice moves it.
+    const unchanged =
+      previous.poiId === poi?.id &&
+      previous.personSlug === personSlug &&
+      previous.openRequestId === openRequestId;
+    if (!isOpen || !container || unchanged) return;
+    if (personSlug) container.scrollTop = 0;
+    else if (previous.personSlug && previous.poiId === poi?.id)
+      container.scrollTop = storyScrollTop.current;
+    focusHeading();
+  }, [isOpen, poi?.id, personSlug, openRequestId]);
+
   const panel =
     poi || personSlug ? (
       <>
@@ -80,6 +108,10 @@ export const DetailsPanel = ({
         {/* In the bottom sheet preview the whole sheet drags, so the content does not scroll. */}
         <div
           key={poi?.id ?? "person"}
+          ref={scrollRef}
+          onScroll={(event) => {
+            if (!personSlug) storyScrollTop.current = event.currentTarget.scrollTop;
+          }}
           className="h-full overflow-y-auto group-data-[snap=peek]/sheet:overflow-hidden"
         >
           <div className="absolute top-4 right-4 z-10">
@@ -123,7 +155,13 @@ export const DetailsPanel = ({
       {panel}
     </BottomSheet>
   ) : (
-    <Drawer open={isOpen} side="right" width={width} afterLeave={afterLeave}>
+    <Drawer
+      open={isOpen}
+      side="right"
+      width={width}
+      beforeEnter={() => focusPending.current && focusHeading()}
+      afterLeave={afterLeave}
+    >
       {panel}
     </Drawer>
   );

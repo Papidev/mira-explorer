@@ -8,6 +8,7 @@ export const Drawer = ({
   open,
   side,
   width,
+  beforeEnter,
   afterLeave,
   children,
   className,
@@ -17,6 +18,7 @@ export const Drawer = ({
   side: "left" | "right";
   /** Pixel width from md up; below md the drawer fills the screen. */
   width: number;
+  beforeEnter?: () => void;
   afterLeave?: () => void;
   children: ReactNode;
 } & Omit<HTMLAttributes<HTMLElement>, "children">) => (
@@ -25,6 +27,7 @@ export const Drawer = ({
     show={open}
     appear
     unmount={false}
+    beforeEnter={beforeEnter}
     afterLeave={afterLeave}
     style={{ "--panel-width": `${width}px` } as CSSProperties}
     className="contents"
