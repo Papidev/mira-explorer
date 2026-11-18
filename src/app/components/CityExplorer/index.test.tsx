@@ -433,6 +433,21 @@ describe("visitor category filtering", () => {
     expect(screen.queryByRole("heading", { name: "A Museum" })).not.toBeInTheDocument();
   });
 
+  it("removes a link to an unknown place from the URL and keeps the rest", async () => {
+    window.history.replaceState(null, "", "/rome?poi=does-not-exist&source=shared#map");
+    const historyLength = window.history.length;
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    await waitFor(() => expect(window.location.search).toBe("?source=shared"));
+    expect(window.location.hash).toBe("#map");
+    expect(window.history.length).toBe(historyLength);
+    expect(screen.queryByRole("heading", { level: 2, name: /A / })).not.toBeInTheDocument();
+
+    window.history.pushState(null, "", "/rome?poiId=gone");
+    fireEvent.popState(window);
+    await waitFor(() => expect(window.location.search).toBe(""));
+  });
+
   it("selects and clears every child with its parent, with disjoint child counts", async () => {
     const user = userEvent.setup();
     window.history.replaceState(null, "", "/rome?poiId=basilica");

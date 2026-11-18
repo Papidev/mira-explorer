@@ -47,8 +47,14 @@ export const useSelectedPoi = (
 
   useEffect(() => {
     const poi = pois.find(({ id }) => id === selectedPoiId);
-    if (!poi) return;
     const url = new URL(window.location.href);
+    if (!poi) {
+      // A link to a place that isn't on the map just opens the map, with a clean URL.
+      url.searchParams.delete("poi");
+      url.searchParams.delete("poiId");
+      updateUrl(url, true);
+      return;
+    }
     if (url.searchParams.get("poi") === (poi.slug ?? poi.id) && !url.searchParams.has("poiId"))
       return;
     url.searchParams.delete("poiId");
