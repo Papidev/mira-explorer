@@ -98,6 +98,8 @@ export interface MapAdapter {
   setOnZoomChange: (handler: ((zoom: number) => void) | null) => void;
   setOnOpenPoiDetails: (handler: ((poiId: string) => void) | null) => void;
   setOnMapClick: (handler: (() => void) | null) => void;
+  /** Called once the map is first drawn completely: style, street map and places. */
+  setOnLoad: (handler: (() => void) | null) => void;
   setOnPreviewChange: (handler: ((preview: MapPreview | null) => void) | null) => void;
   destroy: () => void;
 }
@@ -116,6 +118,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let onZoomChange: ((zoom: number) => void) | null = null;
   let onOpenPoiDetails: ((poiId: string) => void) | null = null;
   let onMapClick: (() => void) | null = null;
+  let onLoad: (() => void) | null = null;
   let onPreviewChange: ((preview: MapPreview | null) => void) | null = null;
 
   const poiAt = ({ x, y }: { x: number; y: number }) => {
@@ -473,6 +476,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         onZoomChange(map.getZoom());
       });
       map.once("load", () => {
+        onLoad?.();
         for (const layer of map?.getStyle().layers ?? []) {
           if (layer.type !== "symbol" || layer["source-layer"] !== "poi") {
             continue;
@@ -573,6 +577,9 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     },
     setOnOpenPoiDetails(handler) {
       onOpenPoiDetails = handler;
+    },
+    setOnLoad(handler) {
+      onLoad = handler;
     },
     setOnMapClick(handler) {
       onMapClick = handler;
