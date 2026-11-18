@@ -25,6 +25,8 @@ type Props = {
   onZoomChange?: (zoom: number) => void;
   onOpenPoiDetails?: (poiId: string) => void;
   onMapClick?: () => void;
+  /** Called once the street map and places are first drawn. */
+  onLoad?: () => void;
   /** Parts of the map hidden by panels; a focused place is centred in what remains. */
   coveredArea?: CoveredArea;
   focusRequest?: { poi: Poi; requestId: number };
@@ -34,6 +36,7 @@ type MapHandlers = {
   onZoomChange?: Props["onZoomChange"];
   onOpenPoiDetails?: Props["onOpenPoiDetails"];
   onMapClick?: Props["onMapClick"];
+  onLoad?: Props["onLoad"];
 };
 
 const ZOOM_EPSILON = 0.001;
@@ -46,6 +49,7 @@ export const Map = ({
   onZoomChange,
   onOpenPoiDetails,
   onMapClick,
+  onLoad,
   coveredArea = { left: 0, right: 0, bottom: 0 },
   focusRequest,
 }: Props) => {
@@ -54,13 +58,13 @@ export const Map = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const adapterRef = useRef<MapAdapter | null>(null);
   const lastZoomFromMapRef = useRef<number | null>(null);
-  const handlersRef = useRef<MapHandlers>({ onZoomChange, onOpenPoiDetails, onMapClick });
+  const handlersRef = useRef<MapHandlers>({ onZoomChange, onOpenPoiDetails, onMapClick, onLoad });
   const lastCenterRef = useRef<[number, number] | null>(null);
   const initialViewRef = useRef({ center: coordinates, zoom });
 
   useEffect(() => {
-    handlersRef.current = { onZoomChange, onOpenPoiDetails, onMapClick };
-  }, [onZoomChange, onOpenPoiDetails, onMapClick]);
+    handlersRef.current = { onZoomChange, onOpenPoiDetails, onMapClick, onLoad };
+  }, [onZoomChange, onOpenPoiDetails, onMapClick, onLoad]);
 
   useEffect(() => {
     if (adapterRef.current || !containerRef.current) {
@@ -74,7 +78,10 @@ export const Map = ({
     });
     adapter.setOnOpenPoiDetails((poiId) => handlersRef.current.onOpenPoiDetails?.(poiId));
     adapter.setOnMapClick(() => handlersRef.current.onMapClick?.());
-    adapter.setOnLoad(() => setLoaded(true));
+    adapter.setOnLoad(() => {
+      setLoaded(true);
+      handlersRef.current.onLoad?.();
+    });
     adapter.setOnPreviewChange((nextPreview) => {
       if (nextPreview) {
         // MapLibre measures and positions the popup immediately after this callback.
@@ -166,7 +173,8 @@ export const Map = ({
         createPortal(
           <PoiPreviewCard
             key={preview.poi.id}
-            poi={preview.poi}
+            // Current marker data, so previews loaded while the card is open still show.
+            poi={markers.find(({ poi }) => poi.id === preview.poi.id)?.poi ?? preview.poi}
             onOpenDetails={preview.onOpenDetails}
           />,
           preview.container,

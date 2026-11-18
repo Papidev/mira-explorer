@@ -15,6 +15,7 @@ import {
   clickMapMarker,
   finishMapLoad,
   holdMapLoad,
+  hoverMapMarker,
   mapMarkerNames,
   resetMapLibreFakes,
   selectedMapMarkerName,
@@ -35,6 +36,7 @@ const pois: Poi[] = (
   ...poi,
 }));
 const server = setupServer(
+  http.get("*/api/pois/rome/previews", () => HttpResponse.json({ previews: {} })),
   http.get("*/api/pois/rome/:id/dialog-content", () =>
     HttpResponse.json({
       storyContent: {
@@ -53,6 +55,23 @@ describe("map start-up", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Loading the map…");
     finishMapLoad();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("adds preview text to the hover card once the map is drawn", async () => {
+    server.use(
+      http.get("*/api/pois/rome/previews", () =>
+        HttpResponse.json({ previews: { church: { previewDescription: "A quiet nave." } } }),
+      ),
+    );
+    holdMapLoad();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    hoverMapMarker("A Church");
+    expect(screen.getByRole("heading", { level: 3, name: "A Church" })).toBeInTheDocument();
+    expect(screen.queryByText("A quiet nave.")).not.toBeInTheDocument();
+
+    finishMapLoad();
+    expect(await screen.findByText("A quiet nave.")).toBeInTheDocument();
   });
 });
 
