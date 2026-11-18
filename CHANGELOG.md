@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Upgrade the map library to MapLibre GL JS 6, which fixes a critical security advisory in how it cleans map credits, with no visible change to the Rome map.
+- Upgrade the map library to MapLibre GL JS 6, keeping the Rome map on the maintained release line and fixing a critical security advisory in how it cleans map credits, with no visible change to the map.
 
 ## 0.27.6
 
