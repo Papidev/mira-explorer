@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.9
+
+### Patch Changes
+
+- Stop downloading hover previews on touch phones, so the Rome map and place details load sooner on slow connections.
+
 ## 0.27.8
 
 ### Patch Changes
