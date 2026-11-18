@@ -403,16 +403,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     });
     map.addLayer(pinLayer(SELECTED_POI_LAYER, SELECTED_POI_SOURCE));
     renderPois();
-    const styledMap = map;
-    loadMarkerImages().then(
-      (images) => {
-        if (map !== styledMap || !map.getSource(POI_SOURCE)) return;
-        for (const { id, image, pixelRatio } of images) {
-          if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio });
-        }
-      },
-      () => {},
-    );
   };
 
   return {
@@ -434,7 +424,15 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         map.touchZoomRotate.disableRotation();
         map.touchPitch.disable();
       }
-      // A style swap drops the markers' source, layer and images; the popup is a DOM overlay.
+      // Tiles wait for this before drawing, on every style, so markers are in place by `load`.
+      const styledMap = map;
+      map.setMissingStyleImageResolver(async (id) => {
+        const marker = (await loadMarkerImages()).find((image) => image.id === id);
+        if (marker && map === styledMap && !map.hasImage(id)) {
+          map.addImage(id, marker.image, { pixelRatio: marker.pixelRatio });
+        }
+      });
+      // A style swap drops the markers' source and layer; the popup is a DOM overlay.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {
         if (map && isDarkTheme()) brightenDarkStyle(map);
