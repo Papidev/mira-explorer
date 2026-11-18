@@ -45,9 +45,23 @@ export const CityExplorer = ({
   initialSelectedPoiId = null,
   initialPersonSlug = null,
   aliases = {},
-  pois,
+  pois: catalogPois,
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
 }: Props) => {
+  const [previews, setPreviews] = useState<Record<string, Partial<Poi>> | null>(null);
+  const pois = useMemo(
+    () => (previews ? catalogPois.map((poi) => ({ ...poi, ...previews[poi.id] })) : catalogPois),
+    [catalogPois, previews],
+  );
+  // Preview text and images wait for the map, so they never compete with its downloads.
+  const loadPreviews = () => {
+    fetch(`/api/pois/${citySlug}/previews`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (data?.previews) setPreviews(data.previews);
+      })
+      .catch(() => {});
+  };
   const [categorySelection, setSelectedCategories] = useState<CategorySelection>(null);
   const filter = useMemo(
     () => categoryFilter(categoryDefinitions, pois, categorySelection),
@@ -181,6 +195,7 @@ export const CityExplorer = ({
           onZoomChange={setZoom}
           onOpenPoiDetails={openPoi}
           onMapClick={() => selectPoi(null)}
+          onLoad={loadPreviews}
         />
         <DetailsPanel
           citySlug={citySlug}
