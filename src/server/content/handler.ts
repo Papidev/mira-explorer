@@ -70,35 +70,7 @@ export const createContentHandler =
         const people = parameters.get("people");
         if (people !== null && people !== "omit")
           throw new ContentHttpError(400, "invalid", "Expected people=omit.");
-        const repository = getRepository();
-        const stories = await repository.getAdminStories(city, ids);
-        if (people === "omit") return contentJson({ stories });
-        // Admin clients that predate the People read expect each Story's profiles embedded.
-        // ponytail: remove this branch (and require people=omit) once every Admin reads People separately.
-        const personIds = [
-          ...new Set(
-            stories.flatMap(({ detail }) =>
-              detail.story.relatedPeople.map(({ personId }) => personId),
-            ),
-          ),
-        ];
-        const profiles = new Map<
-          string,
-          Awaited<ReturnType<typeof repository.getAdminPeople>>[number]
-        >();
-        for (let start = 0; start < personIds.length; start += 100)
-          for (const profile of await repository.getAdminPeople(
-            personIds.slice(start, start + 100),
-          ))
-            profiles.set(profile.personId, profile);
-        return contentJson({
-          stories: stories.map((story) => ({
-            ...story,
-            people: story.detail.story.relatedPeople.flatMap(({ personId }) =>
-              profiles.has(personId) ? [profiles.get(personId)!] : [],
-            ),
-          })),
-        });
+        return contentJson({ stories: await getRepository().getAdminStories(city, ids) });
       }
       if (resource === "type-rules" && segments.length === 1) {
         if (request.method === "GET")

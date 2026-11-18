@@ -339,13 +339,13 @@ publication eligibility, schema or content.
   are excluded. An empty catalog is distinct from a failed request.
 - `GET /api/admin/content/v1/catalogs/<city>/stories?ids=<uuid>,<uuid>` returns
   `{ stories: [...] }` for complete published Stories in that city, with their
-  saved generation provenance, Source references, gallery and canonical linked
-  Person profiles/provenance. Request 1–25 distinct UUIDs. Missing or unpublished
-  IDs are absent from the result; IDs from another city return no content. With
-  `&people=omit`, Stories carry no `people`: each lists its People in
-  `detail.story.relatedPeople`, and clients read their profiles separately. The
-  embedded form remains the default only for Admin clients that predate this
-  option; remove it once every Admin sends `people=omit`.
+  saved generation provenance, Source references and gallery. Request 1–25
+  distinct UUIDs. Missing or unpublished IDs are absent from the result; IDs from
+  another city return no content. Stories carry no Person profiles: each lists its
+  People in `detail.story.relatedPeople`, and clients read their profiles through
+  the People read below. The optional `&people=omit` is still accepted, with the
+  same response, for Admin clients that send it; any other `people` value is
+  rejected.
 - `GET /api/admin/content/v1/people?ids=<person-id>,<person-id>` returns
   `{ people: [...] }` with each Person's identity, profile version, generation
   provenance and canonical profile (the visitor profile plus its image). Request

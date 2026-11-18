@@ -1,10 +1,16 @@
 # mira-explorer
 
-## 0.27.3
+## 0.27.4
 
 ### Patch Changes
 
 - Remove a place that isn't on the map from Rome map links, so the URL stays clean when a link names an unknown place.
+
+## 0.27.3
+
+### Patch Changes
+
+- Return private Admin Story reads without embedded Person profiles; clients read People separately.
 
 ## 0.27.2
 
