@@ -324,6 +324,6 @@ export const clickMapMarker = (target: string | Point | null) =>
 export const leaveMap = (to?: Element) =>
   act(() => pointAt(null).fire("mouseout", new MouseEvent("mouseout", { relatedTarget: to })));
 
-export { FakeMap as Map, FakePopup as Popup, NavigationControl };
-const maplibregl = { Map: FakeMap, Popup: FakePopup, NavigationControl };
-export default maplibregl;
+const setWorkerUrl = () => {};
+
+export { FakeMap as Map, FakePopup as Popup, NavigationControl, setWorkerUrl };

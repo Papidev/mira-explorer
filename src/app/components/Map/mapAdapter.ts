@@ -1,7 +1,10 @@
 "use client";
 
-import maplibregl, {
+import {
   Map as MapLibreMap,
+  NavigationControl,
+  Popup,
+  setWorkerUrl,
   type ExpressionSpecification,
   type GeoJSONSource,
   type MapGeoJSONFeature,
@@ -20,6 +23,9 @@ import {
   SELECTED_MARKER_SCALE,
 } from "./markerImages";
 import { preloadPreviewImage } from "./PoiPreviewCard";
+
+// MapLibre 6 ships its worker as a separate module; Next emits it as a hashed asset.
+setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
 
 const mapStyleUrl = (isDark: boolean) =>
   `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
@@ -110,7 +116,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let poisById = new Map<string, Poi>();
   let hoveredPoiId: string | null = null;
   let selectedPoiId: string | null = null;
-  let previewPopup: maplibregl.Popup | null = null;
+  let previewPopup: Popup | null = null;
   let previewContainer: HTMLDivElement | null = null;
   let activePreviewPoiId: string | null = null;
   let previewCloseTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -415,7 +421,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         return;
       }
 
-      map = new maplibregl.Map({
+      map = new MapLibreMap({
         container,
         style: mapStyleUrl(isDarkTheme()),
         center: initialView.center,
@@ -435,7 +441,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         addPoiLayer();
       });
 
-      const navigationControl = new maplibregl.NavigationControl();
+      const navigationControl = new NavigationControl();
       const zoomValue = document.createElement("output");
       zoomValue.className = "map-zoom-value";
       zoomValue.setAttribute("aria-label", "Zoom level");
@@ -461,7 +467,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       previewContainer = document.createElement("div");
       previewContainer.addEventListener("focusin", handlePreviewFocusIn);
       previewContainer.addEventListener("focusout", handlePreviewFocusOut);
-      previewPopup = new maplibregl.Popup({
+      previewPopup = new Popup({
         className: "poi-preview-popup cursor-pointer",
         closeButton: false,
         closeOnClick: false,

@@ -2,7 +2,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("maplibre-gl", () => ({ default: {} }));
+vi.mock("maplibre-gl", () => ({ setWorkerUrl: () => {} }));
 vi.mock("next/server", () => ({ connection: async () => {} }));
 vi.mock("@/server/visitorContent", () => ({
   visitorContent: {
