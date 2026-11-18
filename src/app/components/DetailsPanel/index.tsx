@@ -6,6 +6,7 @@ import { Drawer } from "@/app/components/ui/Drawer";
 import { BottomSheet } from "@/app/components/ui/BottomSheet";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
+import { Spinner } from "@/app/components/ui/Spinner";
 import { usePoiStoryContent } from "@/app/components/usePoiStoryContent";
 import { usePerson } from "@/app/components/usePerson";
 import { useViewport } from "@/app/viewport";
@@ -98,10 +99,7 @@ export const DetailsPanel = ({
             role="status"
             className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
           >
-            <span
-              aria-hidden="true"
-              className="border-accent/20 border-t-accent size-8 animate-spin rounded-full border-3 motion-reduce:animate-none"
-            />
+            <Spinner />
             <span className="sr-only">{personSlug ? "Loading person..." : "Loading place..."}</span>
           </div>
         ) : null}

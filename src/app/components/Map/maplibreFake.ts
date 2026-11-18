@@ -15,6 +15,8 @@ type Handler = (event: { point: Point; originalEvent?: Event }) => void;
 export const fakeMaps: FakeMap[] = [];
 export const fakePopups: FakePopup[] = [];
 export const cameraUpdates: EaseToOptions[] = [];
+/** Maps draw at once unless a test holds their first draw with `holdMapLoad()`. */
+let pendingLoads: (() => void)[] | null = null;
 
 class FakeMap {
   container: HTMLDivElement;
@@ -97,7 +99,9 @@ class FakeMap {
   }
   off() {}
   once(type: string, handler: () => void) {
-    if (type === "load") handler();
+    if (type !== "load") return;
+    if (pendingLoads) pendingLoads.push(handler);
+    else handler();
   }
   addSource(
     id: string,
@@ -241,7 +245,19 @@ class FakePopup {
 
 class NavigationControl {}
 
+export const holdMapLoad = () => {
+  pendingLoads = [];
+};
+
+/** Finishes drawing maps held by `holdMapLoad()`, as when the style and tiles arrive. */
+export const finishMapLoad = () => {
+  const loads = pendingLoads ?? [];
+  pendingLoads = null;
+  act(() => loads.forEach((load) => load()));
+};
+
 export const resetMapLibreFakes = () => {
+  pendingLoads = null;
   fakeMaps.length = 0;
   fakePopups.length = 0;
   cameraUpdates.length = 0;

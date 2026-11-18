@@ -1,3 +1,4 @@
+import { Spinner } from "@/app/components/ui/Spinner";
 import { RomeHeader } from "./RomeHeader";
 
 const Loading = () => (
@@ -5,10 +6,7 @@ const Loading = () => (
     <RomeHeader />
     <div className="grid flex-1 place-items-center">
       <div role="status">
-        <span
-          aria-hidden="true"
-          className="border-accent/20 border-t-accent block size-8 animate-spin rounded-full border-3 motion-reduce:animate-none"
-        />
+        <Spinner />
         <span className="sr-only">Loading the map…</span>
       </div>
     </div>

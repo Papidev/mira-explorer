@@ -13,6 +13,8 @@ import { CityExplorer } from ".";
 import {
   cameraUpdates,
   clickMapMarker,
+  finishMapLoad,
+  holdMapLoad,
   mapMarkerNames,
   resetMapLibreFakes,
   selectedMapMarkerName,
@@ -43,6 +45,17 @@ const server = setupServer(
     }),
   ),
 );
+describe("map start-up", () => {
+  it("shows the loading status until the map is first drawn", () => {
+    holdMapLoad();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Loading the map…");
+    finishMapLoad();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+});
+
 const getListedPlaces = () =>
   within(screen.getByRole("complementary", { name: "Discover places" })).queryAllByRole("listitem");
 

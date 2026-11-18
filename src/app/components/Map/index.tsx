@@ -3,6 +3,7 @@
 import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from "react";
 import { createPortal, flushSync } from "react-dom";
 import type { Poi } from "@/types/Poi";
+import { Spinner } from "@/app/components/ui/Spinner";
 import "./markers.css";
 import "./controls.css";
 import {
@@ -49,6 +50,7 @@ export const Map = ({
   focusRequest,
 }: Props) => {
   const [preview, setPreview] = useState<MapPreview | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const adapterRef = useRef<MapAdapter | null>(null);
   const lastZoomFromMapRef = useRef<number | null>(null);
@@ -72,6 +74,7 @@ export const Map = ({
     });
     adapter.setOnOpenPoiDetails((poiId) => handlersRef.current.onOpenPoiDetails?.(poiId));
     adapter.setOnMapClick(() => handlersRef.current.onMapClick?.());
+    adapter.setOnLoad(() => setLoaded(true));
     adapter.setOnPreviewChange((nextPreview) => {
       if (nextPreview) {
         // MapLibre measures and positions the popup immediately after this callback.
@@ -85,6 +88,7 @@ export const Map = ({
 
     return () => {
       adapter.setOnPreviewChange(null);
+      adapter.setOnLoad(null);
       adapter.destroy();
       adapterRef.current = null;
     };
@@ -151,6 +155,13 @@ export const Map = ({
         data-controls-covered={Object.values(coveredArea).some(Boolean)}
         style={{ "--map-controls-right-inset": `${coveredArea.right}px` } as CSSProperties}
       />
+      {/* Continues the page's loading spinner until the street map and places are drawn. */}
+      {!loaded && (
+        <div role="status" className="pointer-events-none absolute inset-0 grid place-items-center">
+          <Spinner />
+          <span className="sr-only">Loading the map…</span>
+        </div>
+      )}
       {preview &&
         createPortal(
           <PoiPreviewCard

@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.5
+
+### Patch Changes
+
+- Keep the loading spinner over the Rome map until the street map and places are drawn, so the map area is never left empty without a loading indicator.
+
 ## 0.27.4
 
 ### Patch Changes
