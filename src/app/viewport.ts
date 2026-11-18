@@ -32,3 +32,16 @@ const getSnapshot = () =>
  */
 export const useViewport = () =>
   useSyncExternalStore(subscribe, getSnapshot, () => layouts.drawers);
+
+const subscribeToResize = (onChange: () => void) => {
+  window.addEventListener("resize", onChange);
+  return () => window.removeEventListener("resize", onChange);
+};
+
+/** Window width in CSS pixels; the server assumes unlimited room, as before hydration. */
+export const useViewportWidth = () =>
+  useSyncExternalStore(
+    subscribeToResize,
+    () => window.innerWidth,
+    () => Number.POSITIVE_INFINITY,
+  );

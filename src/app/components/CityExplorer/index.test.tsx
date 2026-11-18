@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { http, HttpResponse } from "msw";
@@ -48,6 +48,8 @@ const getListedPlaces = () =>
 
 const nativeFetch = globalThis.fetch;
 beforeEach(() => {
+  // A wide desktop, where the filters and an open place both fit beside the map.
+  window.innerWidth = 1600;
   window.history.replaceState(null, "", "/rome");
   resetMapLibreFakes();
 });
@@ -67,7 +69,6 @@ beforeAll(() => {
 });
 afterEach(() => {
   cleanup();
-  window.innerWidth = 1024;
   server.resetHandlers();
 });
 afterAll(() => {
@@ -870,6 +871,65 @@ it("centers the selected marker in the visible map from both the map and the lis
   expect(cameraUpdates).toHaveLength(1);
   clickMapMarker("A Museum");
   expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.89], offset: [-224, 0] });
+});
+
+it("keeps at least 40% of the screen for the map when a place opens", async () => {
+  const user = userEvent.setup();
+  window.innerWidth = 1280;
+  render(
+    <CityExplorer
+      citySlug="rome"
+      coordinates={[12.44, 41.9]}
+      initialZoom={15}
+      pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
+    />,
+  );
+  expect(screen.queryByRole("button", { name: "Open filters" })).not.toBeInTheDocument();
+
+  // Filters and the place would leave the map 480 of 1280 px, so the filters step aside.
+  clickMapMarker("A Church");
+  expect(await screen.findByRole("heading", { name: "A Church" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Open filters" })).toBeInTheDocument();
+  expect(cameraUpdates.at(-1)).toMatchObject({ offset: [-224, 0] });
+
+  await user.click(screen.getByRole("button", { name: "Close" }));
+  expect(screen.queryByRole("button", { name: "Open filters" })).not.toBeInTheDocument();
+});
+
+it("keeps the filters beside an open place while the map still has 40% of the width", () => {
+  window.innerWidth = 1280;
+  render(
+    <CityExplorer
+      citySlug="rome"
+      coordinates={[12.44, 41.9]}
+      initialZoom={15}
+      pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
+    />,
+  );
+  clickMapMarker("A Church");
+  expect(screen.getByRole("button", { name: "Open filters" })).toBeInTheDocument();
+
+  // At 1440 px the map keeps 640 px (44%) beside both panels, so the filters return.
+  act(() => {
+    window.innerWidth = 1440;
+    window.dispatchEvent(new Event("resize"));
+  });
+  expect(screen.queryByRole("button", { name: "Open filters" })).not.toBeInTheDocument();
+});
+
+it("caps the place panel at 45% of the width on a landscape phone", () => {
+  window.innerWidth = 812;
+  render(
+    <CityExplorer
+      citySlug="rome"
+      coordinates={[12.44, 41.9]}
+      initialZoom={15}
+      pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
+    />,
+  );
+  clickMapMarker("A Church");
+  // The 365 px panel (45% of 812) leaves the map 447 px instead of 364.
+  expect(cameraUpdates.at(-1)).toMatchObject({ offset: [-182.5, 0] });
 });
 
 describe("visitor place search", () => {

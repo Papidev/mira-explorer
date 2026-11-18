@@ -40,7 +40,8 @@ export const PlaceDetails = ({
     <>
       {mainImageUrl && mainImageUrl !== failedMainImageUrl ? (
         <figure>
-          <div className="bg-surface-muted relative aspect-video w-full shrink-0 overflow-hidden">
+          {/* On short screens, such as a phone held sideways, the cap keeps the name in view. */}
+          <div className="bg-surface-muted relative aspect-video w-full shrink-0 overflow-hidden [@media(height<32rem)]:max-h-[40dvh]">
             <Image
               src={mainImageUrl}
               alt={`Main image of ${detail?.name ?? poi.name}`}
@@ -82,7 +83,7 @@ export const PlaceDetails = ({
           )}
         </figure>
       ) : detail ? (
-        <div className="bg-surface-muted text-ink-subtle flex aspect-video items-center justify-center gap-2 text-sm">
+        <div className="bg-surface-muted text-ink-subtle flex aspect-video items-center justify-center gap-2 text-sm [@media(height<32rem)]:max-h-[40dvh]">
           <PhotoIcon className="size-6" aria-hidden="true" />
           Image unavailable
         </div>

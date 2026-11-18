@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.1
+
+### Patch Changes
+
+- Keep the map usable when a place opens: the Story panel takes at most 45% of the screen width, the filters step aside while an open place would leave the map less than 40% of the width, and on short screens such as a phone held sideways the main image is capped so the place name stays in view.
+
 ## 0.27.0
 
 ### Minor Changes
