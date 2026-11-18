@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.6
+
+### Patch Changes
+
+- Load place preview text and images after the Rome map is drawn instead of inside the page, so the map page downloads about three quarters less data before it can start.
+
 ## 0.27.5
 
 ### Patch Changes

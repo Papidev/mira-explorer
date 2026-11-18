@@ -55,7 +55,9 @@ export const RomeMap = async ({
           coordinates={coordinates}
           initialZoom={15}
           initialSelectedPoiId={initialSelectedPoi?.id ?? null}
-          pois={pois}
+          // Previews load after the map is drawn, which keeps them out of the page's HTML.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          pois={pois.map(({ previewDescription, shortDescription, mainImageUrl, ...poi }) => poi)}
           aliases={aliases}
           initialPersonSlug={initialPersonSlug}
         />

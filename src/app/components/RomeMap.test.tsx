@@ -72,5 +72,10 @@ describe("Rome map arrival", () => {
     expect(screen.getByText("place").parentElement?.textContent?.trim()).toBe("1 place");
     expect(screen.getByText("people").parentElement?.textContent?.trim()).toBe("2 people");
     expect(map.props.children[1].props.pois).toHaveLength(2);
+    // Previews load after the map, so they stay out of the page's HTML.
+    for (const poi of map.props.children[1].props.pois) {
+      expect(poi).not.toHaveProperty("previewDescription");
+      expect(poi).not.toHaveProperty("mainImageUrl");
+    }
   });
 });
