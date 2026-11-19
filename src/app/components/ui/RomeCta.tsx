@@ -15,7 +15,7 @@ type Props = {
 
 const sizes = {
   small: "gap-3 px-4 py-2 text-sm",
-  large: "gap-6 px-7 py-4 text-base shadow-lg shadow-black/20",
+  large: "gap-4 px-5 py-4 sm:gap-6 sm:px-7 text-base shadow-lg shadow-black/20",
 };
 
 export const RomeCta = ({
@@ -29,10 +29,16 @@ export const RomeCta = ({
     onClick={() => track("rome_cta_click", { placement })}
     className={`group bg-brand text-atlas focus-visible:outline-accent inline-flex cursor-pointer items-center rounded-full font-semibold whitespace-nowrap transition-colors hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 ${sizes[size]} ${className}`}
   >
-    <span className="inline-flex items-center gap-5">
+    <span className="inline-flex items-center gap-3 sm:gap-5">
       {label}
       {size === "large" && (
-        <Image src="/icons/cities/rome-blue.svg" alt="" width={36} height={24} />
+        <Image
+          src="/icons/cities/rome-blue.svg"
+          alt=""
+          width={36}
+          height={24}
+          className="shrink-0"
+        />
       )}
     </span>
     <ArrowRightIcon
