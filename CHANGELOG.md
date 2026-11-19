@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.13
+
+### Patch Changes
+
+- Give the Rome map more room on phones with a slimmer header and search bar.
+
 ## 0.27.12
 
 ### Patch Changes
