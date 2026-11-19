@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.10
+
+### Patch Changes
+
+- Center opened places in the visible part of the map with MapLibre's own camera anchoring instead of a hand-made offset, with no visible change.
+
 ## 0.27.9
 
 ### Patch Changes

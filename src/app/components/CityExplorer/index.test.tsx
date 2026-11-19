@@ -19,6 +19,7 @@ import {
   mapMarkerNames,
   resetMapLibreFakes,
   selectedMapMarkerName,
+  selectedMapMarkerTip,
 } from "../Map/maplibreFake";
 
 const pois: Poi[] = (
@@ -899,16 +900,15 @@ it("centers the selected marker in the visible map from both the map and the lis
     />,
   );
   clickMapMarker("A Church");
-  expect(cameraUpdates.at(-1)).toMatchObject({
-    center: [12.45, 41.9],
-    offset: [-48, 0],
-    duration: 600,
-  });
+  // The place lands in the middle of the map left visible beside the 96 px panel.
+  expect(selectedMapMarkerTip()).toEqual({ x: -48, y: 0 });
+  expect(cameraUpdates.at(-1)).toMatchObject({ duration: 600 });
   expect(selectedMapMarkerName()).toBe("A Church");
 
   cameraUpdates.length = 0;
   await user.click(screen.getByRole("button", { name: "A Museum" }));
-  expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.89], offset: [-48, 0] }]);
+  expect(cameraUpdates).toHaveLength(1);
+  expect(selectedMapMarkerTip()).toEqual({ x: -48, y: 0 });
   expect(cameraUpdates[0].duration).toBeGreaterThan(600);
   expect(selectedMapMarkerName()).toBe("A Museum");
   expect(mapMarkerNames()).toContain("A Church");
@@ -917,7 +917,7 @@ it("centers the selected marker in the visible map from both the map and the lis
   await user.click(screen.getByRole("button", { name: "Close filters" }));
   expect(cameraUpdates).toHaveLength(1);
   clickMapMarker("A Museum");
-  expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.89], offset: [-224, 0] });
+  expect(selectedMapMarkerTip()).toEqual({ x: -224, y: 0 });
 });
 
 it("keeps at least 40% of the screen for the map when a place opens", async () => {
@@ -937,7 +937,7 @@ it("keeps at least 40% of the screen for the map when a place opens", async () =
   clickMapMarker("A Church");
   expect(await screen.findByRole("heading", { name: "A Church" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Open filters" })).toBeInTheDocument();
-  expect(cameraUpdates.at(-1)).toMatchObject({ offset: [-224, 0] });
+  expect(selectedMapMarkerTip()).toEqual({ x: -224, y: 0 });
 
   await user.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.queryByRole("button", { name: "Open filters" })).not.toBeInTheDocument();
@@ -976,7 +976,7 @@ it("caps the place panel at 45% of the width on a landscape phone", () => {
   );
   clickMapMarker("A Church");
   // The 365 px panel (45% of 812) leaves the map 447 px instead of 364.
-  expect(cameraUpdates.at(-1)).toMatchObject({ offset: [-182.5, 0] });
+  expect(selectedMapMarkerTip()).toEqual({ x: -182.5, y: 0 });
 });
 
 describe("visitor place search", () => {
@@ -1009,7 +1009,7 @@ describe("visitor place search", () => {
     await user.keyboard("{ArrowDown}{ArrowUp}{Enter}");
     expect(await screen.findByRole("heading", { name: "Café Museum" })).toBeVisible();
     expect(selectedMapMarkerName()).toBe("Café Museum");
-    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.5, 41.8], offset: [-48, 0] });
+    expect(selectedMapMarkerTip()).toEqual({ x: -48, y: 0 });
     expect(new URLSearchParams(window.location.search).get("poi")).toBe("cafe");
     expect(search).toHaveValue("");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
@@ -1019,7 +1019,7 @@ describe("visitor place search", () => {
     cameraUpdates.length = 0;
     await user.type(search, "cafe");
     await user.click(await screen.findByRole("option", { name: /Café Museum.*Via Ostiense/ }));
-    expect(cameraUpdates).toMatchObject([{ center: [12.5, 41.8], offset: [-48, 0] }]);
+    expect(cameraUpdates).toHaveLength(1);
     expect(window.history.length).toBe(historyLength);
   });
 
@@ -1095,7 +1095,8 @@ describe("visitor place search", () => {
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
     expect(screen.queryByRole("combobox", { name: "Search" })).not.toBeInTheDocument();
-    expect(cameraUpdates.at(-1)).toMatchObject({ center: [12.01, 41] });
+    // The place lands in the middle of the map left beside the 360 px panel.
+    expect(selectedMapMarkerTip()).toEqual({ x: -180, y: 0 });
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("button", { name: "Open filters" })).toBeVisible();
   });

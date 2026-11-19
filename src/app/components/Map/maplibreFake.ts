@@ -21,7 +21,7 @@ let pendingLoads: (() => void)[] | null = null;
 class FakeMap {
   container: HTMLDivElement;
   canvas = document.createElement("canvas");
-  center: EaseToOptions["center"];
+  center: [number, number];
   zoom: number;
   removed = false;
   styleUrl: string;
@@ -60,14 +60,32 @@ class FakeMap {
   addControl() {}
   easeTo(view: EaseToOptions) {
     cameraUpdates.push(view);
-    if (view.center) this.center = view.center;
+    if (view.center) this.center = view.center as [number, number];
     if (view.zoom !== undefined) this.zoom = view.zoom;
   }
   getCenter() {
     return this.center;
   }
+  /** Screen pixels, with the map's center in the middle of its container. */
   project([lng, lat]: [number, number]) {
-    return { x: lng * 20000, y: -lat * 20000 };
+    const { clientWidth, clientHeight } = this.container;
+    return {
+      x: clientWidth / 2 + (lng - this.center[0]) * 20000,
+      y: clientHeight / 2 - (lat - this.center[1]) * 20000,
+    };
+  }
+  calculateAnchoredCameraOptions({
+    anchorLocation: [lng, lat],
+    anchorScreenPoint: [x, y],
+  }: {
+    anchorLocation: [number, number];
+    anchorScreenPoint: [number, number];
+  }) {
+    const { clientWidth, clientHeight } = this.container;
+    return {
+      center: [lng - (x - clientWidth / 2) / 20000, lat + (y - clientHeight / 2) / 20000],
+      zoom: this.zoom,
+    };
   }
   getZoom() {
     return this.zoom;
@@ -275,6 +293,16 @@ export const mapMarkers = () =>
 
 export const mapMarkerNames = () => mapMarkers().map(({ name }) => name);
 export const selectedMapMarkerName = () => mapMarkers().find(({ selected }) => selected)?.name;
+
+/** Where the selected place's marker points on screen, to a tenth of a pixel. */
+export const selectedMapMarkerTip = () => {
+  const map = liveMap();
+  const feature = map.features().find(({ properties }) => properties.selected);
+  if (!feature) throw new Error("No selected marker");
+  const { x, y } = map.project(feature.geometry.coordinates);
+  const round = (value: number) => Math.round(value * 10) / 10 + 0;
+  return { x: round(x), y: round(y) };
+};
 
 /** A point on the head of a place's marker. */
 export const mapMarkerHead = (name: string) => {
