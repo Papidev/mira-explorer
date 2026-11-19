@@ -183,7 +183,7 @@ export const CityExplorer = ({
         )}
         {detailsAsSheet && (
           // Phones search from a bar over the map; the details sheet and filters cover it.
-          <div className="absolute inset-x-3 top-3 z-10">
+          <div className="absolute inset-x-2 top-2 z-10">
             <Search variant="floating" pois={pois} onSelect={searchPoi} />
           </div>
         )}

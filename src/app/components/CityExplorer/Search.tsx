@@ -41,14 +41,14 @@ export const Search = ({
       <div className={floating ? "relative" : "relative mt-2"}>
         <MagnifyingGlassIcon
           aria-hidden="true"
-          className={`text-ink-subtle pointer-events-none absolute top-1/2 -translate-y-1/2 ${floating ? "left-4 size-5" : "left-3 size-4"}`}
+          className={`text-ink-subtle pointer-events-none absolute top-1/2 -translate-y-1/2 ${floating ? "left-3.5 size-4" : "left-3 size-4"}`}
         />
         <ComboboxInput
           autoComplete="off"
           placeholder={floating ? "Search places" : "Search by name"}
           displayValue={() => ""}
           onChange={(event) => setQuery(event.target.value)}
-          className={`bg-surface text-ink outline-line-strong placeholder:text-ink-subtle focus:outline-accent block w-full text-base outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 ${floating ? "min-h-12 rounded-full py-3 pr-4 pl-11 shadow-lg" : "min-h-11 rounded-lg py-2.5 pr-3 pl-9 sm:text-sm md:min-h-9 md:py-2"}`}
+          className={`bg-surface text-ink outline-line-strong placeholder:text-ink-subtle focus:outline-accent block w-full text-base outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 ${floating ? "min-h-10 rounded-full py-2 pr-3 pl-10 shadow-md" : "min-h-11 rounded-lg py-2.5 pr-3 pl-9 sm:text-sm md:min-h-9 md:py-2"}`}
         />
       </div>
       <ComboboxOptions
