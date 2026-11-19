@@ -24,7 +24,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
       </svg>
       {/* The height cap keeps the photo's CTA on the first screen; on phones the vw floor keeps
           the arch from flattening on short screens or with enlarged text. */}
-      <div className="bg-surface-muted relative aspect-4/5 max-h-[max(85vw,calc(100svh-21rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl sm:aspect-5/4 sm:max-h-[max(8rem,calc(100svh-26rem))] lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
+      <div className="bg-surface-muted relative aspect-4/5 max-h-[max(85vw,calc(100svh-16rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl sm:aspect-5/4 sm:max-h-[max(8rem,calc(100svh-26rem))] lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
         <Image
           src={cover.mainImage.thumbnailUrl}
           alt={cover.poi.name}
