@@ -35,6 +35,8 @@ class FakeMap {
   /** Layer ids, with whether each draws bubbles rather than single places. */
   layers = new Map<string, { drawsClusters: boolean }>();
   handlers = new Map<string, Handler[]>();
+  touchZoomRotate = { disableRotation() {} };
+  touchPitch = { disable() {} };
   /** Where the mouse is, in pixels; markers are drawn at their projected positions. */
   pointer: Point = { x: -1e9, y: -1e9 };
 
