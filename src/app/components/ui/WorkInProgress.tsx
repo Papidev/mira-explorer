@@ -84,7 +84,8 @@ export const WorkInProgressNotice = ({
       className={`relative flex cursor-pointer items-center gap-1.5 rounded-sm text-[10px]/none font-semibold tracking-[0.16em] whitespace-nowrap uppercase underline decoration-dotted underline-offset-4 transition-colors after:absolute after:-inset-x-2 after:-inset-y-4 focus-visible:outline-2 focus-visible:outline-offset-4 ${tone === "dark" ? "focus-visible:outline-brand text-white/85 decoration-white/50 hover:text-white" : "focus-visible:outline-accent text-ink-muted decoration-ink-subtle hover:text-ink"}`}
     >
       <WrenchScrewdriverIcon className="size-3.5" aria-hidden="true" />
-      In progress
+      {/* Icon only on phones, where the label would push the header past the screen edge. */}
+      <span className="max-sm:sr-only">In progress</span>
     </PopoverButton>
     <PopoverPanel
       anchor={{ to: "bottom end", gap: 10, padding: 16 }}

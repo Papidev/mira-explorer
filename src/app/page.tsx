@@ -58,7 +58,7 @@ const Home = () => {
           {/* Sits above the hero photo, which rises into the header on large screens. Below lg
               it shares the logo's font size so the em nudge centres it on the "mira" letters
               rather than on the taller bird. */}
-          <div className="relative z-10 flex items-center gap-3 text-[3.5rem] max-lg:translate-y-[0.22em] sm:text-[4.25rem] lg:self-start">
+          <div className="relative z-10 flex items-center gap-3 text-[2.75rem] max-lg:translate-y-[0.22em] sm:text-[4.25rem] lg:self-start">
             <div className="flex lg:hidden">
               <WorkInProgressNotice />
             </div>
@@ -87,7 +87,7 @@ const Home = () => {
               </p>
               <h1
                 id="hero-title"
-                className="text-ink mt-2 max-w-xl font-serif text-5xl leading-[1.08] tracking-tight sm:mt-6 sm:text-6xl lg:text-7xl"
+                className="text-ink mt-1 max-w-xl font-serif text-[2.5rem] leading-[1.08] tracking-tight sm:mt-6 sm:text-6xl lg:text-7xl"
               >
                 Every place has a{" "}
                 <span className="text-story-emphasis decoration-brand italic underline decoration-4 underline-offset-8">

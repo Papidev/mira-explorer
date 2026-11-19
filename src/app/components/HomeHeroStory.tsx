@@ -22,7 +22,9 @@ export const HomeHeroStory = ({ cover }: Props) => (
         <path d="M48 880V320a272 272 0 0 1 544 0v560" stroke="currentColor" />
         <path d="M72 880V320a248 248 0 0 1 496 0v560" stroke="currentColor" />
       </svg>
-      <div className="bg-surface-muted relative aspect-4/5 max-h-[max(8rem,calc(100svh-26rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl sm:aspect-5/4 lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
+      {/* The height cap keeps the photo's CTA on the first screen; on phones the vw floor keeps
+          the arch from flattening on short screens or with enlarged text. */}
+      <div className="bg-surface-muted relative aspect-4/5 max-h-[max(85vw,calc(100svh-21rem))] w-full overflow-hidden rounded-t-[10rem] rounded-b-2xl sm:aspect-5/4 sm:max-h-[max(8rem,calc(100svh-26rem))] lg:aspect-4/5 lg:max-h-[max(12rem,calc(100svh-8rem))]">
         <Image
           src={cover.mainImage.thumbnailUrl}
           alt={cover.poi.name}
