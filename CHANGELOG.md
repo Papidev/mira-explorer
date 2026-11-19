@@ -1,10 +1,22 @@
 # mira-explorer
 
-## 0.27.9
+## 0.27.11
 
 ### Patch Changes
 
 - Stop downloading hover previews on touch phones, so the Rome map and place details load sooner on slow connections.
+
+## 0.27.10
+
+### Patch Changes
+
+- Center opened places in the visible part of the map with MapLibre's own camera anchoring instead of a hand-made offset, with no visible change.
+
+## 0.27.9
+
+### Patch Changes
+
+- Let the Rome map request place marker images when it first needs them, instead of adding them all again after every map style change, with no visible change to the markers.
 
 ## 0.27.8
 

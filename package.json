@@ -1,6 +1,6 @@
 {
   "name": "mira-explorer",
-  "version": "0.27.9",
+  "version": "0.27.11",
   "private": true,
   "packageManager": "pnpm@10.18.0",
   "engines": {

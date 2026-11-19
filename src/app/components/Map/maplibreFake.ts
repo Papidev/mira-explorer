@@ -21,7 +21,7 @@ let pendingLoads: (() => void)[] | null = null;
 class FakeMap {
   container: HTMLDivElement;
   canvas = document.createElement("canvas");
-  center: EaseToOptions["center"];
+  center: [number, number];
   zoom: number;
   removed = false;
   styleUrl: string;
@@ -34,7 +34,6 @@ class FakeMap {
   >();
   /** Layer ids, with whether each draws bubbles rather than single places. */
   layers = new Map<string, { drawsClusters: boolean }>();
-  images = new Set<string>();
   handlers = new Map<string, Handler[]>();
   touchZoomRotate = { disableRotation() {} };
   touchPitch = { disable() {} };
@@ -63,14 +62,32 @@ class FakeMap {
   addControl() {}
   easeTo(view: EaseToOptions) {
     cameraUpdates.push(view);
-    if (view.center) this.center = view.center;
+    if (view.center) this.center = view.center as [number, number];
     if (view.zoom !== undefined) this.zoom = view.zoom;
   }
   getCenter() {
     return this.center;
   }
+  /** Screen pixels, with the map's center in the middle of its container. */
   project([lng, lat]: [number, number]) {
-    return { x: lng * 20000, y: -lat * 20000 };
+    const { clientWidth, clientHeight } = this.container;
+    return {
+      x: clientWidth / 2 + (lng - this.center[0]) * 20000,
+      y: clientHeight / 2 - (lat - this.center[1]) * 20000,
+    };
+  }
+  calculateAnchoredCameraOptions({
+    anchorLocation: [lng, lat],
+    anchorScreenPoint: [x, y],
+  }: {
+    anchorLocation: [number, number];
+    anchorScreenPoint: [number, number];
+  }) {
+    const { clientWidth, clientHeight } = this.container;
+    return {
+      center: [lng - (x - clientWidth / 2) / 20000, lat + (y - clientHeight / 2) / 20000],
+      zoom: this.zoom,
+    };
   }
   getZoom() {
     return this.zoom;
@@ -92,7 +109,6 @@ class FakeMap {
     this.styleUrl = url;
     this.sources.clear();
     this.layers.clear();
-    this.images.clear();
     this.handlers.get("style.load")?.forEach((handler) => handler({ point: { x: 0, y: 0 } }));
   }
   on(type: string, handler: Handler) {
@@ -144,12 +160,8 @@ class FakeMap {
   getLayer(id: string) {
     return this.layers.has(id) ? { id } : undefined;
   }
-  hasImage(id: string) {
-    return this.images.has(id);
-  }
-  addImage(id: string) {
-    this.images.add(id);
-  }
+  /** Markers are matched by layer, so the fake never needs their images. */
+  setMissingStyleImageResolver() {}
   /** Like MapLibre, matches whole marker images, shadow margin included, in no particular order. */
   queryRenderedFeatures(
     area: Point | [[number, number], [number, number]],
@@ -283,6 +295,16 @@ export const mapMarkers = () =>
 
 export const mapMarkerNames = () => mapMarkers().map(({ name }) => name);
 export const selectedMapMarkerName = () => mapMarkers().find(({ selected }) => selected)?.name;
+
+/** Where the selected place's marker points on screen, to a tenth of a pixel. */
+export const selectedMapMarkerTip = () => {
+  const map = liveMap();
+  const feature = map.features().find(({ properties }) => properties.selected);
+  if (!feature) throw new Error("No selected marker");
+  const { x, y } = map.project(feature.geometry.coordinates);
+  const round = (value: number) => Math.round(value * 10) / 10 + 0;
+  return { x: round(x), y: round(y) };
+};
 
 /** A point on the head of a place's marker. */
 export const mapMarkerHead = (name: string) => {

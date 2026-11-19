@@ -404,16 +404,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     });
     map.addLayer(pinLayer(SELECTED_POI_LAYER, SELECTED_POI_SOURCE));
     renderPois();
-    const styledMap = map;
-    loadMarkerImages().then(
-      (images) => {
-        if (map !== styledMap || !map.getSource(POI_SOURCE)) return;
-        for (const { id, image, pixelRatio } of images) {
-          if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio });
-        }
-      },
-      () => {},
-    );
   };
 
   return {
@@ -436,7 +426,15 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
         map.touchZoomRotate.disableRotation();
         map.touchPitch.disable();
       }
-      // A style swap drops the markers' source, layer and images; the popup is a DOM overlay.
+      // Tiles wait for this before drawing, on every style, so markers are in place by `load`.
+      const styledMap = map;
+      map.setMissingStyleImageResolver(async (id) => {
+        const marker = (await loadMarkerImages()).find((image) => image.id === id);
+        if (marker && map === styledMap && !map.hasImage(id)) {
+          map.addImage(id, marker.image, { pixelRatio: marker.pixelRatio });
+        }
+      });
+      // A style swap drops the markers' source and layer; the popup is a DOM overlay.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {
         if (map && isDarkTheme()) brightenDarkStyle(map);
@@ -564,18 +562,22 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       if (!map) return;
       closePreview();
       const center: [number, number] = [poi.coordinates.lng, poi.coordinates.lat];
-      // An offset, unlike easeTo's padding, does not persist into later zooms.
-      const offsetX = (left - right) / 2;
-      const coveredBelow = bottom * map.getContainer().clientHeight;
-      const offsetY = coveredBelow ? -coveredBelow / 2 : 0;
+      // The middle of the map area left uncovered by panels. Unlike easeTo's padding,
+      // anchoring there does not persist into later zooms.
+      const { clientWidth, clientHeight } = map.getContainer();
+      const visibleCenter: [number, number] = [
+        (clientWidth + left - right) / 2,
+        (clientHeight * (1 - bottom)) / 2,
+      ];
       const target = map.project(center);
-      const current = map.project(map.getCenter());
-      const distance = Math.hypot(target.x - current.x - offsetX, target.y - current.y - offsetY);
+      const distance = Math.hypot(target.x - visibleCenter[0], target.y - visibleCenter[1]);
       map.easeTo({
-        center,
+        ...map.calculateAnchoredCameraOptions({
+          anchorLocation: center,
+          anchorScreenPoint: visibleCenter,
+        }),
         duration: Math.min(1150, Math.max(600, distance * 1.1)),
         easing: (progress) => progress * progress * (3 - 2 * progress),
-        offset: [offsetX, offsetY],
       });
     },
     getZoom() {
