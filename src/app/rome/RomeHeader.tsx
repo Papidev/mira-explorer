@@ -18,7 +18,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
     {/* Everything is centred on one row axis. Text boxes are trimmed to cap height and
         baseline so flex centres the letters, not the font's line box. The right inset
         centres the theme switch over the map's zoom controls. */}
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-6 pr-4 pb-2 pl-4 sm:gap-x-6 sm:py-5 sm:pl-7">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 py-3 pr-4 pl-4 sm:gap-x-6 sm:py-5 sm:pl-7">
       {/* On phones the bird and the theme switch frame Rome, which sits at the centre. */}
       <div className="flex items-center gap-2 max-sm:flex-1 max-sm:justify-center sm:gap-3">
         <Image
@@ -29,7 +29,7 @@ export const RomeHeader = ({ counts }: { counts?: { places: number; people: numb
           className="h-auto w-12 shrink-0 sm:w-16"
         />
         <div className="relative">
-          <p className="text-brand absolute bottom-full mb-1.5 text-[9px]/3 font-bold tracking-[0.24em] uppercase sm:mb-2">
+          <p className="text-brand mb-1.5 text-[9px]/3 font-bold tracking-[0.24em] uppercase max-sm:[text-box:trim-both_cap_alphabetic] sm:absolute sm:bottom-full sm:mb-2">
             Italy
           </p>
           <h1 className="font-serif text-4xl/none tracking-tight [text-box:trim-both_cap_alphabetic] sm:text-5xl/none">
