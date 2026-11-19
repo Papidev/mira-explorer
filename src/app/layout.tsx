@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
+import { Fraunces, Inter } from "next/font/google";
 import { WebAnalytics } from "./components/WebAnalytics";
 import { themeInitScript } from "./theme";
 import "./globals.css";
@@ -10,11 +9,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const fraunces = localFont({
-  src: "./components/ui/MiraLogo/Fraunces.ttf",
+const fraunces = Fraunces({
   variable: "--font-fraunces",
-  display: "swap",
-  weight: "100 900",
+  subsets: ["latin"],
+  axes: ["opsz"],
 });
 
 export const metadata: Metadata = {

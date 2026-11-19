@@ -34,7 +34,6 @@ class FakeMap {
   >();
   /** Layer ids, with whether each draws bubbles rather than single places. */
   layers = new Map<string, { drawsClusters: boolean }>();
-  images = new Set<string>();
   handlers = new Map<string, Handler[]>();
   /** Where the mouse is, in pixels; markers are drawn at their projected positions. */
   pointer: Point = { x: -1e9, y: -1e9 };
@@ -108,7 +107,6 @@ class FakeMap {
     this.styleUrl = url;
     this.sources.clear();
     this.layers.clear();
-    this.images.clear();
     this.handlers.get("style.load")?.forEach((handler) => handler({ point: { x: 0, y: 0 } }));
   }
   on(type: string, handler: Handler) {
@@ -160,12 +158,8 @@ class FakeMap {
   getLayer(id: string) {
     return this.layers.has(id) ? { id } : undefined;
   }
-  hasImage(id: string) {
-    return this.images.has(id);
-  }
-  addImage(id: string) {
-    this.images.add(id);
-  }
+  /** Markers are matched by layer, so the fake never needs their images. */
+  setMissingStyleImageResolver() {}
   /** Like MapLibre, matches whole marker images, shadow margin included, in no particular order. */
   queryRenderedFeatures(
     area: Point | [[number, number], [number, number]],
