@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.9
+
+### Patch Changes
+
+- Let the Rome map request place marker images when it first needs them, instead of adding them all again after every map style change, with no visible change to the markers.
+
 ## 0.27.8
 
 ### Patch Changes

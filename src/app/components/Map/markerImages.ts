@@ -57,7 +57,7 @@ const loadImage = async (svg: string) => {
 type MarkerImage = { id: string; image: HTMLImageElement; pixelRatio: number };
 let markerImages: Promise<MarkerImage[]> | null = null;
 
-/** Draws every category marker once; style swaps drop images, so callers re-add them. */
+/** Draws every category marker once, for the map's missing-image resolver on every style. */
 export const loadMarkerImages = () =>
   (markerImages ??= Promise.all(
     categoryMarkerColors.map(async ({ icon, marker }) => {
@@ -75,7 +75,7 @@ export const loadMarkerImages = () =>
   ).then(
     (images) => images.flat(),
     (error: unknown) => {
-      markerImages = null; // Let the next style load retry.
+      markerImages = null; // Let the next missing image retry.
       throw error;
     },
   ));
