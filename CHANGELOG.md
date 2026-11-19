@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.12
+
+### Patch Changes
+
+- Fit the homepage hero on phone screens: a smaller logo and title, an icon-only work-in-progress tag so the theme switch stays visible, a taller photo that keeps its arch, and an Explore Rome button that stays on the first screen without its icons overlapping.
+
 ## 0.27.11
 
 ### Patch Changes
