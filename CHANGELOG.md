@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.2
+
+### Patch Changes
+
+- Soften the light theme background with a faint warm tint and lower the homepage hero photo on wide screens.
+
 ## 0.28.1
 
 ### Patch Changes
