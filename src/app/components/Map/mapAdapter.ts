@@ -41,7 +41,13 @@ const brightenDarkStyle = (map: MapLibreMap) => {
   }
   // Fiord draws footpaths and park outlines darker than its background; lift them above it.
   map.setPaintProperty("highway_path", "line-color", "hsl(212, 25%, 50%)");
-  map.setPaintProperty("park_outline", "line-color", "hsl(205, 30%, 46%)");
+  map.setPaintProperty("park_outline", "line-color", "hsl(185, 24%, 44%)");
+  // Fiord tints parks and buildings almost like its background; give parks a muted teal
+  // and buildings a darker block so open ground and built-up areas read apart.
+  map.setPaintProperty("park", "fill-color", "hsl(185, 22%, 32%)");
+  map.setPaintProperty("park", "fill-opacity", 0.75);
+  map.setPaintProperty("building", "fill-color", "hsl(228, 32%, 24%)");
+  map.setPaintProperty("building", "fill-opacity", 0.7);
 };
 const PREVIEW_CLOSE_DELAY_MS = 180;
 const POI_SOURCE = "pois";

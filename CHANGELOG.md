@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.27.14
+
+### Patch Changes
+
+- Make the dark Rome map easier to read: parks are a muted teal, buildings stand out as darker blocks, and dark-theme panels use blue-slate instead of black.
+
 ## 0.27.13
 
 ### Patch Changes
