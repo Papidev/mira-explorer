@@ -48,27 +48,14 @@ Read `docs/agents/domain.md` before domain exploration.
 - `pnpm lint` runs ESLint with the Next `core-web-vitals` rules plus `eslint-config-prettier` to keep formatting conflicts out.
 - Select local checks according to [Testing & Verification](#testing--verification), including before commits and PRs.
 
-## Tailwind Plus / Catalyst
-
-- Before creating or changing a city logo, read [City logos](docs/city-logos.md) and follow the approved Rome drawing style and surface colors.
-- `.tailwind-plus/` contains paid Tailwind Plus source when present locally and is intentionally gitignored. Treat it only as a reference catalog and never import it from production code.
-- `src/app/components/ui/` contains committed, app-owned base components built from or inspired by Tailwind Plus examples.
-- Do not commit the local Tailwind Plus catalog. Commit only app-specific components needed by this product, and keep paid source material available only on licensed development machines.
-- The repo may commit Catalyst runtime dependencies, Tailwind theme/font setup, and app-specific components built from or inspired by Catalyst or Tailwind Plus examples.
-- Before building UI, first check `src/app/components/ui/` for a matching app-owned component.
-- If none fits, inspect Tailwind Plus UI Blocks through the authenticated Chrome session and evaluate the available React variants before designing the component.
-- Check the local Catalyst reference after UI Blocks when lower-level primitives are needed, then implement only the app-owned adaptation in `src/app/components/ui/` or the relevant feature.
-
 ## Coding Standards & A11y
 
+- Before building or styling UI, read [Building UI](docs/agents/ui.md).
 - Keep all user-facing application copy in English until localization support is introduced.
 - When a UI module grows into multiple implementation files, place it in a folder named after its public component. Put the public component implementation in `index.tsx` (for example `PoiRowsTable/index.tsx` exports `PoiRowsTable`); use short contextual names for private files and components (for example `Row.tsx` exports `Row`) instead of repeating the public prefix. The index file should own the implementation rather than act as a barrel that only re-exports other files.
 - Compose React components from focused child components when distinct UI sections make the parent hard to read. Keep the parent responsible for structure and shared state, and keep each child responsible for its own content and actions; place non-trivial children in separate files.
 - Favor a lightweight Domain-Driven Design mindset: model features around the domain language (cities, POIs, timelines) and keep logic close to the data source, but resist extra indirection unless it delivers clear value.
 - Keep React components declarative and push imperative map logic into adapters/utilities. Any `maplibre-gl` interaction must guard against double-mounts and clean up markers in `destroy()`.
-- Apply TypeScript’s quick-fix suggestions where feasible, especially for type safety and nullability, unless they conflict with product or UX intent.
-- Add `cursor-pointer` to enabled custom interactive controls and their clickable labels when the browser does not provide it; use `cursor-not-allowed` for disabled controls.
-- Prefer Tailwind utilities directly in owned JSX, and keep small class-list repetitions local. When a repeated pattern represents reusable structure or behavior, extract a React component that owns the utilities. Reserve custom CSS and `@apply` for cases where a component would be disproportionate or the markup is externally generated. Use class-list maps only for real component variants, not solely to deduplicate strings. Keep `globals.css` limited to genuinely shared styles: feature-specific styles belong in the owned component or its integration adapter, including narrowly scoped DOM styles at third-party boundaries. Use global CSS for generated or third-party markup only when no local styling hook exists, and place component rules in `@layer components`. When writing custom CSS, use Tailwind theme variables whenever possible for colors, spacing, typography, radii, shadows, and other design tokens; use literal values only for deliberate exceptions not covered by the theme.
 
 ## Feature Implementation Approach
 
