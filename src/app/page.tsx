@@ -313,7 +313,7 @@ const Home = () => {
 
         <section
           aria-labelledby="final-cta-title"
-          className="bg-atlas-deep text-white [--color-accent:var(--color-brand)]"
+          className="bg-atlas-deep dark:from-canvas dark:to-atlas-deep text-white [--color-accent:var(--color-brand)] dark:bg-linear-to-b dark:to-70%"
         >
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
             <div>
