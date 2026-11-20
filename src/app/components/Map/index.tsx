@@ -12,10 +12,12 @@ import {
   type MapAdapter,
   type MapPreview,
   type PoiMarker,
+  type TransportMode,
 } from "./mapAdapter";
 
 export type { CoveredArea };
 import { PoiPreviewCard } from "./PoiPreviewCard";
+import { TransportMenu } from "./TransportMenu";
 
 type Props = {
   coordinates: [number, number];
@@ -55,6 +57,7 @@ export const Map = ({
 }: Props) => {
   const [preview, setPreview] = useState<MapPreview | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [hiddenTransport, setHiddenTransport] = useState<TransportMode[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const adapterRef = useRef<MapAdapter | null>(null);
   const lastZoomFromMapRef = useRef<number | null>(null);
@@ -145,6 +148,10 @@ export const Map = ({
     adapterRef.current?.updateSelectedPoi(selectedPoiId);
   }, [selectedPoiId]);
 
+  useEffect(() => {
+    adapterRef.current?.updateHiddenTransport(hiddenTransport);
+  }, [hiddenTransport]);
+
   const focusSelectedPoi = useEffectEvent(() => {
     if (focusRequest) adapterRef.current?.focusPoi(focusRequest.poi, coveredArea);
   });
@@ -162,6 +169,20 @@ export const Map = ({
         data-controls-covered={Object.values(coveredArea).some(Boolean)}
         style={{ "--map-controls-right-inset": `${coveredArea.right}px` } as CSSProperties}
       />
+      {loaded && (
+        <TransportMenu
+          hidden={hiddenTransport}
+          onToggle={(mode) =>
+            setHiddenTransport((hidden) =>
+              hidden.includes(mode) ? hidden.filter((other) => other !== mode) : [...hidden, mode],
+            )
+          }
+          style={{
+            right: `calc(${coveredArea.right}px + 0.75rem)`,
+            bottom: `calc(${coveredArea.bottom * 100}% + 2.25rem)`,
+          }}
+        />
+      )}
       {/* Continues the page's loading spinner until the street map and places are drawn. */}
       {!loaded && (
         <div role="status" className="pointer-events-none absolute inset-0 grid place-items-center">
