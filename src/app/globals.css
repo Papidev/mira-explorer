@@ -41,9 +41,9 @@
 
   @variant dark {
     color-scheme: dark;
-    --canvas: var(--color-slate-800);
-    --surface: var(--color-slate-700);
-    --surface-muted: var(--color-slate-600);
+    --canvas: var(--color-zinc-950);
+    --surface: var(--color-zinc-900);
+    --surface-muted: var(--color-zinc-800);
     --ink: var(--color-zinc-100);
     --ink-muted: var(--color-zinc-300);
     --ink-subtle: var(--color-zinc-400);

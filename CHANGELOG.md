@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- Show public transport on the Rome map from close zoom, with metro stations marked by the red "M" and placed above other stops, and let visitors show or hide metro, buses & trams, trains and airports from a small button in the map's corner. The base map no longer shows its own museum and church labels, which clashed with Mira's markers, and the dark theme's panels now use a softer blue-slate instead of near-black.
+- Show public transport on the Rome map from close zoom, with metro stations marked by the red "M" and placed above other stops, and let visitors show or hide metro, buses & trams, trains and airports from a small button in the map's corner. The base map no longer shows its own museum and church labels, which clashed with Mira's markers.
 
 ## 0.27.13
 
