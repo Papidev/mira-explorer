@@ -41,9 +41,10 @@
 
   @variant dark {
     color-scheme: dark;
-    --canvas: var(--color-zinc-950);
-    --surface: var(--color-zinc-900);
-    --surface-muted: var(--color-zinc-800);
+    /* Blue-slate rather than black, to sit with the dark map and the atlas header. */
+    --canvas: hsl(218 24% 16%);
+    --surface: hsl(218 22% 21%);
+    --surface-muted: hsl(218 20% 27%);
     --ink: var(--color-zinc-100);
     --ink-muted: var(--color-zinc-300);
     --ink-subtle: var(--color-zinc-400);
