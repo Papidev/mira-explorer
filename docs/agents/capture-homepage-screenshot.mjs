@@ -13,7 +13,8 @@ const CHROME =
 // Framing approved in v0.23: Castel Sant'Angelo upper left, the historic center to the south.
 const VIEW = { center: [12.4822, 41.8993], zoom: 14.15 };
 const NEUTRAL_POINTER = { x: 1000, y: 60 }; // header text, clear of markers and controls
-const ARA_PACIS = { lng: 12.4755017, lat: 41.9061511 };
+// A standalone marker (not in a count bubble) whose preview fits inside the visible map.
+const PREVIEW = { name: "Sant'Andrea al Quirinale", lng: 12.4893546, lat: 41.9006805 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const profile = mkdtempSync(join(tmpdir(), "mira-capture-"));
@@ -94,7 +95,7 @@ try {
 
   await evaluate(`document.querySelector("nextjs-portal")?.remove()`);
   await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...NEUTRAL_POINTER });
-  // Markers are drawn on the canvas: hover the Ara Pacis marker body, 20px above its tip.
+  // Markers are drawn on the canvas: hover the preview marker body, 20px above its tip.
   const marker = await evaluate(`(() => {
     const world = (lng, lat) => {
       const size = 512 * 2 ** ${VIEW.zoom};
@@ -103,13 +104,13 @@ try {
     };
     const rect = document.querySelector(".maplibregl-canvas").getBoundingClientRect();
     const [cx, cy] = world(${VIEW.center[0]}, ${VIEW.center[1]});
-    const [px, py] = world(${ARA_PACIS.lng}, ${ARA_PACIS.lat});
+    const [px, py] = world(${PREVIEW.lng}, ${PREVIEW.lat});
     return { x: rect.left + rect.width / 2 + px - cx, y: rect.top + rect.height / 2 + py - cy - 20 };
   })()`);
   await send("Input.dispatchMouseEvent", { type: "mouseMoved", ...marker });
   await waitFor(
-    "the Ara Pacis preview",
-    `document.querySelector(".poi-preview-popup")?.innerText.startsWith("Ara Pacis")`,
+    `the ${PREVIEW.name} preview`,
+    `document.querySelector(".poi-preview-popup")?.innerText.startsWith(${JSON.stringify(PREVIEW.name)})`,
   );
   // Lazy images below the fold never load, so wait only for the visible ones.
   await waitFor(

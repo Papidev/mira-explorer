@@ -43,8 +43,8 @@ export const MapShowcase = () => (
         className="group border-line bg-surface focus-visible:outline-focus relative block cursor-pointer overflow-x-auto rounded-2xl border shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         <Image
-          src="/rome-map-showcase-v0-23-ara-pacis.webp"
-          alt="Mira map of Rome with place markers, an Ara Pacis preview, and the Castel Sant’Angelo detail panel open"
+          src="/rome-map-showcase-v0-28-sant-andrea.webp"
+          alt="Mira map of Rome with place markers, a Sant’Andrea al Quirinale preview, and the Castel Sant’Angelo detail panel open"
           width={3456}
           height={1596}
           unoptimized

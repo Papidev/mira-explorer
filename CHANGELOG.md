@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.3
+
+### Patch Changes
+
+- Refresh the homepage map screenshot with the current Rome catalog and a Sant'Andrea al Quirinale preview.
+
 ## 0.28.2
 
 ### Patch Changes
