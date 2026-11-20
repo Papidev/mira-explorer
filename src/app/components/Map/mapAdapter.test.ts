@@ -151,7 +151,7 @@ describe("Map and its MapLibre adapter", () => {
     adapter.updatePois(markersOf(pois));
     adapter.updateSelectedPoi("forum-boarium");
 
-    act(() => fakeMaps[0].setStyle("https://tiles.openfreemap.org/styles/fiord"));
+    act(() => fakeMaps[0].setStyle("/map-styles/dark.json"));
 
     expect(mapMarkerNames().toSorted()).toEqual(["Cloisters of Bramante", "Forum Boarium"]);
     expect(selectedMapMarkerName()).toBe("Forum Boarium");

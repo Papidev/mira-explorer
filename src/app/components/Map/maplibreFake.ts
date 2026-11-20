@@ -4,6 +4,8 @@
 // Clustered sources merge places drawn closer than their cluster radius into one bubble.
 import { act } from "@testing-library/react";
 import type { EaseToOptions } from "maplibre-gl";
+import lightStyle from "../../../../public/map-styles/light.json";
+import darkStyle from "../../../../public/map-styles/dark.json";
 
 type Point = { x: number; y: number };
 type Feature = {
@@ -24,7 +26,7 @@ class FakeMap {
   center: [number, number];
   zoom: number;
   removed = false;
-  styleUrl: string;
+  styleUrl = "";
   sources = new Map<
     string,
     {
@@ -35,6 +37,8 @@ class FakeMap {
   /** Layer ids, with whether each draws bubbles rather than single places. */
   layers = new Map<string, { drawsClusters: boolean }>();
   handlers = new Map<string, Handler[]>();
+  /** The real style file's basemap layers, with whether each is drawn. */
+  styleLayers = new Map<string, boolean>();
   touchZoomRotate = { disableRotation() {} };
   touchPitch = { disable() {} };
   /** Where the mouse is, in pixels; markers are drawn at their projected positions. */
@@ -54,7 +58,7 @@ class FakeMap {
     this.container = container;
     this.center = center;
     this.zoom = zoom;
-    this.styleUrl = style;
+    this.loadStyleLayers(style);
     container.append(this.canvas);
     fakeMaps.push(this);
   }
@@ -106,7 +110,7 @@ class FakeMap {
   }
   /** The style counts as loaded, so style.load handlers run at once and on every swap. */
   setStyle(url: string) {
-    this.styleUrl = url;
+    this.loadStyleLayers(url);
     this.sources.clear();
     this.layers.clear();
     this.handlers.get("style.load")?.forEach((handler) => handler({ point: { x: 0, y: 0 } }));
@@ -157,8 +161,18 @@ class FakeMap {
   addLayer({ id, filter }: { id: string; filter?: unknown }) {
     this.layers.set(id, { drawsClusters: JSON.stringify(filter) === '["has","point_count"]' });
   }
+  loadStyleLayers(url: string) {
+    this.styleUrl = url;
+    const style = url.includes("dark") ? darkStyle : lightStyle;
+    this.styleLayers = new Map(style.layers.map(({ id }) => [id, true]));
+  }
   getLayer(id: string) {
-    return this.layers.has(id) ? { id } : undefined;
+    return this.layers.has(id) || this.styleLayers.has(id) ? { id } : undefined;
+  }
+  setLayoutProperty(id: string, name: string, value: unknown) {
+    if (name === "visibility" && this.styleLayers.has(id)) {
+      this.styleLayers.set(id, value !== "none");
+    }
   }
   /** Markers are matched by layer, so the fake never needs their images. */
   setMissingStyleImageResolver() {}
@@ -351,3 +365,6 @@ export const leaveMap = (to?: Element) =>
 const setWorkerUrl = () => {};
 
 export { FakeMap as Map, FakePopup as Popup, NavigationControl, setWorkerUrl };
+
+/** Whether the basemap draws a layer of the real style, such as a group of transport stops. */
+export const mapDrawsLayer = (id: string) => fakeMaps.at(-1)?.styleLayers.get(id) ?? false;

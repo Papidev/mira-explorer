@@ -10,12 +10,14 @@ import type { Poi } from "@/types/Poi";
 vi.mock("maplibre-gl", () => import("../Map/maplibreFake"));
 
 import { CityExplorer } from ".";
+import { setThemePreference } from "@/app/theme";
 import {
   cameraUpdates,
   clickMapMarker,
   finishMapLoad,
   holdMapLoad,
   hoverMapMarker,
+  mapDrawsLayer,
   mapMarkerNames,
   resetMapLibreFakes,
   selectedMapMarkerName,
@@ -1259,5 +1261,26 @@ describe("phone place search", () => {
 
     await user.click(screen.getByRole("button", { name: "Close filters" }));
     await waitFor(() => expect(placeRow()).not.toBeInTheDocument());
+  });
+});
+
+describe("transport on the map", () => {
+  it("lets visitors hide a group of stops, and keeps it hidden after a theme switch", async () => {
+    const user = userEvent.setup();
+    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    expect(mapDrawsLayer("poi_surface")).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: "Transport on the map" }));
+    await user.click(screen.getByRole("checkbox", { name: "Buses & trams" }));
+
+    expect(screen.getByRole("checkbox", { name: "Buses & trams" })).not.toBeChecked();
+    expect(mapDrawsLayer("poi_surface")).toBe(false);
+    expect(mapDrawsLayer("poi_metro")).toBe(true);
+
+    act(() => setThemePreference("dark"));
+    expect(mapDrawsLayer("poi_surface")).toBe(false);
+    expect(mapDrawsLayer("poi_metro")).toBe(true);
+
+    delete document.documentElement.dataset.theme;
   });
 });
