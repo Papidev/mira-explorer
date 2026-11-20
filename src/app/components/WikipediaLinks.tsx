@@ -24,7 +24,7 @@ export const WikipediaLinks = ({ sources }: { sources?: WikipediaSource[] }) => 
           alt=""
           width={28}
           height={28}
-          className="mr-1 shrink-0"
+          className="mr-1 shrink-0 dark:invert"
         />
         Read on Wikipedia
         <ArrowTopRightOnSquareIcon className="ml-1.5 size-3.5" aria-hidden="true" />
