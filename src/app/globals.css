@@ -18,9 +18,9 @@
 
 :root {
   color-scheme: light;
-  --canvas: var(--color-zinc-50);
+  --canvas: color-mix(in oklch, var(--color-zinc-100) 97%, var(--color-brand));
   --surface: var(--color-white);
-  --surface-muted: var(--color-zinc-100);
+  --surface-muted: color-mix(in oklch, color-mix(in oklch, var(--color-zinc-100), var(--color-zinc-200)) 97%, var(--color-brand));
   --ink: var(--color-zinc-900);
   --ink-muted: var(--color-zinc-600);
   --ink-subtle: var(--color-zinc-500);
@@ -32,9 +32,9 @@
   --link-hover: var(--color-sky-950);
   --link-line: var(--color-sky-300);
   --brand-soft: var(--color-yellow-50);
-  --atlas-mist: #e8eff2;
-  --hero-start: #f4f7f9;
-  --hero-end: #e8eff2;
+  --atlas-mist: color-mix(in oklch, var(--color-zinc-200) 96%, var(--color-brand));
+  --hero-start: color-mix(in oklch, var(--color-zinc-50) 97%, var(--color-brand));
+  --hero-end: color-mix(in oklch, var(--color-zinc-200) 96%, var(--color-brand));
   --hero-dots: rgb(52 85 104 / 0.12);
   --emphasis: color-mix(in oklch, var(--color-violet-700), var(--color-violet-800));
   --story-emphasis: var(--color-amber-700);

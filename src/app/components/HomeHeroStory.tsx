@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const HomeHeroStory = ({ cover }: Props) => (
-  <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-36">
+  <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-28">
     <div className="relative lg:pb-14">
       <svg
         aria-hidden="true"
