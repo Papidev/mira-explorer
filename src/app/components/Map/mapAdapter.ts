@@ -28,27 +28,8 @@ import { isTouchOnly } from "@/app/viewport";
 // MapLibre 6 ships its worker as a separate module; Next emits it as a hashed asset.
 setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
 
-const mapStyleUrl = (isDark: boolean) =>
-  `https://tiles.openfreemap.org/styles/${isDark ? "fiord" : "liberty"}`;
-
-/** Fiord's labels and path lines are too faint; lift them above the dark background. */
-const brightenDarkStyle = (map: MapLibreMap) => {
-  for (const layer of map.getStyle().layers) {
-    if (layer.type !== "symbol" || !layer.layout?.["text-field"]) continue;
-    map.setPaintProperty(layer.id, "text-color", "hsl(210, 30%, 88%)");
-    map.setPaintProperty(layer.id, "text-halo-color", "hsl(222, 35%, 14%)");
-    map.setPaintProperty(layer.id, "text-halo-width", 1.5);
-  }
-  // Fiord draws footpaths and park outlines darker than its background; lift them above it.
-  map.setPaintProperty("highway_path", "line-color", "hsl(212, 25%, 50%)");
-  map.setPaintProperty("park_outline", "line-color", "hsl(185, 24%, 44%)");
-  // Fiord tints parks and buildings almost like its background; give parks a muted teal
-  // and buildings a darker block so open ground and built-up areas read apart.
-  map.setPaintProperty("park", "fill-color", "hsl(185, 22%, 32%)");
-  map.setPaintProperty("park", "fill-opacity", 0.75);
-  map.setPaintProperty("building", "fill-color", "hsl(228, 32%, 24%)");
-  map.setPaintProperty("building", "fill-opacity", 0.7);
-};
+/** Our own copies of OpenFreeMap's Liberty (light) and Fiord (dark) styles, edited for Mira. */
+const mapStyleUrl = (isDark: boolean) => `/map-styles/${isDark ? "dark" : "light"}.json`;
 const PREVIEW_CLOSE_DELAY_MS = 180;
 const POI_SOURCE = "pois";
 const POI_LAYER = "poi-markers";
@@ -98,6 +79,17 @@ export type MapPreview = {
   onOpenDetails: () => void;
 };
 
+/** Groups of public transport the visitor can show or hide on the basemap. */
+export const TRANSPORT_MODES = ["metro", "surface", "train", "airport"] as const;
+export type TransportMode = (typeof TRANSPORT_MODES)[number];
+/** The light style's layer for each group; the dark style draws no transport. */
+const TRANSPORT_LAYERS: Record<TransportMode, string> = {
+  metro: "poi_metro",
+  surface: "poi_surface",
+  train: "poi_train",
+  airport: "airport",
+};
+
 /** A POI Marker to draw, in the color the Category Filter chose. */
 export type PoiMarker = { poi: Poi; color: string };
 
@@ -106,6 +98,7 @@ export interface MapAdapter {
   updateView: (view: MapViewUpdate) => void;
   updatePois: (markers: PoiMarker[]) => void;
   updateSelectedPoi: (poiId: string | null) => void;
+  updateHiddenTransport: (hidden: TransportMode[]) => void;
   focusPoi: (poi: Poi, coveredArea: CoveredArea) => void;
   getZoom: () => number | null;
   setOnZoomChange: (handler: ((zoom: number) => void) | null) => void;
@@ -123,6 +116,7 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
   let poisById = new Map<string, Poi>();
   let hoveredPoiId: string | null = null;
   let selectedPoiId: string | null = null;
+  let hiddenTransport: TransportMode[] = [];
   let previewPopup: Popup | null = null;
   let previewContainer: HTMLDivElement | null = null;
   let activePreviewPoiId: string | null = null;
@@ -339,6 +333,16 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
     });
   };
 
+  const showTransport = () => {
+    if (!map) return;
+    for (const mode of TRANSPORT_MODES) {
+      const layer = TRANSPORT_LAYERS[mode];
+      if (!map.getLayer(layer)) continue;
+      const visibility = hiddenTransport.includes(mode) ? "none" : "visible";
+      map.setLayoutProperty(layer, "visibility", visibility);
+    }
+  };
+
   const addPoiLayer = () => {
     if (!map || map.getSource(POI_SOURCE)) return;
     const empty = { type: "FeatureCollection" as const, features: [] };
@@ -421,6 +425,17 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       map = new MapLibreMap({
         container,
         style: mapStyleUrl(isDarkTheme()),
+        // MapLibre needs absolute sprite URLs; our styles point at Mira's icons by path.
+        transformStyle: (_previous, style) =>
+          Array.isArray(style.sprite)
+            ? {
+                ...style,
+                sprite: style.sprite.map((sprite) => ({
+                  ...sprite,
+                  url: new URL(sprite.url, window.location.href).href,
+                })),
+              }
+            : style,
         center: initialView.center,
         zoom: initialView.zoom,
         minZoom: 9,
@@ -443,8 +458,8 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       // A style swap drops the markers' source and layer; the popup is a DOM overlay.
       unsubscribeFromTheme = subscribeToDarkTheme((isDark) => map?.setStyle(mapStyleUrl(isDark)));
       map.on("style.load", () => {
-        if (map && isDarkTheme()) brightenDarkStyle(map);
         addPoiLayer();
+        showTransport();
       });
 
       const navigationControl = new NavigationControl();
@@ -489,42 +504,6 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       });
       map.once("load", () => {
         onLoad?.();
-        for (const layer of map?.getStyle().layers ?? []) {
-          if (layer.type !== "symbol" || layer["source-layer"] !== "poi") {
-            continue;
-          }
-
-          map?.setFilter(layer.id, [
-            "all",
-            // Liberty uses expression filters; preserve its geometry and zoom-rank restrictions.
-            (layer.filter as ExpressionSpecification | undefined) ?? true,
-            [
-              "any",
-              [
-                "match",
-                ["get", "class"],
-                [
-                  "museum",
-                  "monument",
-                  "memorial",
-                  "castle",
-                  "archaeological_site",
-                  "place_of_worship",
-                  "theatre",
-                ],
-                true,
-                false,
-              ],
-              [
-                "match",
-                ["get", "subclass"],
-                ["artwork", "gallery", "arts_centre", "library"],
-                true,
-                false,
-              ],
-            ],
-          ]);
-        }
       });
       map.on("click", handleMapClick);
       map.on("mousemove", handleMouseMove);
@@ -559,6 +538,10 @@ export const createMapLibreAdapter = (initialView: MapView): MapAdapter => {
       poisById = new Map(nextMarkers.map(({ poi }) => [poi.id, poi]));
       if (activePreviewPoiId && !poisById.has(activePreviewPoiId)) closePreview();
       renderPois();
+    },
+    updateHiddenTransport(hidden) {
+      hiddenTransport = hidden;
+      showTransport();
     },
     updateSelectedPoi(poiId) {
       selectedPoiId = poiId;

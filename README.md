@@ -213,7 +213,9 @@ Use [Mira Admin](https://github.com/Papidev/mira-admin) to generate, review, and
 
 ## Visitor map
 
-The OpenFreeMap basemap shows cultural labels/icons: museums, monuments/memorials, castles/ruins, archaeology, worship, theatres, galleries, artworks, arts centres, and libraries. Other business/service/transit/sport POIs and generic attractions are hidden; roads, buildings, geographic labels, and curated markers remain.
+The basemap uses Mira's own styles in `public/map-styles/`: `light.json` and `dark.json` are copies of OpenFreeMap's Liberty and Fiord, edited directly (by hand or in [Maputnik](https://maputnik.github.io/editor)). Tiles, icons, and fonts still come from OpenFreeMap, but upstream style changes are not picked up automatically.
+
+Both styles hide the basemap's own place labels so they never clash with curated markers. From zoom 17 they show transport stops in four groups (metro, buses & trams, trains, airports), with metro stations drawn larger and placed first. Visitors show or hide each group from the small metro button in the map's bottom-right corner. Their red "M" icon lives in Mira's own sprite, `public/map-styles/sprites/mira`, rendered from the public-domain [Logo Metropolitane Italia](https://commons.wikimedia.org/wiki/File:Logo_Metropolitane_Italia.svg); the map resolves the sprite's path to an absolute URL when it loads a style. The dark style brightens Fiord's labels, footpaths, and park outlines.
 
 Each parent category has a distinct map marker and matching pin in the filters: Religion yellow, Arts & Culture green, Architecture orange, Memorials violet, Public Spaces rose, Sport blue, Nature lime green, and Other places cyan. Markers and filter pins also share a category symbol from Font Awesome Free, displayed directly on the category color. Selected checkboxes use a dark-blue checkmark and border on white; partial selections use the same pairing for the minus sign. A selected marker darkens while keeping its category color.
 

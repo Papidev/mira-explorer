@@ -1,10 +1,16 @@
 # mira-explorer
 
-## 0.27.14
+## 0.28.1
 
 ### Patch Changes
 
-- Make the dark Rome map easier to read: parks are a muted teal, buildings stand out as darker blocks, and dark-theme panels use blue-slate instead of black.
+- Make the dark Rome map easier to read: parks are a muted teal and buildings stand out as darker blocks. Dark-theme panels use blue-slate instead of black, and the homepage fades smoothly into its closing call to action.
+
+## 0.28.0
+
+### Minor Changes
+
+- Show public transport on the Rome map from close zoom, with metro stations marked by the red "M" and placed above other stops, and let visitors show or hide metro, buses & trams, trains and airports from a small button in the map's corner. The base map no longer shows its own museum and church labels, which clashed with Mira's markers.
 
 ## 0.27.13
 
