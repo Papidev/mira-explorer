@@ -20,7 +20,11 @@
   color-scheme: light;
   --canvas: color-mix(in oklch, var(--color-zinc-100) 97%, var(--color-brand));
   --surface: var(--color-white);
-  --surface-muted: color-mix(in oklch, color-mix(in oklch, var(--color-zinc-100), var(--color-zinc-200)) 97%, var(--color-brand));
+  --surface-muted: color-mix(
+    in oklch,
+    color-mix(in oklch, var(--color-zinc-100), var(--color-zinc-200)) 97%,
+    var(--color-brand)
+  );
   --ink: var(--color-zinc-900);
   --ink-muted: var(--color-zinc-600);
   --ink-subtle: var(--color-zinc-500);
