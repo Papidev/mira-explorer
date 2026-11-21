@@ -59,7 +59,7 @@
     "jsdom": "^30.1.2",
     "lint-staged": "^17.6.1",
     "msw": "^2.15.0",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
