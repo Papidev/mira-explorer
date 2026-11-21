@@ -33,40 +33,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Shared with mira-admin (Papidev/mira-shared): skips documentation-only changes.
       - name: Decide whether application checks are needed
         id: changes
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: |
-          run_checks=true
-          if [ "$EVENT_NAME" != "workflow_dispatch" ] &&
-            [ -n "$CHANGE_BASE" ] &&
-            [ "$CHANGE_BASE" != "0000000000000000000000000000000000000000" ] &&
-            git diff --quiet --no-renames "$CHANGE_BASE" HEAD -- . ':!docs/' ':!README.md' ':!AGENTS.md'; then
-            run_checks=false
-          fi
-          echo "run_checks=$run_checks" >> "$GITHUB_OUTPUT"
-          if [ "$run_checks" = "false" ]; then
-            echo "Documentation only: skipping application checks."
-          fi
+        uses: Papidev/mira-shared/.github/actions/changed@main
 
-      - name: Set up pnpm
-        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10.18.0
-
-      - name: Set up Node.js
-        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
-        uses: actions/setup-node@v7
+      - name: Set up pnpm, Node.js and dependencies
+        if: steps.changes.outputs.changed == 'true' || matrix.task == 'static'
+        uses: Papidev/mira-shared/.github/actions/setup@main
         with:
           node-version-file: .nvmrc
-          cache: pnpm
-
-      - name: Install dependencies
-        if: steps.changes.outputs.run_checks == 'true' || matrix.task == 'static'
-        run: pnpm install --frozen-lockfile
 
       # Runs on every change, docs included, so unformatted files never reach main.
       - name: Check formatting
@@ -74,33 +50,33 @@ jobs:
         run: pnpm exec prettier --check .
 
       - name: Check application version
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'static'
         env:
           RELEASE_BASE: ${{ inputs.release_base || github.event.pull_request.base.sha || github.event.before }}
         run: pnpm release:check "$RELEASE_BASE"
 
       - name: Test release policy
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'static'
         run: node --test scripts/check-release.tests.mjs
 
       - name: Lint
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'static'
         run: pnpm lint
 
       - name: Test
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'test'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'test'
         run: pnpm test
 
       - name: Test content API with isolated PostgreSQL
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'static'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'static'
         run: pnpm test:content-database
 
       - name: Build
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'build'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'build'
         run: pnpm build
 
       - name: Check built app starts
-        if: steps.changes.outputs.run_checks == 'true' && matrix.task == 'build'
+        if: steps.changes.outputs.changed == 'true' && matrix.task == 'build'
         run: |
           pnpm start --hostname 127.0.0.1 --port 3000 > /tmp/next-start.log 2>&1 &
           server_pid=$!
