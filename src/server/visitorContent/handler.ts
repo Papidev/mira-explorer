@@ -1,10 +1,6 @@
 import { compareBirthDates } from "@/utils/compareBirthDates";
 import { z } from "zod";
-import type {
-  PublishedCityPreview,
-  PublishedPerson,
-  PublishedPoiDetail,
-} from "@/server/content/publishedContent";
+import type { PublishedCityPreview, PublishedPerson, PublishedPoiDetail } from "@mira/shared";
 import type { createPublicCatalog } from "@/server/publicCatalog";
 import type { PublicStoryContent } from "@/server/storyWorkflow/storyContent";
 import { matchesPoiIdentity } from "./mergeCity";

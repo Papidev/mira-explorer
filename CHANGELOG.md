@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.5
+
+### Patch Changes
+
+- Validate content API requests with the schemas shared with Mira Admin through `@mira/shared`, including the Admin's clearer validation messages and Person name cleanup.
+
 ## 0.28.4
 
 ### Patch Changes

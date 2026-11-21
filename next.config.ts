@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
     APP_COMMIT: getCommit(),
   },
   reactCompiler: true,
+  // @mira/shared ships TypeScript sources.
+  transpilePackages: ["@mira/shared"],
   images: {
     // Wikimedia sends no Cache-Control; keep optimized copies 31 days. A new upload of the same
     // file keeps its URL, so it shows up to 31 days later.

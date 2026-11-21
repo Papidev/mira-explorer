@@ -5,9 +5,9 @@ description: Use when the user asks to create, open, update, prepare, or describ
 
 # PR Generation
 
-Use the repo-local [push-branch](../push-branch/SKILL.md) skill when publishing the branch for a pull request.
+Follow the shared Mira [pr-generation](../../../node_modules/@mira/shared/skills/pr-generation/SKILL.md) conventions for the title, issue links, state, assignment and GitHub identity, then apply the Explorer steps below.
 
-Read the full diff against the PR's base branch before writing its title and change list.
+Use the repo-local [push-branch](../push-branch/SKILL.md) skill when publishing the branch for a pull request.
 
 ## Base Branch Alignment
 
@@ -41,28 +41,6 @@ before running the required checks and publishing the PR:
 - Run `pnpm release:check origin/main` when application, dependency, version, changelog, or release automation changes make release validation relevant; skip it for documentation or agent-instruction-only updates.
 - Preserve `0.1.0` for the initial tracked release. Subsequent application PRs require one increment unless covered by the documented exemptions.
 
-## GitHub Access
-
-Create and manage pull requests, including assignment and other PR metadata, as `Papidev` with `gh` and the token from the [Mira GitHub account](../../../AGENTS.md#mira-github-account) rules, for example `GH_TOKEN="$papidev_token" gh pr create --repo Papidev/mira-explorer --assignee Papidev --body-file -`. A GitHub connector works as well once its identity is verified as `Papidev`.
-
-## Title
-
-Use a lowercase prefix and colon:
-
-- `add:` for new capabilities
-- `change:` for behavior updates
-- `fix:` for bug fixes
-- `docs:` for documentation-only changes
-- `chore:` for maintenance
-- `refactor:` for internal restructuring without intended behavior changes
-
-Keep the title concise and scoped to the PR's main change.
-
-## State And Assignment
-
-- Open PRs as ready for review unless the user explicitly asks for a draft.
-- Assign new PRs to the repository owner when GitHub permissions allow it.
-
 ## Body
 
 Use this format for every PR in this repository, including when the generic `pr`
@@ -93,7 +71,4 @@ PR body unless they are necessary to understand the implemented scope.
 Omit placeholders, conversation history and release bookkeeping already clear
 from the diff.
 
-When using the GitHub connector, pass actual newlines and leave a blank line before
-Markdown lists. Link the originating issue and use a closing keyword when appropriate.
-
-Choose local verification using [Testing & Verification](../../../AGENTS.md#testing--verification). Opening a PR or marking it ready for review does not require a blanket test, type-check, lint, format, or build run.
+Choose local verification using [Testing & Verification](../../../AGENTS.md#testing--verification).

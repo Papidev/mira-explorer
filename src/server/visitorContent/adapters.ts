@@ -1,8 +1,4 @@
-import type {
-  PublishedCityPreview,
-  PublishedPerson,
-  PublishedPoiDetail,
-} from "@/server/content/publishedContent";
+import type { PublishedCityPreview, PublishedPerson, PublishedPoiDetail } from "@mira/shared";
 import type { Poi } from "@/types/Poi";
 import type { PoiCategoryDefinition } from "@/types/PoiCategory";
 import type { PublicPerson } from "@/server/person/types";
