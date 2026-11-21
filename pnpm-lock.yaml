@@ -15,8 +15,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react@19.3.0)
       '@mira/shared':
-        specifier: github:Papidev/mira-shared#3742325a50cfe7024029227504994dd2a473a129
-        version: https://codeload.github.com/Papidev/mira-shared/tar.gz/3742325a50cfe7024029227504994dd2a473a129(zod@4.6.6)
+        specifier: github:Papidev/mira-shared#38a58308fa72dbcfebee622f692e5d1ed1089650
+        version: https://codeload.github.com/Papidev/mira-shared/tar.gz/38a58308fa72dbcfebee622f692e5d1ed1089650(zod@4.6.6)
       '@vercel/analytics':
         specifier: ^2.0.1
         version: 2.0.1(next@16.4.5(@babel/core@7.29.7)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -873,8 +873,8 @@ packages:
   '@maplibre/vt-pbf@4.3.3':
     resolution: {integrity: sha512-dEe5XUd64RQbxNxy2OzIkJnwNDWjVmSXjCd0A7zLirm7QJ/WWbmtDFIkfsiM4yt1cplqzG6oSivRYeWx1SM1yg==}
 
-  '@mira/shared@https://codeload.github.com/Papidev/mira-shared/tar.gz/3742325a50cfe7024029227504994dd2a473a129':
-    resolution: {tarball: https://codeload.github.com/Papidev/mira-shared/tar.gz/3742325a50cfe7024029227504994dd2a473a129}
+  '@mira/shared@https://codeload.github.com/Papidev/mira-shared/tar.gz/38a58308fa72dbcfebee622f692e5d1ed1089650':
+    resolution: {tarball: https://codeload.github.com/Papidev/mira-shared/tar.gz/38a58308fa72dbcfebee622f692e5d1ed1089650}
     version: 0.1.0
     peerDependencies:
       zod: ^4.4.3
@@ -4609,7 +4609,7 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@mira/shared@https://codeload.github.com/Papidev/mira-shared/tar.gz/3742325a50cfe7024029227504994dd2a473a129(zod@4.6.6)':
+  '@mira/shared@https://codeload.github.com/Papidev/mira-shared/tar.gz/38a58308fa72dbcfebee622f692e5d1ed1089650(zod@4.6.6)':
     dependencies:
       zod: 4.6.6
 
