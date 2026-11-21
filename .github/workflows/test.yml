@@ -41,6 +41,8 @@ jobs:
       - name: Set up pnpm, Node.js and dependencies
         if: steps.changes.outputs.changed == 'true' || matrix.task == 'static'
         uses: Papidev/mira-shared/.github/actions/setup@main
+        with:
+          node-version-file: .nvmrc
 
       # Runs on every change, docs included, so unformatted files never reach main.
       - name: Check formatting
@@ -119,7 +121,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           package-manager-cache: false
 
       - name: Tag the release version

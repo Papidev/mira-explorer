@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.4
+
+### Patch Changes
+
+- Run on Node.js 26.
+
 ## 0.28.3
 
 ### Patch Changes
