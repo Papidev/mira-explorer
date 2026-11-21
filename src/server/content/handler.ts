@@ -1,5 +1,5 @@
+import { createPostgresContent } from "./postgresContent";
 import {
-  createPostgresContent,
   catalogWriteSchema,
   categoryCatalogCreateSchema,
   categoryCatalogRenameSchema,
@@ -10,9 +10,9 @@ import {
   storyWriteSchema,
   poiTypesWriteSchema,
   typeCategoryRuleWriteSchema,
-} from "./postgresContent";
-import { publishedCategorySchema, publishedPoiSummarySchema } from "./publishedContent";
-import { adminPeopleIdsSchema } from "./adminReads";
+} from "@mira/shared";
+import { publishedCategorySchema, publishedPoiSummarySchema } from "@mira/shared";
+import { adminPeopleIdsSchema } from "@mira/shared";
 import {
   authenticateContentRequest,
   contentErrorResponse,

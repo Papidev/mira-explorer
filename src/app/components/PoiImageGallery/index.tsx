@@ -8,7 +8,7 @@ import {
   ChevronRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import type { PublishedPoiDetail } from "@/server/content/publishedContent";
+import type { PublishedPoiDetail } from "@mira/shared";
 import { IconButton } from "@/app/components/ui/IconButton";
 import { Photo } from "./Photo";
 import { Thumbnails } from "./Thumbnails";

@@ -1,4 +1,4 @@
-import type { PublishedCityPreview } from "@/server/content/publishedContent";
+import type { PublishedCityPreview } from "@mira/shared";
 import type { createPublicCatalog } from "@/server/publicCatalog";
 import type { Poi } from "@/types/Poi";
 import { toVisitorCity } from "./adapters";

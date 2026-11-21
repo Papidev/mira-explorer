@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { z } from "zod";
-import type { storyWriteSchema } from "../postgresContent";
+import type { storyWriteSchema } from "@mira/shared";
 
 export const exampleStoryWrite = (): z.infer<typeof storyWriteSchema> => {
   const source = {
