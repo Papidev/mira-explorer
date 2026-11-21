@@ -25,7 +25,7 @@
   "dependencies": {
     "@headlessui/react": "2.2.10",
     "@heroicons/react": "2.2.0",
-    "@mira/shared": "github:Papidev/mira-shared#1356d9ce3e1e6db637b02b920e0dc17665480fdd",
+    "@mira/shared": "github:Papidev/mira-shared#3742325a50cfe7024029227504994dd2a473a129",
     "@vercel/analytics": "^2.0.1",
     "@vercel/functions": "^3.10.3",
     "clsx": "^2.1.1",
