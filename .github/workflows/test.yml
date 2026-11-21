@@ -38,22 +38,9 @@ jobs:
         id: changes
         uses: Papidev/mira-shared/.github/actions/changed@main
 
-      - name: Set up pnpm
+      - name: Set up pnpm, Node.js and dependencies
         if: steps.changes.outputs.changed == 'true' || matrix.task == 'static'
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10.18.0
-
-      - name: Set up Node.js
-        if: steps.changes.outputs.changed == 'true' || matrix.task == 'static'
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        if: steps.changes.outputs.changed == 'true' || matrix.task == 'static'
-        run: pnpm install --frozen-lockfile
+        uses: Papidev/mira-shared/.github/actions/setup@main
 
       # Runs on every change, docs included, so unformatted files never reach main.
       - name: Check formatting
