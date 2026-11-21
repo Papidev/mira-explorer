@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { GalleryImage } from "./GalleryImage";
-import type { PublishedPoiDetail } from "@/server/content/publishedContent";
+import type { PublishedPoiDetail } from "@mira/shared";
 
 export const Thumbnails = ({
   images,

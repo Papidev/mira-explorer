@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { PublishedCityPreview } from "@/server/content/publishedContent";
+import type { PublishedCityPreview } from "@mira/shared";
 import type { Poi } from "@/types/Poi";
 import { mergeVisitorCity } from "./mergeCity";
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fixtures from "./__fixtures__/contract-v1.json";
-import { catalogWriteSchema, personUpdateSchema, storyWriteSchema } from "./postgresContent";
+import { catalogWriteSchema, personUpdateSchema, storyWriteSchema } from "@mira/shared";
 import { CONTENT_BODY_LIMIT } from "./http";
 
 describe("portable v1 contract fixtures", () => {

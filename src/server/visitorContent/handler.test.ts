@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createPublicCatalog } from "@/server/publicCatalog";
-import type { PublishedCityPreview } from "@/server/content/publishedContent";
+import type { PublishedCityPreview } from "@mira/shared";
 import { exampleStoryWrite } from "@/server/content/__fixtures__/writes";
 import { createVisitorHandler } from "./handler";
 

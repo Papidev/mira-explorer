@@ -6,7 +6,7 @@ import {
   publishedSourceSchema,
   type PublishedPerson,
   type PublishedPoiDetail,
-} from "./publishedContent";
+} from "@mira/shared";
 
 const poi = (): PublishedPoiDetail => ({
   id: "728cbdf6-2449-4991-99b0-75204603eaa0",

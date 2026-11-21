@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { PublicStoryContent } from "@/server/storyWorkflow/storyContent";
-import type { PublishedPoiDetail } from "@/server/content/publishedContent";
+import type { PublishedPoiDetail } from "@mira/shared";
 
 type StoryContentState = {
   content: PublicStoryContent | null;

@@ -1,5 +1,5 @@
 import { GalleryImage } from "./GalleryImage";
-import type { PublishedPoiDetail } from "@/server/content/publishedContent";
+import type { PublishedPoiDetail } from "@mira/shared";
 import { ImageAttribution } from "@/app/components/ImageAttribution";
 
 export const Photo = ({
