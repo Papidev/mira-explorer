@@ -6,6 +6,8 @@ export default defineConfig({
   test: {
     env: { HISTORICAL_EXPLORER_LOCAL_DATA_DIR: "data" },
     setupFiles: ["src/test/matchMedia.ts"],
+    // Node 25+ defines its own localStorage, which hides jsdom's in browser tests.
+    execArgv: ["--no-experimental-webstorage"],
   },
   resolve: {
     alias: {
