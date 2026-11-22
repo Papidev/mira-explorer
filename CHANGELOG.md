@@ -1,16 +1,22 @@
 # mira-explorer
 
-## 0.28.7
+## 0.28.8
 
 ### Patch Changes
 
 - Keep visitor content cached until a save changes it, so visits no longer query the database for unchanged content.
 
-## 0.28.6
+## 0.28.7
 
 ### Patch Changes
 
 - Download only changed content from the database, so the Rome map and content API stay within the free hosting allowance and load faster.
+
+## 0.28.6
+
+### Patch Changes
+
+- Run server functions in Dublin, next to the content database, so catalog writes finish before the Admin times out and uncached reads are faster.
 
 ## 0.28.5
 
