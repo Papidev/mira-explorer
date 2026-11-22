@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.6
+
+### Patch Changes
+
+- Run server functions in Dublin, next to the content database, so catalog writes finish before the Admin times out and uncached reads are faster.
+
 ## 0.28.5
 
 ### Patch Changes
