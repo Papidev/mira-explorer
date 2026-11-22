@@ -26,6 +26,8 @@ Use a dedicated runtime login with membership in the existing `historical_explor
 
 Copy the exact pooler hostname from Supabase's Connect panel; do not derive it from the region. The supplied project's dashboard currently shows `aws-0-eu-west-1.pooler.supabase.com:6543`. Query parameters in the URI are rejected so `pg` cannot override the explicit verified TLS configuration through `sslmode` or `sslrootcert`. Use percent-encoded credentials, including encoding literal `%` as `%25`.
 
+`vercel.json` runs Vercel Functions in `dub1` (Dublin), next to that `eu-west-1` database. Keep them together: a catalog write makes one query per POI, so from another continent it outlasts the Admin's 30-second request timeout. Move both if the database moves.
+
 The lazy process-level `pg` pool has one connection, a 5-second idle timeout, a 60-second maximum connection lifetime, a 10-second connection timeout and bounded query/statement timeouts. Vercel attaches its pool lifecycle handler before use. Queries use positional parameters without named prepared statements, session locks or session-dependent transactions. Each write pins one client through commit/rollback and discards it if rollback fails. No automatic write retries are performed. See [Supabase connection guidance](https://supabase.com/docs/guides/database/connecting-to-postgres) and [Vercel pool lifecycle guidance](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package).
 
 ## HTTP behavior and payload limits
