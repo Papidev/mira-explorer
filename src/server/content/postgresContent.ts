@@ -32,23 +32,27 @@ import {
   typeCategoryRuleSchema,
   typeCategoryRuleWriteSchema,
 } from "@mira/shared";
+import { readUnchanged } from "./unchangedRead";
 
 // One MVCC snapshot covers rules, definitions and affected-catalog inputs, even on a fresh install.
-const typeRulesQuery = `SELECT
-  COALESCE((SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+const typeRulesQuery = `SELECT 'rule' AS kind, type_id AS key, jsonb_strip_nulls(jsonb_build_object(
     'typeId', type_id, 'decision', decision, 'categoryIds', category_ids, 'origin', origin,
     'reason', reason, 'revision', revision, 'updatedAt', to_char(updated_at AT TIME ZONE 'UTC',
-      'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'))) ORDER BY type_id COLLATE "C")
-    FROM content.type_category_rules), '[]'::jsonb) AS rules,
-  (SELECT COALESCE(jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
-    'id', id, 'name', name, 'label', label, 'parentId', parent_id)) ORDER BY id COLLATE "C"),
-    '[]'::jsonb) FROM content.categories) AS definitions,
-  COALESCE((SELECT jsonb_agg(name ORDER BY name COLLATE "C") FROM content.deleted_category_names), '[]'::jsonb) AS "deletedNames",
-  COALESCE((SELECT jsonb_agg(jsonb_build_array(city, revision) ORDER BY city COLLATE "C")
-    FROM content.city_catalogs), '[]'::jsonb) AS catalogs,
-  COALESCE((SELECT jsonb_agg(jsonb_build_array(p.id, p.input_revision, a.revision) ORDER BY p.id)
-    FROM content.pois p LEFT JOIN content.poi_type_acquisitions a ON a.poi_id = p.id
-    WHERE p.removed_at IS NULL), '[]'::jsonb) AS inputs`;
+      'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'))) AS value
+  FROM content.type_category_rules
+  UNION ALL
+  SELECT 'input', p.id::text, jsonb_build_array(p.id, p.input_revision, a.revision)
+  FROM content.pois p LEFT JOIN content.poi_type_acquisitions a ON a.poi_id = p.id
+  WHERE p.removed_at IS NULL
+  UNION ALL
+  SELECT 'state', '', jsonb_build_object(
+    'definitions', (SELECT COALESCE(jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+      'id', id, 'name', name, 'label', label, 'parentId', parent_id)) ORDER BY id COLLATE "C"),
+      '[]'::jsonb) FROM content.categories),
+    'deletedNames', COALESCE((SELECT jsonb_agg(name ORDER BY name COLLATE "C")
+      FROM content.deleted_category_names), '[]'::jsonb),
+    'catalogs', COALESCE((SELECT jsonb_agg(jsonb_build_array(city, revision) ORDER BY city COLLATE "C")
+      FROM content.city_catalogs), '[]'::jsonb))`;
 
 const poiTypesQuery = `SELECT p.id AS "poiId", p.city, p.name, p.wikidata_id AS "wikidataId",
   p.wikipedia_pages AS "wikipediaPages", p.input_revision AS "inputRevision", w.revision,
@@ -60,6 +64,26 @@ const poiTypesQuery = `SELECT p.id AS "poiId", p.city, p.name, p.wikidata_id AS 
 const categoryDefinitionsQuery = `SELECT COALESCE(jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
   'id', id, 'name', name, 'label', label, 'parentId', parent_id)) ORDER BY id COLLATE "C"),
   '[]'::jsonb) AS definitions FROM content.categories`;
+
+const catalogRevisionQuery = `SELECT 'revision', '',
+  to_jsonb((SELECT revision FROM content.city_catalogs WHERE city = $1))`;
+
+// Exported for the test comparing it with the visitor profile.
+export const adminPeopleQuery = `SELECT 'person' AS kind, p.id AS key,
+  jsonb_build_object('personId', p.id, 'wikidataId', p.wikidata_id,
+    'profileVersion', p.profile_version, 'generation', p.generation,
+    'person', jsonb_strip_nulls(jsonb_build_object('image', p.image)) || jsonb_build_object(
+      'id', p.id, 'name', p.name, 'textFormat', 'markdown', 'content', p.content, 'sources', p.sources,
+      'updatedAt', to_char(p.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
+      'linkedPois', linked.pois)) AS value
+  FROM content.people p CROSS JOIN LATERAL (
+    SELECT jsonb_agg(jsonb_build_object('id', poi.id, 'city', poi.city, 'name', s.name,
+      'coordinates', jsonb_build_object('lat', poi.latitude, 'lng', poi.longitude),
+      'categoryIds', COALESCE((SELECT jsonb_agg(c.category_id ORDER BY c.category_id)
+        FROM content.poi_categories c WHERE c.poi_id = poi.id), '[]'::jsonb)) ORDER BY poi.city, poi.id) AS pois
+    FROM content.poi_people r JOIN content.pois poi ON poi.id = r.poi_id AND poi.removed_at IS NULL
+    JOIN content.published_stories s ON s.poi_id = poi.id WHERE r.person_id = p.id) linked
+  WHERE p.id = ANY($1::text[]) AND linked.pois IS NOT NULL`;
 
 // One statement gives baseline callers one MVCC snapshot, even during concurrent writes.
 const categoriesBaselineQuery = `SELECT p.id AS "poiId", p.input_revision AS "inputRevision",
@@ -127,10 +151,14 @@ const transaction = async <T>(pool: Pool, work: (client: PoolClient) => Promise<
 // This also serializes absent rules and definitions without per-process mutexes.
 const lockCategories = (client: PoolClient) =>
   client.query("LOCK TABLE content.categories, content.poi_categories IN SHARE ROW EXCLUSIVE MODE");
-const readTypeRules = async (client: Pick<Pool, "query"> | PoolClient) => {
-  const {
-    rows: [row],
-  } = await client.query(typeRulesQuery);
+const readTypeRules = async (client: Pick<Pool, "query">) => {
+  const read = await readUnchanged(client, typeRulesQuery);
+  // The digest is a concurrency token: keep this shape and order.
+  const row = {
+    ...(read("state")[0] as { definitions: unknown; deletedNames: unknown; catalogs: unknown }),
+    rules: read("rule"),
+    inputs: read("input"),
+  };
   return {
     rules: z.array(typeCategoryRuleSchema).parse(row.rules),
     definitions: z.array(publishedCategorySchema).parse(row.definitions),
@@ -302,10 +330,13 @@ export const createPostgresContent = (pool: Pool) => ({
   },
 
   getCityPoiTypes: async (city: string) => {
-    const { rows } = await pool.query(`${poiTypesQuery} AND p.city = $1 ORDER BY p.id`, [
-      publishedPoiSummarySchema.shape.city.parse(city),
-    ]);
-    return z.array(poiTypesBaselineSchema).parse(rows);
+    const read = await readUnchanged(
+      pool,
+      `SELECT 'poi' AS kind, poi."poiId"::text AS key, to_jsonb(poi) AS value
+       FROM (${poiTypesQuery} AND p.city = $1) poi`,
+      [publishedPoiSummarySchema.shape.city.parse(city)],
+    );
+    return z.array(poiTypesBaselineSchema).parse(read("poi"));
   },
 
   savePoiTypes: async (value: unknown) => {
@@ -1040,76 +1071,61 @@ export const createPostgresContent = (pool: Pool) => ({
   },
 
   getCatalogBaseline: async (city: string) => {
-    const {
-      rows: [result],
-    } = await pool.query(
-      `SELECT
-      (SELECT revision FROM content.city_catalogs WHERE city = $1) AS revision,
-      COALESCE((SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+    const read = await readUnchanged(
+      pool,
+      `SELECT 'poi' AS kind, id::text AS key, jsonb_strip_nulls(jsonb_build_object(
         'id', id, 'name', name, 'coordinates', jsonb_build_object('lat', latitude, 'lng', longitude),
         'wikidataId', wikidata_id, 'osmIds', osm_ids, 'wikipediaPages', wikipedia_pages,
-        'inputRevision', input_revision)) ORDER BY id)
-        FROM content.pois WHERE city = $1 AND removed_at IS NULL), '[]'::jsonb) AS pois`,
+        'inputRevision', input_revision)) AS value
+       FROM content.pois WHERE city = $1 AND removed_at IS NULL
+       UNION ALL
+       ${catalogRevisionQuery}`,
       [publishedPoiSummarySchema.shape.city.parse(city)],
     );
-    return catalogBaselineSchema.parse({ city, ...result });
+    return catalogBaselineSchema.parse({ city, revision: read("revision")[0], pois: read("poi") });
   },
 
   getAdminInventory: async (city: string) => {
-    const {
-      rows: [result],
-    } = await pool.query(
-      `SELECT (SELECT revision FROM content.city_catalogs WHERE city = $1) AS revision,
-       COALESCE(jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+    const read = await readUnchanged(
+      pool,
+      `SELECT 'poi' AS kind, p.id::text AS key, jsonb_strip_nulls(jsonb_build_object(
          'id', p.id, 'name', p.name, 'coordinates', jsonb_build_object('lat', p.latitude, 'lng', p.longitude),
          'wikidataId', p.wikidata_id, 'osmIds', p.osm_ids, 'wikipediaPages', p.wikipedia_pages,
          'inputRevision', p.input_revision)) || jsonb_build_object('publicationId', s.publication_id,
            'relatedPeople', COALESCE((SELECT jsonb_agg(jsonb_build_object('personId', r.person_id,
              'wikidataId', person.wikidata_id, 'profileVersion', person.profile_version) ORDER BY r.position)
              FROM content.poi_people r JOIN content.people person ON person.id = r.person_id
-             WHERE r.poi_id = p.id), '[]'::jsonb)) ORDER BY p.id), '[]'::jsonb) AS pois
+             WHERE r.poi_id = p.id), '[]'::jsonb)) AS value
        FROM content.pois p LEFT JOIN content.published_stories s ON s.poi_id = p.id
-       WHERE p.city = $1 AND p.removed_at IS NULL`,
+       WHERE p.city = $1 AND p.removed_at IS NULL
+       UNION ALL
+       ${catalogRevisionQuery}`,
       [publishedPoiSummarySchema.shape.city.parse(city)],
     );
-    return adminInventorySchema.parse({ city, ...result });
+    return adminInventorySchema.parse({ city, revision: read("revision")[0], pois: read("poi") });
   },
 
   // PostgreSQL pushes a constant id filter into a security_barrier view, but builds a view joined
   // on a column whole for every outer row (see tests). Stories filter visitor_stories by id; People
   // are built from the tables because visitor_people joins visitor_pois for each Person's links.
   getAdminStories: async (city: string, ids: string[]) => {
-    const { rows } = await pool.query(
-      `SELECT jsonb_build_object('detail', story.response, 'generation', saved.generation) AS response
+    const read = await readUnchanged(
+      pool,
+      `SELECT 'story' AS kind, story.id::text AS key,
+         jsonb_build_object('detail', story.response, 'generation', saved.generation) AS value
        FROM content.visitor_stories story JOIN content.published_stories saved ON saved.poi_id = story.id
-       WHERE story.city = $1 AND story.id = ANY($2::uuid[]) ORDER BY story.id`,
+       WHERE story.city = $1 AND story.id = ANY($2::uuid[])`,
       [
         publishedPoiSummarySchema.shape.city.parse(city),
         z.array(z.uuid()).min(1).max(25).parse(ids),
       ],
     );
-    return rows.map(({ response }) => adminSavedStorySchema.parse(response));
+    return z.array(adminSavedStorySchema).parse(read("story"));
   },
 
   getAdminPeople: async (ids: string[]) => {
-    const { rows } = await pool.query(
-      `SELECT jsonb_build_object('personId', p.id, 'wikidataId', p.wikidata_id,
-         'profileVersion', p.profile_version, 'generation', p.generation,
-         'person', jsonb_strip_nulls(jsonb_build_object('image', p.image)) || jsonb_build_object(
-           'id', p.id, 'name', p.name, 'textFormat', 'markdown', 'content', p.content, 'sources', p.sources,
-           'updatedAt', to_char(p.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
-           'linkedPois', linked.pois)) AS response
-       FROM content.people p CROSS JOIN LATERAL (
-         SELECT jsonb_agg(jsonb_build_object('id', poi.id, 'city', poi.city, 'name', s.name,
-           'coordinates', jsonb_build_object('lat', poi.latitude, 'lng', poi.longitude),
-           'categoryIds', COALESCE((SELECT jsonb_agg(c.category_id ORDER BY c.category_id)
-             FROM content.poi_categories c WHERE c.poi_id = poi.id), '[]'::jsonb)) ORDER BY poi.city, poi.id) AS pois
-         FROM content.poi_people r JOIN content.pois poi ON poi.id = r.poi_id AND poi.removed_at IS NULL
-         JOIN content.published_stories s ON s.poi_id = poi.id WHERE r.person_id = p.id) linked
-       WHERE p.id = ANY($1::text[]) AND linked.pois IS NOT NULL ORDER BY p.id`,
-      [adminPeopleIdsSchema.parse(ids)],
-    );
-    return rows.map(({ response }) => adminPersonProfileSchema.parse(response));
+    const read = await readUnchanged(pool, adminPeopleQuery, [adminPeopleIdsSchema.parse(ids)]);
+    return z.array(adminPersonProfileSchema).parse(read("person"));
   },
 
   getPoiBaseline: async (poiId: string) => {
@@ -1161,36 +1177,35 @@ export const createPostgresContent = (pool: Pool) => ({
     });
   },
   getCityPreviews: async (city: string) => {
-    const {
-      rows: [result],
-    } = await pool.query(
-      `SELECT
-      COALESCE((SELECT jsonb_agg(p.response || jsonb_build_object(
+    const read = await readUnchanged(
+      pool,
+      `SELECT 'poi' AS kind, p.id::text AS key, p.response || jsonb_build_object(
         'slug', identity.slug,
         'wikidataId', identity.wikidata_id,
         'name', identity.name,
         'introduction', s.response #>> '{story,introduction,text}',
         'mainImage', (SELECT image FROM jsonb_array_elements(s.response->'gallery') image
           WHERE image->>'id' = s.response->>'mainImageId')
-      ) ORDER BY p.id)
+      ) AS value
       FROM content.visitor_pois p JOIN content.visitor_stories s ON s.id = p.id
       JOIN content.pois identity ON identity.id = p.id
-      WHERE p.city = $1), '[]'::jsonb) AS pois,
-      (SELECT count(DISTINCT person->>'personId')::integer
-        FROM content.visitor_stories s
-        CROSS JOIN LATERAL jsonb_array_elements(s.response #> '{story,relatedPeople}') person
-        WHERE s.city = $1) AS "peopleCount",
-      COALESCE((SELECT jsonb_agg(response ORDER BY id) FROM content.visitor_categories), '[]'::jsonb) AS categories,
-      COALESCE((SELECT jsonb_agg(jsonb_build_object('id', id, 'wikidataId', wikidata_id) ORDER BY id)
-        FROM content.pois WHERE city = $1 AND removed_at IS NOT NULL), '[]'::jsonb) AS removed`,
+      WHERE p.city = $1
+      UNION ALL
+      SELECT 'state', '', jsonb_build_object(
+        'peopleCount', (SELECT count(DISTINCT person->>'personId')::integer
+          FROM content.visitor_stories s
+          CROSS JOIN LATERAL jsonb_array_elements(s.response #> '{story,relatedPeople}') person
+          WHERE s.city = $1),
+        'categoryDefinitions', COALESCE((SELECT jsonb_agg(response ORDER BY id)
+          FROM content.visitor_categories), '[]'::jsonb),
+        'removedPois', COALESCE((SELECT jsonb_agg(jsonb_build_object('id', id, 'wikidataId', wikidata_id) ORDER BY id)
+          FROM content.pois WHERE city = $1 AND removed_at IS NOT NULL), '[]'::jsonb))`,
       [publishedPoiSummarySchema.shape.city.parse(city)],
     );
     return publishedCityPreviewSchema.parse({
       city,
-      pois: result.pois,
-      peopleCount: result.peopleCount,
-      categoryDefinitions: result.categories,
-      removedPois: result.removed,
+      pois: read("poi"),
+      ...(read("state")[0] as object),
     });
   },
   getStory: async (poiId: string) => {

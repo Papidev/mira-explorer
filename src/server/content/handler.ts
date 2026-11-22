@@ -20,10 +20,19 @@ import {
   contentJson,
   parseContentInput,
   readContentBody,
+  revalidateContentResponse,
 } from "./http";
 import { z } from "zod";
 
-export const createContentHandler =
+export const createContentHandler = (
+  getRepository: () => ReturnType<typeof createPostgresContent>,
+) => {
+  const handle = createOperationsHandler(getRepository);
+  return async (request: Request, context: { params: Promise<{ segments: string[] }> }) =>
+    revalidateContentResponse(request, await handle(request, context));
+};
+
+const createOperationsHandler =
   (getRepository: () => ReturnType<typeof createPostgresContent>) =>
   async (request: Request, context: { params: Promise<{ segments: string[] }> }) => {
     try {

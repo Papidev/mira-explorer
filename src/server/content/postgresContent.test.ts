@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { z } from "zod";
-import { createPostgresContent } from "./postgresContent";
+import { adminPeopleQuery, createPostgresContent } from "./postgresContent";
+import { createUnchangedRead, readUnchanged } from "./unchangedRead";
 import { type catalogWriteSchema } from "@mira/shared";
 import { readFile } from "node:fs/promises";
 import { createContentHandler } from "./handler";
@@ -158,6 +159,76 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       expect((await repository.getAdminInventory("rome")).pois.map(({ id }) => id)).toEqual([
         saved.detail.id,
       ]);
+    });
+
+    it("downloads only changed parts of a large read, across instances and cache failures", async () => {
+      const shared = new Map<string, unknown>();
+      let downloaded = 0;
+      const client = {
+        query: async (text: string, values: unknown[]) => {
+          const result = await pool.query(text, values);
+          for (const { body } of result.rows) downloaded += body?.length ?? 0;
+          return result;
+        },
+      } as unknown as Pool;
+      const cache = {
+        get: async (key: string) => shared.get(key) ?? null,
+        set: async (key: string, value: unknown) => void shared.set(key, value),
+      };
+      const rows = (changed: number, count = 160) =>
+        `SELECT 'item' AS kind, lpad(i::text, 3, '0') AS key,
+          jsonb_build_object('i', i, 'changed', i = ${changed}, 'text', repeat('à', 500)) AS value
+         FROM generate_series(1, ${count}) i`;
+      const load = async (read: ReturnType<typeof createUnchangedRead>, sql: string) => {
+        downloaded = 0;
+        const values = (await read(client, sql))("item") as Array<{ i: number; changed: boolean }>;
+        return { values, downloaded };
+      };
+
+      const first = await load(
+        createUnchangedRead(() => cache),
+        rows(0),
+      );
+      expect(first.values.map(({ i }) => i)).toEqual(Array.from({ length: 160 }, (_, i) => i + 1));
+      expect(first.downloaded).toBeGreaterThan(80_000);
+
+      // Another server instance holds nothing in memory.
+      const other = createUnchangedRead(() => cache);
+      expect(await load(other, rows(0))).toEqual({ values: first.values, downloaded: 0 });
+
+      const edited = await load(other, rows(7));
+      expect(edited.values[6].changed).toBe(true);
+      expect(edited.downloaded).toBeGreaterThan(0);
+      expect(edited.downloaded).toBeLessThan(first.downloaded / 4);
+
+      expect((await load(other, rows(0, 159))).values).toHaveLength(159);
+      expect((await load(other, rows(0, 0))).values).toEqual([]);
+
+      const broken = createUnchangedRead(() => {
+        throw new Error("Runtime Cache is unavailable.");
+      });
+      expect((await load(broken, rows(7))).values).toEqual(edited.values);
+      const corrupt = createUnchangedRead(() => ({ ...cache, get: async () => "not gzip" }));
+      expect((await load(corrupt, rows(7))).values).toEqual(edited.values);
+    });
+
+    it("never mixes versions when content changes between the digest and body statements", async () => {
+      let version = 1;
+      const client = {
+        query: async (text: string, values: unknown[]) => {
+          const result = await pool.query(text.replaceAll("VERSION", String(version)), values);
+          version = 2; // A write commits right after the first statement.
+          return result;
+        },
+      } as unknown as Pool;
+      const read = await createUnchangedRead(() => ({
+        get: async () => null,
+        set: async () => {},
+      }))(
+        client,
+        "SELECT 'item' AS kind, i::text AS key, to_jsonb(VERSION) AS value FROM generate_series(1, 40) i",
+      );
+      expect(new Set(read("item"))).toEqual(new Set([2]));
     });
 
     it("invalidates private read versions after a shared Person changes without changing its Story publication ID", async () => {
@@ -320,7 +391,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       await pool.query(
         "INSERT INTO content.categories(id, name) VALUES ('arena', 'Arena'); INSERT INTO content.poi_categories SELECT id, 'arena' FROM content.pois LIMIT 50",
       );
-      const { rows: read } = await pool.query(queries[1].text, queries[1].values);
+      const read = (await readUnchanged(pool, adminPeopleQuery, queries[1].values))("person");
       const { rows: visitor } = await pool.query(
         `SELECT profile.response || jsonb_strip_nulls(jsonb_build_object('image', person.image)) AS response
          FROM content.visitor_people profile JOIN content.people person ON person.id = profile.id
@@ -328,7 +399,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         [people.map(({ person_id }) => person_id)],
       );
       expect(visitor).toHaveLength(100);
-      expect(read.map(({ response }) => response.person)).toEqual(
+      expect(read.map((value) => (value as { person: unknown }).person)).toEqual(
         visitor.map(({ response }) => response),
       );
     }, 120_000);

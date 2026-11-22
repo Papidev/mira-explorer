@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.7
+
+### Patch Changes
+
+- Download only changed content from the database, so the Rome map and content API stay within the free hosting allowance and load faster.
+
 ## 0.28.6
 
 ### Patch Changes

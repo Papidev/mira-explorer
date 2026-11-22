@@ -21,6 +21,22 @@ export const contentJson = (body: unknown, status = 200, headers?: HeadersInit) 
     headers: { ...Object.fromEntries(new Headers(headers)), "Cache-Control": "no-store" },
   });
 
+/**
+ * Lets a client that already holds a response skip downloading it again: large lists otherwise
+ * spend the Vercel transfer allowance on every read. The content is always read before comparing.
+ */
+export const revalidateContentResponse = async (request: Request, response: Response) => {
+  if (request.method !== "GET" || response.status !== 200) return response;
+  const body = await response.text();
+  const tag = `"${createHash("sha256").update(body).digest("hex")}"`;
+  const headers = new Headers(response.headers);
+  headers.set("ETag", tag);
+  // A proxy that compresses the body may mark the tag weak.
+  return request.headers.get("if-none-match")?.replace(/^W\//, "") === tag
+    ? new Response(null, { status: 304, headers })
+    : new Response(body, { headers });
+};
+
 export const authenticateContentRequest = (
   request: Request,
   token = process.env.CONTENT_API_TOKEN,
