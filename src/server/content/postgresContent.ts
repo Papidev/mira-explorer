@@ -1263,7 +1263,7 @@ export const createPostgresContent = (
            FROM jsonb_array_elements(p.response->'linkedPois') WITH ORDINALITY l(poi, ord)
            JOIN content.pois identity ON identity.id = (poi->>'id')::uuid))) AS response
        FROM content.visitor_people p JOIN content.people identity ON identity.id = p.id
-       WHERE ${bySlug ? "identity.slug" : "p.id"} = $1`,
+       WHERE p.id = ${bySlug ? "(SELECT id FROM content.people WHERE slug = $1)" : "$1"}`,
       [personId],
     );
     return result ? publishedPersonSchema.parse(result.response) : undefined;

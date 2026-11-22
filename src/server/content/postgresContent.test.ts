@@ -357,6 +357,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       );
       await recorder.getAdminStories("rome", storyIds);
       await recorder.getAdminPeople(people.map(({ person_id }) => person_id));
+      await recorder.getPerson("person-3", true);
       const explain = async (text: string, values: unknown[]) => {
         const {
           rows: [
@@ -388,6 +389,8 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
           `${stories.toFixed(1)} ms Stories + ${profiles.toFixed(1)} ms People after.`,
       );
       expect(stories + profiles).toBeLessThan(before / 10);
+      // A slug resolves to an id first: filtering the joined table built every Person's profile.
+      expect(await explain(queries[2].text, queries[2].values)).toBeLessThan(before / 10);
       // The Admin profile is the visitor profile with its image.
       await pool.query(
         "INSERT INTO content.categories(id, name) VALUES ('arena', 'Arena'); INSERT INTO content.poi_categories SELECT id, 'arena' FROM content.pois LIMIT 50",
