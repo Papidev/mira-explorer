@@ -20,7 +20,7 @@ export const GET = async (_request: Request, { params }: Context) => {
         { previewDescription, shortDescription, mainImageUrl },
       ]),
     );
-    // Matches the 60-second cache of online reads.
+    // Short, so the CDN adds at most a minute to the online reads' 10-minute recheck.
     return Response.json({ previews }, { headers: { "Cache-Control": "public, s-maxage=60" } });
   } catch {
     return Response.json(

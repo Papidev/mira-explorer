@@ -9,7 +9,8 @@ import { readFile } from "node:fs/promises";
 import { createContentHandler } from "./handler";
 import { toVisitorCity } from "../visitorContent/adapters";
 import { matchesPoiCategory } from "@/types/PoiCategory";
-import { createCachedRead } from "../visitorContent/cache";
+import { createCachedRead, createVisitorClear } from "../visitorContent/cache";
+import { createVisitorReads } from "../visitorContent/reads";
 import { exampleStoryWrite as example } from "./__fixtures__/writes";
 
 describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
@@ -356,6 +357,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       );
       await recorder.getAdminStories("rome", storyIds);
       await recorder.getAdminPeople(people.map(({ person_id }) => person_id));
+      await recorder.getPerson("person-3", true);
       const explain = async (text: string, values: unknown[]) => {
         const {
           rows: [
@@ -387,6 +389,8 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
           `${stories.toFixed(1)} ms Stories + ${profiles.toFixed(1)} ms People after.`,
       );
       expect(stories + profiles).toBeLessThan(before / 10);
+      // A slug resolves to an id first: filtering the joined table built every Person's profile.
+      expect(await explain(queries[2].text, queries[2].values)).toBeLessThan(before / 10);
       // The Admin profile is the visitor profile with its image.
       await pool.query(
         "INSERT INTO content.categories(id, name) VALUES ('arena', 'Arena'); INSERT INTO content.poi_categories SELECT id, 'arena' FROM content.pois LIMIT 50",
@@ -1050,13 +1054,13 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         ...person,
         linkedPois: person!.linkedPois.map((poi) => ({ ...poi, categoryIds: ["culture"] })),
       });
-      time = 59_999;
+      time = 599_999;
       expect(
         toVisitorCity(await cached("rome")).categoryDefinitions.some(
           ({ id }) => id === "architecture",
         ),
       ).toBe(true);
-      time = 60_000;
+      time = 600_000;
       const visitor = toVisitorCity(await cached("rome"));
       expect(visitor.categoryDefinitions).toEqual([{ id: "culture", name: "Culture" }]);
       expect(visitor.pois).toHaveLength(1);
@@ -1332,13 +1336,13 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         ...person,
         linkedPois: person!.linkedPois.map((poi) => ({ ...poi, categoryIds: after.categoryIds })),
       });
-      time = 59_999;
+      time = 599_999;
       expect(
         toVisitorCity(await cached("rome")).categoryDefinitions.find(
           ({ id }) => id === "amphitheatre",
         )?.parent,
       ).toBe("architecture");
-      time = 60_000;
+      time = 600_000;
       const visitor = toVisitorCity(await cached("rome"));
       expect(visitor.categoryDefinitions.find(({ id }) => id === "amphitheatre")?.parent).toBe(
         "Culture",
@@ -1573,7 +1577,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       ).toEqual(derived);
     });
 
-    it("renames through authenticated HTTP without changing content or assignments, and refreshes visitor filters after 60 seconds", async () => {
+    it("renames through authenticated HTTP without changing content or assignments, and refreshes visitor filters after 10 minutes", async () => {
       const write = example();
       await prepare([write]);
       await repository.savePoiCategories(await categoryWrite(write));
@@ -1629,13 +1633,13 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         categoryIds: assignments!.categoryIds,
       });
       expect(after!.stateDigest).not.toBe(assignments!.stateDigest);
-      time = 59_999;
+      time = 599_999;
       expect(
         toVisitorCity(await cached("rome")).categoryDefinitions.find(
           ({ id }) => id === "amphitheatre",
         )?.name,
       ).toBe("Amphitheatre");
-      time = 60_000;
+      time = 600_000;
       const visitor = toVisitorCity(await cached("rome"));
       expect(visitor.categoryDefinitions).toContainEqual({
         id: "amphitheatre",
@@ -1795,11 +1799,11 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       const person = await repository.getPerson("vespasian");
       const clear = { ...(await categoryWrite(write)), categoryIds: [], definitions: [] };
       await repository.savePoiCategories(clear);
-      time = 59_999;
+      time = 599_999;
       expect(
         (await cachedCity("rome")).pois.find((poi) => poi.id === write.detail.id)?.categoryIds,
       ).toEqual(["amphitheatre"]);
-      time = 60_000;
+      time = 600_000;
       expect(
         (await cachedCity("rome")).pois.find((poi) => poi.id === write.detail.id)?.categoryIds,
       ).toEqual([]);
@@ -2788,6 +2792,260 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         body: { error: { code: "conflict" } },
       });
       expect(await repository.getStory(other.detail.id)).toBeUndefined();
+    });
+
+    it("clears exactly the cached visitor reads that each write operation changes", async () => {
+      const a = example();
+      const b = example();
+      const profile = (id: string, name: string, wikidataId: string) => {
+        const [person] = example().people;
+        return { ...person, wikidataId, person: { ...person.person, id, name } };
+      };
+      const titus = profile("titus", "Titus", "Q1421");
+      const nerva = profile("nerva", "Nerva", "Q1424");
+      b.people = [titus];
+      b.detail.story.relatedPeople = [
+        { personId: "titus", name: "Titus", sourceIds: ["wikipedia"] },
+      ];
+      const catalog = await prepare([a, b]);
+      await repository.saveStory(a);
+      await repository.saveStory(b);
+
+      const written = new Set<string>();
+      const writer = createPostgresContent(
+        pool,
+        createVisitorClear(() => {}),
+      );
+      const handle = createContentHandler(
+        () =>
+          new Proxy(writer, {
+            get(target, operation: keyof typeof writer) {
+              written.add(operation);
+              return target[operation];
+            },
+          }),
+      );
+      const deployment = randomUUID();
+      // A new server instance each time: memory can't hide what the shared cache holds.
+      const visit = async () => {
+        let queried = 0;
+        const reads = createVisitorReads(() => {
+          queried++;
+          return repository;
+        }, deployment);
+        const expected = new Map<string, unknown>();
+        const fromDatabase: string[] = [];
+        const check = async (
+          key: string,
+          cached: () => Promise<unknown>,
+          direct: () => Promise<unknown>,
+        ) => {
+          queried = 0;
+          const value = await cached();
+          expect(value, key).toEqual((await direct()) ?? null);
+          // Missing identities are never shared, so they are always read again.
+          if (queried && value !== null) fromDatabase.push(key);
+          expected.set(key, value);
+        };
+        await check(
+          "map",
+          () => reads.getCity("rome"),
+          () => repository.getCityPreviews("rome"),
+        );
+        for (const [key, { detail }] of Object.entries({ a, b }))
+          await check(
+            key,
+            () => reads.getStory(detail.id),
+            () => repository.getStory(detail.id),
+          );
+        for (const id of ["vespasian", "titus", "nerva"]) {
+          await check(
+            id,
+            () => reads.getPerson(id),
+            () => repository.getPerson(id),
+          );
+          await check(
+            `${id} by slug`,
+            () => reads.getPersonBySlug(id),
+            () => repository.getPerson(id, true),
+          );
+        }
+        return fromDatabase.sort();
+      };
+      const save = async (segments: string[], body: unknown, ...cleared: string[]) => {
+        const response = await handle(
+          new Request(`http://localhost/api/admin/content/v1/${segments.join("/")}`, {
+            method: "PUT",
+            headers: {
+              authorization: `Bearer ${process.env.CONTENT_API_TOKEN}`,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify(body),
+          }),
+          { params: Promise.resolve({ segments }) },
+        );
+        expect(response.status, segments.join("/")).toBe(200);
+        expect(await visit(), segments.join("/")).toEqual(
+          cleared
+            .flatMap((key) =>
+              ["vespasian", "titus", "nerva"].includes(key) ? [key, `${key} by slug`] : [key],
+            )
+            .sort(),
+        );
+      };
+      const saveStory = async (people: typeof a.people, ...cleared: string[]) => {
+        a.expectedPublicationId = a.detail.publicationId;
+        a.detail.publicationId = randomUUID();
+        a.people = people;
+        a.detail.story.relatedPeople = people.map(({ person }) => ({
+          personId: person.id,
+          name: person.name,
+          sourceIds: ["wikipedia"],
+        }));
+        await save(["pois", a.detail.id, "story"], a, "map", "a", ...cleared);
+        // An identical retry clears too, in case the first clear was lost.
+        await save(
+          ["pois", a.detail.id, "story"],
+          a,
+          "map",
+          "a",
+          ...cleared.filter((id) => people.some(({ person }) => person.id === id)),
+        );
+      };
+      const digest = async () => (await repository.getCategoryCatalog()).stateDigest;
+      const setRule = async (categories: string[], ...cleared: string[]) =>
+        save(
+          ["type-rules"],
+          {
+            typeId: "Q1",
+            categories,
+            revision: randomUUID(),
+            expectedStateDigest: (await repository.getTypeCategoryRules()).stateDigest,
+          },
+          ...cleared,
+        );
+      const create = async (name: string) =>
+        save(["categories"], { name, expectedStateDigest: await digest() }, "map");
+
+      await visit();
+      expect(await visit()).toEqual([]);
+
+      const update = {
+        ...a.people[0],
+        expectedProfileVersion: a.people[0].profileVersion,
+        profileVersion: randomUUID(),
+        person: { ...a.people[0].person, name: "Emperor Vespasian" },
+      };
+      await save(["people", "vespasian"], update, "vespasian");
+      await save(["people", "vespasian"], update, "vespasian");
+
+      // A new Person replaces the only link of another, who disappears.
+      await saveStory([nerva], "nerva");
+      // An existing Person gains a link, then loses it.
+      await saveStory([nerva, titus], "nerva", "titus");
+      await saveStory([nerva], "nerva", "titus");
+
+      const categories = await categoryWrite(a);
+      await save(["pois", a.detail.id, "categories"], categories, "map", "a", "nerva");
+      await save(["pois", a.detail.id, "categories"], categories, "map", "a", "nerva");
+      for (const name of ["Culture", "Museum", "Arena"]) await create(name);
+      await save(
+        ["categories", "Culture"],
+        { name: "Arts", expectedStateDigest: await digest() },
+        "map",
+      );
+      await save(
+        ["categories", "amphitheatre", "move"],
+        { parentId: "Culture", expectedStateDigest: await digest() },
+        "map",
+        "a",
+        "nerva",
+      );
+
+      const types = await typesWrite(b.detail.id);
+      await save(["pois", b.detail.id, "types"], types, "map", "b", "titus");
+      await save(["pois", b.detail.id, "types"], types, "map", "b", "titus");
+      await setRule(["Museum"], "map", "b", "titus");
+      // Gallery joins the rule's parent without reaching B, whose categories change when it is deleted.
+      const gallery = {
+        ...(await categoryWrite(a)),
+        categoryIds: (await repository.getPoiCategoriesBaseline(a.detail.id))!.categoryIds,
+        definitions: [{ id: "Gallery", name: "Gallery", parentId: "Museum" }],
+      };
+      await save(["pois", a.detail.id, "categories"], gallery, "map", "a", "nerva");
+      await save(
+        ["categories", "Gallery", "delete"],
+        { expectedStateDigest: await digest() },
+        "map",
+        "b",
+        "titus",
+      );
+      await setRule(["Museum"], "map", "b", "titus");
+      // No POI has Arena yet: the move reaches B only through the rule that selects its new parent.
+      await save(
+        ["categories", "Arena", "move"],
+        { parentId: "Museum", expectedStateDigest: await digest() },
+        "map",
+        "b",
+        "titus",
+      );
+      await save(
+        ["categories", "Arena", "delete"],
+        { expectedStateDigest: await digest() },
+        "map",
+        "b",
+        "titus",
+      );
+      await save(
+        ["categories", "amphitheatre", "delete"],
+        { expectedStateDigest: await digest() },
+        "map",
+        "a",
+        "nerva",
+      );
+
+      const renamed = {
+        ...catalog,
+        revision: randomUUID(),
+        expectedRevision: catalog.revision,
+        pois: catalog.pois.map((poi) =>
+          poi.id === a.detail.id ? { ...poi, name: "Flavian Amphitheatre" } : poi,
+        ),
+      };
+      await save(["catalogs", "rome"], renamed, "map", "a", "b", "nerva", "titus");
+      await save(["catalogs", "rome"], renamed, "map", "a", "b", "nerva", "titus");
+
+      // A write operation added to the repository must be added above.
+      expect([...written].sort()).toEqual(
+        Object.keys(writer)
+          .filter((name) => !name.startsWith("get"))
+          .sort(),
+      );
+    });
+
+    it("clears after a commit whose reply was lost, but not after a rejected write", async () => {
+      const write = example();
+      await prepare([write]);
+      const losesReply = {
+        connect: async () => {
+          const client = await pool.connect();
+          return {
+            query: async (text: string, values?: unknown[]) => {
+              const result = await client.query(text, values);
+              if (text === "COMMIT") throw new Error("Connection terminated unexpectedly");
+              return result;
+            },
+            release: () => client.release(),
+          };
+        },
+      } as unknown as Pool;
+      const cleared: string[][] = [];
+      const writer = createPostgresContent(losesReply, async (labels) => void cleared.push(labels));
+      await expect(writer.saveStory({ ...write, inputRevision: randomUUID() })).rejects.toThrow();
+      expect(cleared).toEqual([]);
+      await expect(writer.saveStory(write)).rejects.toThrow("terminated");
+      expect(await repository.getStory(write.detail.id)).toBeDefined();
+      expect(cleared).toEqual([expect.arrayContaining(["map", `poi:${write.detail.id}`])]);
     });
   },
 );

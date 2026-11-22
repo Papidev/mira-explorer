@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.8
+
+### Patch Changes
+
+- Keep visitor content cached until a save changes it, so visits no longer query the database for unchanged content, and open People by their address much faster.
+
 ## 0.28.7
 
 ### Patch Changes

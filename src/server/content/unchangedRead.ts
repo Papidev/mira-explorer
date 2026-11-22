@@ -1,10 +1,7 @@
-import { promisify } from "node:util";
-import { gunzip, gzip } from "node:zlib";
-import { getCache, type RuntimeCache } from "@vercel/functions";
+import type { RuntimeCache } from "@vercel/functions";
 import type { Pool } from "pg";
+import { getContentCache, pack, unpack } from "./runtimeCache";
 
-const compress = promisify(gzip);
-const decompress = promisify(gunzip);
 const retentionSeconds = 30 * 24 * 60 * 60;
 // ponytail: evicts oldest first by count (about 30 MB at today's part sizes); bound bytes if parts grow.
 const memoryLimit = 1000;
@@ -18,9 +15,7 @@ const memoryLimit = 1000;
  * statement that returns every digest again, so a result never mixes two database snapshots.
  */
 export const createUnchangedRead = (
-  getShared: () => Pick<RuntimeCache, "get" | "set"> = () =>
-    // Keys are content digests: the default 32-bit key hash could serve another part's body.
-    getCache({ namespace: "mira-content", keyHashFunction: (key) => key }),
+  getShared: () => Pick<RuntimeCache, "get" | "set"> = getContentCache,
 ) => {
   const memory = new Map<string, string>();
   const remember = (digest: string, body: string) => {
@@ -48,7 +43,7 @@ export const createUnchangedRead = (
         try {
           const shared = await getShared().get(digest);
           if (typeof shared !== "string") return;
-          const body = (await decompress(Buffer.from(shared, "base64"))).toString("utf8");
+          const body = await unpack(shared);
           remember(digest, body);
           bodies.set(digest, body);
         } catch {
@@ -70,8 +65,7 @@ export const createUnchangedRead = (
           bodies.set(digest, body);
           remember(digest, body);
           try {
-            // Compressed, to stay within the free Runtime Cache allowance and its 2 MB item limit.
-            await getShared().set(digest, (await compress(body)).toString("base64"), {
+            await getShared().set(digest, await pack(body), {
               ttl: retentionSeconds,
               name: "content-part",
             });

@@ -1,19 +1,10 @@
 import "server-only";
 import { getContentPool } from "@/server/content/database";
 import { createPostgresContent } from "@/server/content/postgresContent";
-import { createPublishedRead } from "./read";
+import { createVisitorReads } from "./reads";
 
-export const visitorContent = {
-  getPersonBySlug: createPublishedRead(
-    async (slug) => (await createPostgresContent(getContentPool()).getPerson(slug, true)) ?? null,
-  ),
-  getCity: createPublishedRead(async (city) =>
-    createPostgresContent(getContentPool()).getCityPreviews(city),
-  ),
-  getStory: createPublishedRead(
-    async (poiId) => (await createPostgresContent(getContentPool()).getStory(poiId)) ?? null,
-  ),
-  getPerson: createPublishedRead(
-    async (personId) => (await createPostgresContent(getContentPool()).getPerson(personId)) ?? null,
-  ),
-};
+// Keys include the deployment, so redeploying resets the cache after changes made outside the API.
+export const visitorContent = createVisitorReads(
+  () => createPostgresContent(getContentPool()),
+  process.env.VERCEL_DEPLOYMENT_ID,
+);

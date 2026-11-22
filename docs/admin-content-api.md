@@ -1,6 +1,21 @@
 # Admin content API
 
-The public Next.js server implements [Admin content API v1](admin-write-api-contract.md) at `/api/admin/content/v1`. Local admin Node clients use a dedicated Bearer credential; there is no user login, browser credential or CORS integration. Successfully saving complete, valid content publishes its new version automatically; no separate approval or publish action is required. The Rome map and its detail APIs prefer online publications through `src/server/visitorContent`, with a hard 60-second server cache. The map merges eligible local-only POIs; online identity and removal metadata keep duplicates and removed local copies out of the map. Saves do not actively invalidate that cache; new requests observe updates after expiry. A matching online publication is authoritative: its failures or missing fields never select local content. The homepage retains its existing build-generated catalog. See [visitor content deployment](../README.md#visitor-content-deployment).
+The public Next.js server implements [Admin content API v1](admin-write-api-contract.md) at `/api/admin/content/v1`. Local admin Node clients use a dedicated Bearer credential; there is no user login, browser credential or CORS integration. Successfully saving complete, valid content publishes its new version automatically; no separate approval or publish action is required. The Rome map and its detail APIs prefer online publications through `src/server/visitorContent`, with a [visitor cache](#visitor-cache) that saves clear. The map merges eligible local-only POIs; online identity and removal metadata keep duplicates and removed local copies out of the map. New requests observe a save within about 10 minutes. A matching online publication is authoritative: its failures or missing fields never select local content. The homepage retains its existing build-generated catalog. See [visitor content deployment](../README.md#visitor-content-deployment).
+
+## Visitor cache
+
+Visitor reads have no expiry: a successful write, or an identical retry, clears what it changed. The Admin API itself is never served from this cache, because conflicts need current versions. The first clear waits for the commit; a second follows 30 seconds later, after any read that overlapped it. A clear that fails is logged and does not fail the save.
+
+| Save                                 | Clears                                             |
+| ------------------------------------ | -------------------------------------------------- |
+| Person                               | that Person                                        |
+| Story                                | that Story, the map, People linked before or after |
+| A POI's Types or categories          | that Story, the map, its linked People             |
+| New or renamed category              | the map                                            |
+| Type rule, moved or deleted category | the map, the affected Stories and their People     |
+| Catalog                              | everything                                         |
+
+Each entry carries labels for what it contains, so a save needs no list of who links to whom. A Person linked to more than 126 POIs instead carries one label that every POI save clears. See [resetting the cache](../README.md#visitor-content-deployment).
 
 ## Origin and schema compatibility
 
@@ -131,7 +146,7 @@ The transaction checks active POI/input revision first (also for retries), then 
 
 Definitions, replacement associations and operation acknowledgement metadata commit atomically. The POI row is locked; transaction-scoped table locks on categories and associations serialize definition checks/inserts, including absent IDs, against other writes. This deliberately favors simple correctness for the private admin over write throughput. Unrelated POIs' new definitions conservatively invalidate older baselines; clients must reconcile explicitly. Story-only writes do not invalidate a category baseline. Catalog removal deletes category associations and the last-operation record; a restored POI has a fresh input revision and an initial null category revision.
 
-Public map, previews, Story details and linked-POI reads already compose these associations through visitor views. Direct repository reads observe the committed state on their next query. Existing per-instance visitor caches may return the previous snapshot until their **hard 60-second TTL** expires; no cross-instance immediate invalidation is promised. A save response confirms persistence, not a refreshed visitor response. Unpublished POIs remain hidden until a valid Story is saved. The build-generated homepage catalog is unchanged.
+Public map, previews, Story details and linked-POI reads already compose these associations through visitor views. Direct repository reads observe the committed state on their next query. Saving clears what changed from the shared visitor cache; each instance may return the previous snapshot for about 10 minutes, until it rechecks. A save response confirms persistence, not a refreshed visitor response. Unpublished POIs remain hidden until a valid Story is saved. The build-generated homepage catalog is unchanged.
 
 ### Schema prerequisite and private-client handoff
 
@@ -152,7 +167,7 @@ Private repository implementation checklist:
 5. On `saved`/`already-saved`, verify the response revision matches and mark that operation acknowledged. On timeout, disconnect, non-JSON infrastructure response or uncertain outcome, retain and resend the exact payload/UUID. An unresolved earlier operation for the same POI must be reconciled before sending a newer one. On `conflict`/`obsolete`, preserve the result and require reconciliation; never silently replace expected versions. Startup/manual retry must not rerun classification or generation. Synchronize any required catalog creation before category saves; category and Story saves otherwise remain independent.
 6. Add MSW client tests for both success statuses, response-revision mismatch, unknown commit followed by identical retry, conflict/obsolete retention, unavailable endpoints and stale local input fingerprints. Share valid/invalid payload cases with the public tests before enabling the client. The global categories panel (rename/reparent/delete/mappings/bulk changes) remains separate work; future global writers must participate in category concurrency/revision handling rather than modifying assignments behind a current retry acknowledgement.
 
-Local server tests exercise unpublished saves, public reads/cache expiry, non-category content preservation, strict request identities, duplicates/missing references/cycles, rollback after a late database failure, concurrent retries/competing operations, shared-definition conflicts, removed/restored POIs and writer permissions. The database tests load both schema files only in a disposable loopback database.
+Local server tests exercise unpublished saves, public reads/cache clearing, non-category content preservation, strict request identities, duplicates/missing references/cycles, rollback after a late database failure, concurrent retries/competing operations, shared-definition conflicts, removed/restored POIs and writer permissions. The database tests load both schema files only in a disposable loopback database.
 
 ## Authoritative category catalog
 
@@ -284,8 +299,8 @@ category-definition digest. Stale requests conflict, including older assignment 
 rule operations that captured the previous name. A lost acknowledgement requires
 an accepted-state read; do not replay an old rename against a refreshed digest.
 
-Visitor filters receive the renamed definition through existing reads after their
-60-second cache boundary. No new schema, import or Story regeneration is needed.
+Saving clears the map, so visitor filters receive the renamed definition within
+about 10 minutes. No new schema, import or Story regeneration is needed.
 Deploy Explorer before the Admin client. Moves and deletions remain separate.
 
 ## Shared category moves
@@ -297,8 +312,8 @@ POI parent associations and category revisions using the existing category locks
 Selected children and unrelated assignments are preserved; parent assignments follow
 remaining selected children. Existing independent ownership is retained, without
 legacy contribution reconciliation. Admin reloads accepted state after an uncertain
-acknowledgement. Visitor hierarchy and filters refresh at the existing 60-second
-cache boundary; Story/Person regeneration and a new schema migration are not needed.
+acknowledgement. Saving clears what changed, so visitor hierarchy and filters refresh
+within about 10 minutes; Story/Person regeneration and a new schema migration are not needed.
 Deploy this API before the matching Mira Admin client (Papidev/mira-admin#35).
 
 ## Shared category deletion (Admin #36)
@@ -324,8 +339,8 @@ the current Types screen reads the accepted online rules and definitions.
 
 Admin re-reads before deletion and checks lost/invalid acknowledgements against the
 absence of the complete confirmed scope. The UI lists affected children before
-confirmation. Visitor definitions/memberships refresh at the existing 60-second
-boundary. Tests use disposable data. Apply schema 005 with separate approval, deploy
+confirmation. Saving clears what changed, so visitor definitions/memberships refresh
+within about 10 minutes. Tests use disposable data. Apply schema 005 with separate approval, deploy
 Explorer, then Admin. Schema 005 was applied and independently verified on
 2026-10-31, with all 11 existing content tables unchanged. No production category
 deletion was performed. The owner deferred live functional verification to the next suitable opportunity.

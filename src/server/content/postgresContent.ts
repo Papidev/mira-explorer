@@ -33,6 +33,7 @@ import {
   typeCategoryRuleWriteSchema,
 } from "@mira/shared";
 import { readUnchanged } from "./unchangedRead";
+import { visitorLabels } from "./visitorLabels";
 
 // One MVCC snapshot covers rules, definitions and affected-catalog inputs, even on a fresh install.
 const typeRulesQuery = `SELECT 'rule' AS kind, type_id AS key, jsonb_strip_nulls(jsonb_build_object(
@@ -127,12 +128,19 @@ const sourceIdentities = (pages: Array<{ language: string; pageId: number }>) =>
       (left, right) => left.language.localeCompare(right.language) || left.pageId - right.pageId,
     );
 
-const transaction = async <T>(pool: Pool, work: (client: PoolClient) => Promise<T>): Promise<T> => {
+const transaction = async <T>(
+  pool: Pool,
+  clear: (labels: string[]) => Promise<void>,
+  work: (client: PoolClient, changed: Set<string>) => Promise<T>,
+): Promise<T> => {
   const client = await pool.connect();
+  const changed = new Set<string>();
   let discard = false;
+  let committing = false;
   try {
     await client.query("BEGIN");
-    const result = await work(client);
+    const result = await work(client, changed);
+    committing = true;
     await client.query("COMMIT");
     return result;
   } catch (error) {
@@ -144,7 +152,15 @@ const transaction = async <T>(pool: Pool, work: (client: PoolClient) => Promise<
     throw error;
   } finally {
     client.release(discard);
+    // Also when COMMIT fails: it may have been applied with only its reply lost.
+    if (committing) await clear([...changed]);
   }
+};
+
+const changePois = (changed: Set<string>, ...ids: string[]) => {
+  changed.add(visitorLabels.map);
+  if (ids.length) changed.add(visitorLabels.anyPoi);
+  for (const id of ids) changed.add(visitorLabels.poi(id));
 };
 
 // Acquire this before POI/city row locks in every category, acquisition and catalog writer.
@@ -217,11 +233,16 @@ const recalculateTypeCategories = async (
   );
 };
 
-export const createPostgresContent = (pool: Pool) => ({
+export const createPostgresContent = (
+  pool: Pool,
+  // Receives what a write changed for visitors, identical retries included.
+  clear: (labels: string[]) => Promise<void> = async () => {},
+) => ({
   synchronizeCatalog: async (value: unknown) => {
     const input = catalogWriteSchema.parse(value);
     const requestDigest = digest(input);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changed.add(visitorLabels.all);
       await lockCategories(client);
       await client.query(
         "INSERT INTO content.city_catalogs(city) VALUES ($1) ON CONFLICT DO NOTHING",
@@ -342,7 +363,8 @@ export const createPostgresContent = (pool: Pool) => ({
   savePoiTypes: async (value: unknown) => {
     const input = poiTypesWriteSchema.parse(value);
     const requestDigest = digest(input);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changePois(changed, input.poiId);
       await lockCategories(client);
       const {
         rows: [poi],
@@ -393,7 +415,7 @@ export const createPostgresContent = (pool: Pool) => ({
 
   saveTypeCategoryRule: async (value: unknown) => {
     const input = typeCategoryRuleWriteSchema.parse(value);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
       await lockCategories(client);
       const baseline = await readTypeRules(client);
       if (baseline.rules.some((rule) => rule.revision === input.revision))
@@ -474,6 +496,7 @@ export const createPostgresContent = (pool: Pool) => ({
         ],
       );
       const accepted = await readTypeRules(client);
+      changePois(changed, ...affected.map(({ id }) => id));
       for (const { id } of affected) await recalculateTypeCategories(client, id, accepted);
       return { status: "saved" as const, revision: input.revision, affectedPois: affected.length };
     });
@@ -490,7 +513,8 @@ export const createPostgresContent = (pool: Pool) => ({
   createCategory: async (value: unknown) => {
     const input = categoryCatalogCreateSchema.parse(value);
     const name = input.name.trim().replace(/\s+/g, " ");
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changePois(changed);
       // Match per-POI writes, including insertions of previously absent definitions.
       await lockCategories(client);
       const {
@@ -516,7 +540,8 @@ export const createPostgresContent = (pool: Pool) => ({
   renameCategory: async (value: unknown) => {
     const input = categoryCatalogRenameSchema.parse(value);
     const name = input.name.trim().replace(/\s+/g, " ");
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changePois(changed);
       await lockCategories(client);
       const {
         rows: [row],
@@ -546,7 +571,7 @@ export const createPostgresContent = (pool: Pool) => ({
 
   moveCategory: async (value: unknown) => {
     const input = categoryCatalogMoveSchema.parse(value);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
       await lockCategories(client);
       const baseline = await readTypeRules(client);
       if (digest(baseline.definitions) !== input.expectedStateDigest)
@@ -606,6 +631,7 @@ export const createPostgresContent = (pool: Pool) => ({
         ORDER BY p.id FOR UPDATE`,
         [input.id],
       );
+      changePois(changed, ...affected.map(({ id }) => id));
       for (const { id } of affected) {
         const { rows: assignments } = await client.query<{ category_id: string; derived: boolean }>(
           `SELECT c.category_id, d.poi_id IS NOT NULL AS derived FROM content.poi_categories c
@@ -672,6 +698,7 @@ export const createPostgresContent = (pool: Pool) => ({
           ORDER BY p.id FOR UPDATE OF p`,
           [changedTypes],
         );
+        changePois(changed, ...rows.map(({ id }) => id));
         for (const { id } of rows) await recalculateTypeCategories(client, id, accepted);
       }
       return { status: "saved" as const, definition };
@@ -680,7 +707,7 @@ export const createPostgresContent = (pool: Pool) => ({
 
   deleteCategory: async (value: unknown) => {
     const input = categoryCatalogDeleteSchema.parse(value);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
       await lockCategories(client);
       const baseline = await readTypeRules(client);
       if (digest(baseline.definitions) !== input.expectedStateDigest)
@@ -733,6 +760,7 @@ export const createPostgresContent = (pool: Pool) => ({
         ORDER BY p.id FOR UPDATE`,
         [ids],
       );
+      changePois(changed, ...affected.map(({ id }) => id));
       for (const { id } of affected) {
         const { rows: assignments } = await client.query<{ category_id: string; derived: boolean }>(
           `SELECT c.category_id, d.poi_id IS NOT NULL AS derived FROM content.poi_categories c
@@ -803,6 +831,7 @@ export const createPostgresContent = (pool: Pool) => ({
           ORDER BY p.id FOR UPDATE OF p`,
           [changedTypes],
         );
+        changePois(changed, ...rows.map(({ id }) => id));
         for (const { id } of rows) await recalculateTypeCategories(client, id, accepted);
       }
       return { status: "saved" as const, deletedIds: ids };
@@ -821,7 +850,8 @@ export const createPostgresContent = (pool: Pool) => ({
   savePoiCategories: async (value: unknown) => {
     const input = poiCategoriesWriteSchema.parse(value);
     const requestDigest = digest(input);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changePois(changed, input.poiId);
       await lockCategories(client);
       const {
         rows: [poi],
@@ -917,7 +947,11 @@ export const createPostgresContent = (pool: Pool) => ({
   saveStory: async (value: unknown) => {
     const input = storyWriteSchema.parse(value);
     const requestDigest = digest(input);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changePois(changed, input.detail.id);
+      // People linked before the save carry the POI's label; newly linked ones don't yet.
+      for (const { personId } of input.detail.story.relatedPeople)
+        changed.add(visitorLabels.person(personId));
       const {
         rows: [poi],
       } = await client.query("SELECT * FROM content.pois WHERE id = $1 FOR UPDATE", [
@@ -1036,7 +1070,8 @@ export const createPostgresContent = (pool: Pool) => ({
   savePerson: async (value: unknown) => {
     const input = personUpdateSchema.parse(value);
     const requestDigest = digest(input);
-    return transaction(pool, async (client) => {
+    return transaction(pool, clear, async (client, changed) => {
+      changed.add(visitorLabels.person(input.person.id));
       const {
         rows: [person],
       } = await client.query("SELECT * FROM content.people WHERE id = $1 FOR UPDATE", [
@@ -1228,7 +1263,7 @@ export const createPostgresContent = (pool: Pool) => ({
            FROM jsonb_array_elements(p.response->'linkedPois') WITH ORDINALITY l(poi, ord)
            JOIN content.pois identity ON identity.id = (poi->>'id')::uuid))) AS response
        FROM content.visitor_people p JOIN content.people identity ON identity.id = p.id
-       WHERE ${bySlug ? "identity.slug" : "p.id"} = $1`,
+       WHERE p.id = ${bySlug ? "(SELECT id FROM content.people WHERE slug = $1)" : "$1"}`,
       [personId],
     );
     return result ? publishedPersonSchema.parse(result.response) : undefined;
