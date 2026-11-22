@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createContentHandler } from "./handler";
 import { ContentWriteError } from "./postgresContent";
-import { contentErrorResponse, CONTENT_BODY_LIMIT } from "./http";
+import {
+  contentErrorResponse,
+  contentJson,
+  CONTENT_BODY_LIMIT,
+  revalidateContentResponse,
+} from "./http";
 import { ContentDatabaseConfigurationError, contentDatabaseConfig } from "./database";
 import { exampleStoryWrite } from "./__fixtures__/writes";
 
@@ -20,6 +25,38 @@ const request = (segments: string[], body?: unknown, options: RequestInit = {}) 
 };
 
 afterEach(() => vi.unstubAllEnvs());
+
+describe("content revalidation", () => {
+  const read = (tag?: string, method = "GET", response = contentJson({ version: 1 })) =>
+    revalidateContentResponse(
+      new Request("http://localhost/", {
+        method,
+        headers: tag ? { "if-none-match": tag } : {},
+      }),
+      response,
+    );
+
+  it("omits only a body the client already holds", async () => {
+    const first = await read();
+    const tag = first.headers.get("etag")!;
+    expect(await first.json()).toEqual({ version: 1 });
+    for (const held of [tag, `W/${tag}`]) {
+      const unchanged = await read(held);
+      expect(unchanged.status).toBe(304);
+      expect(unchanged.headers.get("cache-control")).toBe("no-store");
+      expect(await unchanged.text()).toBe("");
+    }
+    const changed = await read(tag, "GET", contentJson({ version: 2 }));
+    expect(changed.status).toBe(200);
+    expect(await changed.json()).toEqual({ version: 2 });
+  });
+
+  it("never revalidates writes or errors", async () => {
+    const tag = (await read()).headers.get("etag")!;
+    expect((await read(tag, "PUT")).status).toBe(200);
+    expect((await read(tag, "GET", contentJson({ version: 1 }, 503))).status).toBe(503);
+  });
+});
 
 describe("content HTTP boundary before database access", () => {
   it("fails closed when the server token is missing or too short", async () => {
