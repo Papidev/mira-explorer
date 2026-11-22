@@ -63,7 +63,7 @@ Each parent has a distinct marker color: Religion yellow, Arts & Culture green, 
 
 ## Curator workflow
 
-Use the Categories workspace in [Mira Admin](https://github.com/Papidev/mira-admin) to edit shared type rules and category definitions. Saving an online rule recalculates affected POI categories without regenerating Stories. New visitor requests see the result after the online cache expires.
+Use the Categories workspace in [Mira Admin](https://github.com/Papidev/mira-admin) to edit shared type rules and category definitions. Saving an online rule recalculates affected POI categories without regenerating Stories. New visitor requests see the result within about 10 minutes.
 
 ## Planned per-POI exceptions
 

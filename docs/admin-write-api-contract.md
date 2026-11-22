@@ -146,5 +146,5 @@ older writes. Stories, People, acquisitions and publication versions are untouch
 Admin re-reads accepted definitions before moving. Uncertain acknowledgements are
 checked against the accepted parent, ID and unchanged name/label; failure never
 becomes local success. Fresh Admin installations read the accepted hierarchy online.
-Visitor filtering uses the new hierarchy at the existing 60-second cache boundary.
+Visitor filtering uses the new hierarchy within about 10 minutes.
 No schema migration or production catalog cleanup is part of this implementation.
