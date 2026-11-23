@@ -242,7 +242,6 @@ export const createPostgresContent = (
     const input = catalogWriteSchema.parse(value);
     const requestDigest = digest(input);
     return transaction(pool, clear, async (client, changed) => {
-      changed.add(visitorLabels.all);
       await lockCategories(client);
       await client.query(
         "INSERT INTO content.city_catalogs(city) VALUES ($1) ON CONFLICT DO NOTHING",
@@ -257,6 +256,8 @@ export const createPostgresContent = (
       if (catalog.revision === input.revision) {
         if (catalog.request_digest !== requestDigest)
           throw new ContentWriteError("invalid", "Catalog revision reused for different content.");
+        // What the first attempt changed is no longer known, so its retry clears everything.
+        changed.add(visitorLabels.all);
         return "already-saved" as const;
       }
       if (catalog.revision !== input.expectedRevision)
@@ -265,7 +266,9 @@ export const createPostgresContent = (
           "Catalog has changed since this operation was prepared.",
         );
       const { rows: previous } = await client.query(
-        "SELECT id, input_revision, input_digest, removed_at FROM content.pois WHERE city = $1 ORDER BY id FOR UPDATE",
+        `SELECT id, input_revision, input_digest, removed_at, name, latitude, longitude, wikidata_id,
+          EXISTS (SELECT FROM content.published_stories s WHERE s.poi_id = p.id) AS published
+        FROM content.pois p WHERE city = $1 ORDER BY id FOR UPDATE OF p`,
         [input.city],
       );
       for (const poi of [...input.pois].sort((left, right) => left.id.localeCompare(right.id))) {
@@ -275,6 +278,19 @@ export const createPostgresContent = (
           pages: sourceIdentities(poi.wikipediaPages),
         });
         const existing = previous.find(({ id }) => id === poi.id);
+        // Visitors see a POI's name and coordinates only once it has a Story, and its Wikidata id
+        // only in the map. A restored POI leaves the map's list of removed POIs.
+        if (existing?.removed_at) changePois(changed, poi.id);
+        else if (existing?.published) {
+          if (
+            existing.name !== poi.name ||
+            existing.latitude !== poi.coordinates.lat ||
+            existing.longitude !== poi.coordinates.lng
+          )
+            changePois(changed, poi.id);
+          else if (existing.wikidata_id !== (poi.wikidataId ?? null))
+            changed.add(visitorLabels.map);
+        }
         const result = await client.query(
           `INSERT INTO content.pois
           (id, city, name, latitude, longitude, wikidata_id, osm_ids, wikipedia_pages, input_revision, input_digest)
@@ -306,6 +322,8 @@ export const createPostgresContent = (
         .filter(({ id, removed_at }) => !removed_at && !input.pois.some((poi) => poi.id === id))
         .map(({ id }) => id);
       if (removed.length) {
+        // The map lists removed POIs, with or without a Story.
+        changePois(changed, ...removed);
         await client.query(
           "DELETE FROM content.poi_type_category_assignments WHERE poi_id = ANY($1::uuid[])",
           [removed],

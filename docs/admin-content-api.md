@@ -13,7 +13,10 @@ Visitor reads have no expiry: a successful write, or an identical retry, clears 
 | A POI's Types or categories          | that Story, the map, its linked People             |
 | New or renamed category              | the map                                            |
 | Type rule, moved or deleted category | the map, the affected Stories and their People     |
-| Catalog                              | everything                                         |
+| Catalog: Story POI renamed or moved  | that Story, the map, its linked People             |
+| Catalog: Story POI Wikidata id       | the map                                            |
+| Catalog: removed or restored POI     | the map, that Story, its linked People             |
+| Catalog: identical retry             | everything                                         |
 
 Each entry carries labels for what it contains, so a save needs no list of who links to whom. A Person linked to more than 126 POIs instead carries one label that every POI save clears. See [resetting the cache](../README.md#visitor-content-deployment).
 

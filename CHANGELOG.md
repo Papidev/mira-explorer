@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.28.9
+
+### Patch Changes
+
+- Clear only the cached places a catalog refresh changed, so an unchanged refresh or a single removal no longer makes every visit read the database again.
+
 ## 0.28.8
 
 ### Patch Changes
