@@ -3004,16 +3004,52 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
         "nerva",
       );
 
-      const renamed = {
-        ...catalog,
-        revision: randomUUID(),
-        expectedRevision: catalog.revision,
-        pois: catalog.pois.map((poi) =>
-          poi.id === a.detail.id ? { ...poi, name: "Flavian Amphitheatre" } : poi,
-        ),
+      // Each catalog write clears only the POIs whose visitor content changed.
+      let current = catalog;
+      const sync = async (
+        change: (pois: typeof catalog.pois) => typeof catalog.pois,
+        ...cleared: string[]
+      ) => {
+        current = {
+          ...current,
+          revision: randomUUID(),
+          expectedRevision: current.revision,
+          pois: change(current.pois),
+        };
+        await save(["catalogs", "rome"], current, ...cleared);
       };
-      await save(["catalogs", "rome"], renamed, "map", "a", "b", "nerva", "titus");
-      await save(["catalogs", "rome"], renamed, "map", "a", "b", "nerva", "titus");
+      const edit = (
+        id: string,
+        change: Partial<(typeof catalog.pois)[number]>,
+        ...cleared: string[]
+      ) =>
+        sync(
+          (pois) => pois.map((poi) => (poi.id === id ? { ...poi, ...change } : poi)),
+          ...cleared,
+        );
+
+      await sync((pois) => pois);
+      await edit(a.detail.id, {
+        osmIds: ["way/1"],
+        wikipediaPages: catalog.pois[0].wikipediaPages.map((page) => ({
+          ...page,
+          pageId: page.pageId + 1,
+        })),
+      });
+      const unpublished = { ...catalog.pois[0], id: randomUUID(), name: "Arch of Titus" };
+      await sync((pois) => [...pois, unpublished]);
+      await edit(unpublished.id, { name: "Arch", wikidataId: "Q1" });
+      await edit(b.detail.id, { wikidataId: "Q2" }, "map");
+      await edit(a.detail.id, { name: "Flavian Amphitheatre" }, "map", "a", "nerva");
+      // An identical retry can't tell what the first write changed, so it clears everything.
+      await save(["catalogs", "rome"], current, "map", "a", "b", "nerva", "titus");
+      await edit(b.detail.id, { coordinates: { lat: 41.9, lng: 12.5 } }, "map", "b", "titus");
+      // Removed POIs are listed in the map, with or without a Story.
+      await sync((pois) => pois.filter(({ id }) => id !== unpublished.id), "map");
+      const removed = current.pois.find(({ id }) => id === b.detail.id)!;
+      // B and Titus are cleared too: they now read as missing, which `visit` doesn't list.
+      await sync((pois) => pois.filter(({ id }) => id !== b.detail.id), "map");
+      await sync((pois) => [...pois, removed], "map");
 
       // A write operation added to the repository must be added above.
       expect([...written].sort()).toEqual(
