@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.0
+
+### Minor Changes
+
+- Show the place's name, Story excerpt and image when a Mira link is shared, and help search engines find every place on the Rome map through a sitemap, robots rules and canonical links on www.explorewithmira.app.
+
 ## 0.28.9
 
 ### Patch Changes
