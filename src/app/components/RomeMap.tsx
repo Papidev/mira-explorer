@@ -4,6 +4,7 @@ import { mergeVisitorCity } from "@/server/visitorContent/mergeCity";
 import { publicCatalog } from "@/server/publicCatalog";
 import { CityExplorer } from "@/app/components/CityExplorer";
 import { RomeHeader } from "@/app/rome/RomeHeader";
+import { findLinkedPoi } from "@/app/rome/linkedPoi";
 
 type Props = {
   initialSelectedPoiId?: string;
@@ -29,18 +30,10 @@ export const RomeMap = async ({
     );
   const { pois, categoryDefinitions, aliases } = mergeVisitorCity(city, publicCatalog);
   const peopleCount = city.peopleCount ?? 0;
-  const slugMatches = initialPoiSlug
-    ? pois.filter((poi) => (poi.slug ?? poi.id) === initialPoiSlug)
-    : [];
-  const initialSelectedPoi = initialPoiSlug
-    ? slugMatches.length === 1
-      ? slugMatches[0]
-      : slugMatches.length === 0 && aliases[initialPoiSlug]
-        ? pois.find((poi) => poi.id === aliases[initialPoiSlug])
-        : undefined
-    : initialSelectedPoiId
-      ? pois.find((poi) => poi.id === (aliases[initialSelectedPoiId] ?? initialSelectedPoiId))
-      : undefined;
+  const initialSelectedPoi = findLinkedPoi(pois, aliases, {
+    poi: initialPoiSlug,
+    poiId: initialSelectedPoiId,
+  });
   const coordinates: [number, number] = initialSelectedPoi
     ? [initialSelectedPoi.coordinates.lng, initialSelectedPoi.coordinates.lat]
     : [12.4823, 41.8933]; // Piazza del Campidoglio: default arrival in Rome's historic centre.

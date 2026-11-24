@@ -18,7 +18,19 @@ import { ThemeSwitch } from "@/app/components/ui/ThemeSwitch";
 import { HomeCuriosity } from "@/app/components/HomeCuriosity";
 import { HomeNumbers } from "@/app/components/HomeNumbers";
 import { RomeCta } from "@/app/components/ui/RomeCta";
+import { siteOpenGraph } from "@/app/site";
 import { Suspense } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: {
+    ...siteOpenGraph,
+    title: "Mira",
+    description: "Explore cities through history, art, and culture.",
+    url: "/",
+  },
+};
 
 const Home = () => {
   const cover =
