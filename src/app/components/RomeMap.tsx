@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import { visitorContent } from "@/server/visitorContent";
 import { mergeVisitorCity } from "@/server/visitorContent/mergeCity";
 import { publicCatalog } from "@/server/publicCatalog";
+import { createVisitorHandler } from "@/server/visitorContent/handler";
 import { CityExplorer } from "@/app/components/CityExplorer";
 import { RomeHeader } from "@/app/rome/RomeHeader";
 import { findLinkedPoi } from "@/app/rome/linkedPoi";
@@ -37,6 +38,13 @@ export const RomeMap = async ({
   const coordinates: [number, number] = initialSelectedPoi
     ? [initialSelectedPoi.coordinates.lng, initialSelectedPoi.coordinates.lat]
     : [12.4823, 41.8933]; // Piazza del Campidoglio: default arrival in Rome's historic centre.
+  // A shared place's Story is in the page's HTML; on failure the panel loads it as usual.
+  const initialStory = initialSelectedPoi
+    ? await createVisitorHandler(visitorContent, publicCatalog)
+        .loadStory("rome", initialSelectedPoi.id)
+        .then((story) => story && { ...story, poiId: initialSelectedPoi.id })
+        .catch(() => null)
+    : null;
 
   return (
     <>
@@ -53,6 +61,7 @@ export const RomeMap = async ({
           pois={pois.map(({ previewDescription, shortDescription, mainImageUrl, ...poi }) => poi)}
           aliases={aliases}
           initialPersonSlug={initialPersonSlug}
+          initialStory={initialStory}
         />
       ) : (
         <p role="status" className="text-ink-muted p-6">

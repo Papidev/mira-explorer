@@ -17,6 +17,7 @@ import { Drawer } from "@/app/components/ui/Drawer";
 import type { Poi } from "@/types/Poi";
 import { Map, type CoveredArea } from "@/app/components/Map";
 import { DETAILS_PANEL_WIDTH, DetailsPanel } from "@/app/components/DetailsPanel";
+import type { InitialStory } from "@/app/components/usePoiStoryContent";
 import { BOTTOM_SHEET_PEEK_RATIO } from "@/app/components/ui/BottomSheet";
 import { isTouchOnly, useViewport, useViewportWidth } from "@/app/viewport";
 
@@ -36,6 +37,7 @@ type Props = {
   aliases?: Record<string, string>;
   pois: Poi[];
   categoryDefinitions?: PoiCategoryDefinition[];
+  initialStory?: InitialStory | null;
 };
 
 export const CityExplorer = ({
@@ -47,6 +49,7 @@ export const CityExplorer = ({
   aliases = {},
   pois: catalogPois,
   categoryDefinitions = DEFAULT_POI_CATEGORY_DEFINITIONS,
+  initialStory,
 }: Props) => {
   const [previews, setPreviews] = useState<Record<string, Partial<Poi>> | null>(null);
   const pois = useMemo(
@@ -209,6 +212,7 @@ export const CityExplorer = ({
           width={shownDetailsWidth}
           onResize={setDetailsWidth}
           onClose={() => selectPoi(null)}
+          initialStory={initialStory}
         />
       </div>
     </div>
