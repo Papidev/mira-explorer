@@ -44,39 +44,46 @@ export const createVisitorHandler = (
     return detail && detail.city === city ? { storyContent: toVisitorStory(detail), detail } : null;
   };
 
+  /** A visible Story with its People ordered by birth, or null when the place is not shown. */
+  const loadStory = async (city: string, poiId: string) => {
+    const content = await getStory(city, poiId);
+    if (content) {
+      const datedPeople = await Promise.all(
+        content.storyContent.relatedPeople.map(async (person) => {
+          const profile = person.personId
+            ? content.detail
+              ? await reads.getPerson(person.personId)
+              : local?.getPerson(person.personId)
+            : undefined;
+          return {
+            person: {
+              ...person,
+              ...(profile ? { slug: profile.slug ?? profile.id } : {}),
+            },
+            birthDate: profile
+              ? "content" in profile
+                ? profile.content.birthDate
+                : profile.birthDate
+              : undefined,
+          };
+        }),
+      );
+      content.storyContent = {
+        ...content.storyContent,
+        relatedPeople: datedPeople
+          .sort((left, right) => compareBirthDates(left.birthDate, right.birthDate))
+          .map(({ person }) => person),
+      };
+    }
+    return content;
+  };
+
   return {
+    loadStory,
     getStory: async (city: string, poiId: string) => {
       const headers = { "Cache-Control": "no-store" };
       try {
-        const content = await getStory(city, poiId);
-        if (content) {
-          const datedPeople = await Promise.all(
-            content.storyContent.relatedPeople.map(async (person) => {
-              const profile = person.personId
-                ? content.detail
-                  ? await reads.getPerson(person.personId)
-                  : local?.getPerson(person.personId)
-                : undefined;
-              return {
-                person: {
-                  ...person,
-                  ...(profile ? { slug: profile.slug ?? profile.id } : {}),
-                },
-                birthDate: profile
-                  ? "content" in profile
-                    ? profile.content.birthDate
-                    : profile.birthDate
-                  : undefined,
-              };
-            }),
-          );
-          content.storyContent = {
-            ...content.storyContent,
-            relatedPeople: datedPeople
-              .sort((left, right) => compareBirthDates(left.birthDate, right.birthDate))
-              .map(({ person }) => person),
-          };
-        }
+        const content = await loadStory(city, poiId);
         return Response.json(content ?? { storyContent: null }, {
           status: content ? 200 : 404,
           headers,

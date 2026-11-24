@@ -7,7 +7,7 @@ import { BottomSheet } from "@/app/components/ui/BottomSheet";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { Spinner } from "@/app/components/ui/Spinner";
-import { usePoiStoryContent } from "@/app/components/usePoiStoryContent";
+import { usePoiStoryContent, type InitialStory } from "@/app/components/usePoiStoryContent";
 import { usePerson } from "@/app/components/usePerson";
 import { useViewport } from "@/app/viewport";
 import { PlaceDetails } from "./PlaceDetails";
@@ -30,6 +30,7 @@ export const DetailsPanel = ({
   width = DETAILS_PANEL_WIDTH,
   onResize,
   excludedByFilters = false,
+  initialStory,
 }: {
   citySlug: string;
   poi?: Poi;
@@ -40,11 +41,12 @@ export const DetailsPanel = ({
   width?: number;
   onResize?: (width: number) => void;
   excludedByFilters?: boolean;
+  initialStory?: InitialStory | null;
 }) => {
   // Keep showing the last place while the panel animates closed.
   const [poi, setPoi] = useState(selectedPoi);
   if (selectedPoi && selectedPoi !== poi) setPoi(selectedPoi);
-  const story = usePoiStoryContent({ citySlug, poiId: poi?.id });
+  const story = usePoiStoryContent({ citySlug, poiId: poi?.id, initial: initialStory });
   const { person, isLoading: isPersonLoading } = usePerson(
     personSlug ?? undefined,
     citySlug,

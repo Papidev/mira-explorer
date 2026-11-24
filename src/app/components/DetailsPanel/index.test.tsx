@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import { useState, type ComponentProps } from "react";
+import { renderToString } from "react-dom/server";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Poi } from "@/types/Poi";
 import { DetailsPanel } from ".";
@@ -60,6 +61,22 @@ const useStoryResponse = () => {
     ),
   );
 };
+
+describe("POI details from a shared link", () => {
+  it("includes the Story the server loaded in the page's HTML", () => {
+    const html = renderToString(
+      <Panel
+        citySlug="rome"
+        poi={poi}
+        onClose={() => {}}
+        initialStory={{ poiId: poi.id, storyContent, detail: null }}
+      />,
+    );
+
+    expect(html).toContain("Forum Boarium");
+    expect(html).toContain("A visitor-facing introduction.");
+  });
+});
 
 describe("POI details person navigation", () => {
   it("opens a resolved Person, returns to the same Story, and closes the drawer", async () => {

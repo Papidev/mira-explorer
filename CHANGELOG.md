@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.1
+
+### Patch Changes
+
+- Include the full Story in the page when a place link is opened, so search engines can read it without waiting for the map.
+
 ## 0.29.0
 
 ### Minor Changes
