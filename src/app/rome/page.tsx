@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
+import { siteOpenGraph, toMetaDescription } from "@/app/site";
+import { publicCatalog } from "@/server/publicCatalog";
+import { visitorContent } from "@/server/visitorContent";
+import { mergeVisitorCity } from "@/server/visitorContent/mergeCity";
+import { findLinkedPoi, poiPath } from "./linkedPoi";
 import { RomeMap } from "@/app/components/RomeMap";
 import { WorkInProgressNote } from "@/app/components/ui/WorkInProgress";
 
@@ -8,6 +14,40 @@ type Props = {
     poi?: string;
     person?: string;
   }>;
+};
+
+const cityDescription = "Discover the history, art, and culture of Rome's places on the map.";
+
+export const generateMetadata = async ({ searchParams }: Props): Promise<Metadata> => {
+  const query = await searchParams;
+  const city = await visitorContent.getCity("rome").catch(() => null);
+  const { pois, aliases } = city
+    ? mergeVisitorCity(city, publicCatalog)
+    : { pois: [], aliases: {} };
+  const poi = findLinkedPoi(pois, aliases, query);
+  if (!poi)
+    return {
+      title: "Rome",
+      description: cityDescription,
+      alternates: { canonical: "/rome" },
+      openGraph: { ...siteOpenGraph, title: "Rome", description: cityDescription, url: "/rome" },
+    };
+  const description = toMetaDescription(
+    poi.previewDescription ?? poi.shortDescription ?? cityDescription,
+  );
+  const url = poiPath(poi);
+  return {
+    title: poi.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      ...siteOpenGraph,
+      title: poi.name,
+      description,
+      url,
+      ...(poi.mainImageUrl ? { images: [{ url: poi.mainImageUrl, alt: poi.name }] } : {}),
+    },
+  };
 };
 
 const RomePage = async ({ searchParams }: Props) => {

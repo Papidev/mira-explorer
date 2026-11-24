@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { WebAnalytics } from "./components/WebAnalytics";
+import { siteOpenGraph, siteUrl } from "./site";
 import { themeInitScript } from "./theme";
 import "./globals.css";
 
@@ -15,9 +16,15 @@ const fraunces = Fraunces({
   axes: ["opsz"],
 });
 
+const description = "Explore cities through history, art, and culture.";
+
 export const metadata: Metadata = {
-  title: "Mira",
-  description: "Explore cities through history, art, and culture.",
+  metadataBase: new URL(siteUrl),
+  title: { default: "Mira", template: "%s · Mira" },
+  description,
+  // No canonical or og:url here: child pages would inherit the homepage's.
+  openGraph: { ...siteOpenGraph, title: "Mira", description },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({
