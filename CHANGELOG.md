@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.5
+
+### Patch Changes
+
+- Use the domain glossary's POI and Person names in the visitor map code and content API errors, and drop the unused POI `funFacts` field.
+
 ## 0.29.4
 
 ### Patch Changes
