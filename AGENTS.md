@@ -23,7 +23,7 @@ Read `docs/agents/issue-tracker.md` before issue tracker operations.
 ### Domain docs
 
 Use the single-context layout.
-Read `docs/agents/domain.md` before domain exploration.
+Domain-Driven Design is the baseline for all development, not only domain exploration: read `docs/agents/domain.md` and `CONTEXT.md` before starting any feature, fix, or refactor.
 
 ## Before Starting Work
 
@@ -54,7 +54,7 @@ Read `docs/agents/domain.md` before domain exploration.
 - Keep all user-facing application copy in English until localization support is introduced.
 - When a UI module grows into multiple implementation files, place it in a folder named after its public component. Put the public component implementation in `index.tsx` (for example `PoiRowsTable/index.tsx` exports `PoiRowsTable`); use short contextual names for private files and components (for example `Row.tsx` exports `Row`) instead of repeating the public prefix. The index file should own the implementation rather than act as a barrel that only re-exports other files.
 - Compose React components from focused child components when distinct UI sections make the parent hard to read. Keep the parent responsible for structure and shared state, and keep each child responsible for its own content and actions; place non-trivial children in separate files.
-- Favor a lightweight Domain-Driven Design mindset: model features around the domain language (cities, POIs, timelines) and keep logic close to the data source, but resist extra indirection unless it delivers clear value.
+- Apply lightweight Domain-Driven Design to every change: name modules, types, functions, tests, and issues with `CONTEXT.md` terms (for example POI, Story, Person, Visitor Content), group server code by domain concept under `src/server/`, and keep logic close to the data source. Resist extra indirection unless it delivers clear value. When a change introduces or reshapes a concept, update `CONTEXT.md` in the same PR.
 - Keep React components declarative and push imperative map logic into adapters/utilities. Any `maplibre-gl` interaction must guard against double-mounts and clean up markers in `destroy()`.
 
 ## Feature Implementation Approach
