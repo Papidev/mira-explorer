@@ -10,7 +10,7 @@ import { Spinner } from "@/app/components/ui/Spinner";
 import { usePoiStoryContent, type InitialStory } from "@/app/components/usePoiStoryContent";
 import { usePerson } from "@/app/components/usePerson";
 import { useViewport } from "@/app/viewport";
-import { PlaceDetails } from "./PlaceDetails";
+import { PoiDetails } from "./PoiDetails";
 import { PersonDetails } from "./PersonDetails";
 
 /** Default width of the details side drawer, before the visitor resizes it. */
@@ -60,7 +60,7 @@ export const DetailsPanel = ({
     if (!selectedPoi) setPoi(undefined);
   };
   const isLoading = personSlug ? isPersonLoading : story.isLoading && story.showLoading;
-  const backToPlace = personSlug && selectedPoi ? () => onSelectPerson(null) : undefined;
+  const backToPoi = personSlug && selectedPoi ? () => onSelectPerson(null) : undefined;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   // Where the visitor left the Story, kept while a Person covers it.
@@ -115,7 +115,7 @@ export const DetailsPanel = ({
           className="h-full overflow-y-auto group-data-[snap=peek]/sheet:overflow-hidden"
         >
           <div className="absolute top-4 right-4 z-10">
-            <DrawerCloseButton onClick={backToPlace ?? onClose} />
+            <DrawerCloseButton onClick={backToPoi ?? onClose} />
           </div>
           {personSlug ? (
             <PersonDetails
@@ -126,11 +126,11 @@ export const DetailsPanel = ({
                   ({ personId, slug }) => personId === personSlug || slug === personSlug,
                 )?.name
               }
-              placeName={selectedPoi?.name}
+              poiName={selectedPoi?.name}
               onBack={() => onSelectPerson(null)}
             />
           ) : poi ? (
-            <PlaceDetails
+            <PoiDetails
               poi={poi}
               story={story}
               galleryKey={

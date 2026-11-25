@@ -3,21 +3,20 @@ import type { Poi } from "@/types/Poi";
 import { DEFAULT_POI_CATEGORY_DEFINITIONS as definitions, matchesPoiCategory } from ".";
 import { categoryFilter } from "./filter";
 
-const place = (id: string, categories: string[]): Poi => ({
+const poi = (id: string, categories: string[]): Poi => ({
   id,
   name: id,
   categories,
   city: "Rome",
   coordinates: { lat: 41.9, lng: 12.48 },
-  funFacts: [],
 });
 const pois = [
-  place("church", ["Church"]),
-  place("cathedral", ["Cathedral", "Church"]),
-  place("museum", ["Museum"]),
-  place("church-museum", ["Church", "Museum"]),
-  place("castle-museum", ["Castle", "Museum"]),
-  place("unclassified", []),
+  poi("church", ["Church"]),
+  poi("cathedral", ["Cathedral", "Church"]),
+  poi("museum", ["Museum"]),
+  poi("church-museum", ["Church", "Museum"]),
+  poi("castle-museum", ["Castle", "Museum"]),
+  poi("unclassified", []),
 ];
 const ids = (shown: Poi[]) => shown.map(({ id }) => id);
 const filterOf = (selection: string[] | null) => categoryFilter(definitions, pois, selection);

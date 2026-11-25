@@ -297,7 +297,7 @@ const liveMap = () => {
   return map;
 };
 
-/** Places currently drawn as markers, by name; places inside bubbles are not drawn. */
+/** POIs currently drawn as markers, by name; POIs inside bubbles are not drawn. */
 export const mapMarkers = () =>
   liveMap()
     .features()

@@ -18,3 +18,8 @@
 - Prefer Tailwind utilities directly in owned JSX, and keep small class-list repetitions local. When a repeated pattern represents reusable structure or behavior, extract a React component that owns the utilities. Reserve custom CSS and `@apply` for cases where a component would be disproportionate or the markup is externally generated. Use class-list maps only for real component variants, not solely to deduplicate strings.
 - Keep `globals.css` limited to genuinely shared styles: feature-specific styles belong in the owned component or its integration adapter, including narrowly scoped DOM styles at third-party boundaries. Use global CSS for generated or third-party markup only when no local styling hook exists, and place component rules in `@layer components`.
 - In custom CSS, use Tailwind theme variables for colors, spacing, typography, radii, shadows, and other design tokens; use literal values only for deliberate exceptions not covered by the theme.
+
+## Stories and map
+
+- Story Introductions and Story Topic descriptions support Markdown for readable paragraphs and selective emphasis; plain-text Stories remain valid. React components control presentation and need not render one section per Story Topic. MDX and configurable renderers are undecided.
+- POI Markers are drawn on the map canvas and cannot take keyboard focus: keyboard and screen-reader visitors must reach every POI through the POI list and search.

@@ -26,8 +26,8 @@ const getSnapshot = () =>
 
 /**
  * How the visitor map arranges its panels at the current width:
- * - `detailsAsSheet`: below md, place details open as a bottom sheet instead of a side drawer.
- * - `sidebarBesideMap`: from lg, filters start open and stay beside the map when a place opens.
+ * - `detailsAsSheet`: below md, POI details open as a bottom sheet instead of a side drawer.
+ * - `sidebarBesideMap`: from lg, filters start open and stay beside the map when a POI opens.
  * The server renders the in-between layout (neither), as before hydration.
  */
 export const useViewport = () =>

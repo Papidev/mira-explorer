@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.5
+
+### Patch Changes
+
+- Use the domain glossary's POI and Person names in the visitor map code and content API errors, drop the unused POI `funFacts` field, and read saved People with the renamed `adminSavedPersonSchema` from `@mira/shared`.
+
 ## 0.29.4
 
 ### Patch Changes

@@ -13,5 +13,4 @@ export type Poi = {
   shortDescription?: string;
   previewDescription?: string;
   mainImageUrl?: string;
-  funFacts: string[];
 };

@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   adminInventorySchema,
   adminPeopleIdsSchema,
-  adminPersonProfileSchema,
+  adminSavedPersonSchema,
   adminSavedStorySchema,
   catalogBaselineSchema,
   catalogWriteSchema,
@@ -1036,7 +1036,7 @@ export const createPostgresContent = (
           [reference.personId],
         );
         if (!person)
-          throw new ContentWriteError("invalid", `Missing Person Profile ${reference.personId}.`);
+          throw new ContentWriteError("invalid", `Missing Person ${reference.personId}.`);
         if (candidate && person.wikidata_id !== candidate.wikidataId)
           throw new ContentWriteError(
             "conflict",
@@ -1095,7 +1095,7 @@ export const createPostgresContent = (
       } = await client.query("SELECT * FROM content.people WHERE id = $1 FOR UPDATE", [
         input.person.id,
       ]);
-      if (!person) throw new ContentWriteError("obsolete", "Person Profile was removed.");
+      if (!person) throw new ContentWriteError("obsolete", "Person was removed.");
       if (person.wikidata_id !== input.wikidataId)
         throw new ContentWriteError("conflict", "Person Wikidata identity changed.");
       if (person.profile_version === input.profileVersion) {
@@ -1104,7 +1104,7 @@ export const createPostgresContent = (
         return "already-saved" as const;
       }
       if (person.profile_version !== input.expectedProfileVersion)
-        throw new ContentWriteError("conflict", "A newer Person Profile is already saved.");
+        throw new ContentWriteError("conflict", "A newer Person is already saved.");
       await client.query(
         `UPDATE content.people SET profile_version = $2, name = $3, content = $4,
         sources = $5, generation = $6, request_digest = $7, image = COALESCE($8, image), updated_at = now() WHERE id = $1`,
@@ -1178,7 +1178,7 @@ export const createPostgresContent = (
 
   getAdminPeople: async (ids: string[]) => {
     const read = await readUnchanged(pool, adminPeopleQuery, [adminPeopleIdsSchema.parse(ids)]);
-    return z.array(adminPersonProfileSchema).parse(read("person"));
+    return z.array(adminSavedPersonSchema).parse(read("person"));
   },
 
   getPoiBaseline: async (poiId: string) => {

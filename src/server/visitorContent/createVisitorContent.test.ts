@@ -56,7 +56,6 @@ const colosseum: Poi = {
   name: "Local Colosseum",
   coordinates: { lat: 41.89, lng: 12.49 },
   mainImageUrl: "https://example.com/local.jpg",
-  funFacts: [],
 };
 const castle: Poi = {
   ...colosseum,
@@ -209,7 +208,6 @@ describe("Visitor Content Stories and People", () => {
               name: "Local",
               city: "rome",
               coordinates: detail.coordinates,
-              funFacts: [],
             },
             storyContent: {
               introduction: "Local",
@@ -342,7 +340,6 @@ describe("Visitor Content local-only POIs", () => {
           name: "Local Colosseum",
           city: "rome",
           coordinates: { lat: 41.89, lng: 12.49 },
-          funFacts: [],
           mainImageUrl: "https://example.com/image.jpg",
         },
         storyContent: localStory,

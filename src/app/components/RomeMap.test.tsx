@@ -47,7 +47,6 @@ vi.mock("@/server/publicCatalog", () => ({
         city: "rome",
         name: "Local place",
         coordinates: { lng: 12.5, lat: 41.9 },
-        funFacts: [],
       },
     ],
     getCategoryDefinitions: () => [],

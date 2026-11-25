@@ -3,7 +3,7 @@ import type { Poi } from "@/types/Poi";
 import type { PoiCategoryDefinition } from "@/types/PoiCategory";
 
 /** Clicks are handled by the list, so a tap re-renders only the rows whose selection changed. */
-export const PlaceRow = ({
+export const PoiRow = ({
   poi,
   selected,
   categoryDefinitions,

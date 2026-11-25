@@ -76,7 +76,7 @@ export const CityExplorer = ({
   const { detailsAsSheet, sidebarBesideMap } = useViewport();
   const viewportWidth = useViewportWidth();
   // A closed sidebar still holds ~1,000 place rows; drop them once it has slid away.
-  const [placesListed, setPlacesListed] = useState(false);
+  const [poisListed, setPoisListed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
   const [detailsWidth, setDetailsWidth] = useState(DETAILS_PANEL_WIDTH);
   const openFiltersSwipe = useFilterSwipe("right", () => setSidebarOpen(true));
@@ -135,10 +135,10 @@ export const CityExplorer = ({
   const shownDetailsWidth = Math.min(detailsWidth, Math.round(viewportWidth * DETAILS_MAX_SHARE));
   // From lg the filters stay beside the map, unless they and an open place would leave it too
   // little room; they come back when the place closes. A visitor's own choice still wins.
-  const roomBesidePlace =
+  const roomBesidePoi =
     viewportWidth - sidebarWidth - shownDetailsWidth >= viewportWidth * MAP_MIN_SHARE;
-  const sidebarVisible = sidebarOpen ?? (sidebarBesideMap && (!detailsOpen || roomBesidePlace));
-  if (sidebarVisible && !placesListed) setPlacesListed(true);
+  const sidebarVisible = sidebarOpen ?? (sidebarBesideMap && (!detailsOpen || roomBesidePoi));
+  if (sidebarVisible && !poisListed) setPoisListed(true);
   // Below lg, opening a place closes the filters, so they only ever cover the map beside it.
   const coveredArea: CoveredArea = {
     left: sidebarVisible ? sidebarWidth : 0,
@@ -153,14 +153,14 @@ export const CityExplorer = ({
         open={sidebarVisible}
         side="left"
         width={sidebarWidth}
-        afterLeave={() => setPlacesListed(false)}
+        afterLeave={() => setPoisListed(false)}
         {...closeFiltersSwipe}
         className="z-30 touch-pan-y"
       >
         <Sidebar
           categoryDefinitions={categoryDefinitions}
           pois={pois}
-          visiblePois={placesListed ? visiblePois : []}
+          visiblePois={poisListed ? visiblePois : []}
           filter={filter}
           selectedPoiId={selectedPoiId}
           onToggleCategory={(category) => updateCategories(filter.toggle(category))}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { placeJsonLd, toJsonLdScript } from "./placeJsonLd";
+import { poiJsonLd, toJsonLdScript } from "./poiJsonLd";
 
 const araPacis = {
   id: "0b6f3c1e-8c1a-4a55-9a51-1c2f8f7c9d10",
@@ -9,12 +9,11 @@ const araPacis = {
   city: "rome",
   coordinates: { lat: 41.906, lng: 12.475 },
   mainImageUrl: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg",
-  funFacts: [],
 };
 
 describe("place structured data", () => {
   it("describes a place with its location, image, page and Wikidata identity", () => {
-    expect(placeJsonLd(araPacis, "An altar to Peace.")).toEqual({
+    expect(poiJsonLd(araPacis, "An altar to Peace.")).toEqual({
       "@context": "https://schema.org",
       "@type": "TouristAttraction",
       name: "Ara Pacis",
@@ -28,12 +27,12 @@ describe("place structured data", () => {
 
   it("leaves out what a place does not have", () => {
     const bare = { ...araPacis, mainImageUrl: undefined, wikidataId: undefined };
-    expect(placeJsonLd(bare, "")).not.toHaveProperty("image");
-    expect(placeJsonLd(bare, "")).not.toHaveProperty("sameAs");
+    expect(poiJsonLd(bare, "")).not.toHaveProperty("image");
+    expect(poiJsonLd(bare, "")).not.toHaveProperty("sameAs");
   });
 
   it("cannot close its script tag from content", () => {
-    const script = toJsonLdScript(placeJsonLd(araPacis, "</script><script>alert(1)</script>"));
+    const script = toJsonLdScript(poiJsonLd(araPacis, "</script><script>alert(1)</script>"));
     expect(script).not.toContain("<");
     expect(JSON.parse(script).description).toBe("</script><script>alert(1)</script>");
   });
