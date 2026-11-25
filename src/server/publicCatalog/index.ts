@@ -6,6 +6,7 @@ import type { Poi } from "@/types/Poi";
 import { getPoiDisplayName } from "@/utils/getPoiDisplayName";
 
 export const createPublicCatalog = (readCatalog: () => PublicCatalog) => ({
+  getCatalogCity: () => readCatalog().city,
   getCategoryDefinitions: () => readCatalog().categoryDefinitions,
   getPois: (city: string): Poi[] => {
     const catalog = readCatalog();

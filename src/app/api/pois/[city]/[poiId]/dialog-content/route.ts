@@ -1,6 +1,4 @@
-import { onlineVisitorReads } from "@/server/visitorContent";
-import { createVisitorHandler } from "@/server/visitorContent/handler";
-import { publicCatalog } from "@/server/publicCatalog";
+import { visitorContent } from "@/server/visitorContent";
 
 type Context = {
   params: Promise<{ city: string; poiId: string }>;
@@ -8,5 +6,12 @@ type Context = {
 
 export const GET = async (_request: Request, { params }: Context) => {
   const { city, poiId } = await params;
-  return createVisitorHandler(onlineVisitorReads, publicCatalog).getStory(city, poiId);
+  const result = await visitorContent.story(city, poiId);
+  const headers = { "Cache-Control": "no-store" };
+  return result.status === "found"
+    ? Response.json(result.story, { headers })
+    : Response.json(
+        { storyContent: null },
+        { status: result.status === "not-found" ? 404 : 503, headers },
+      );
 };
