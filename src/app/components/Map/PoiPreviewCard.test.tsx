@@ -13,7 +13,6 @@ const poi: Poi = {
   coordinates: { lat: 41.889, lng: 12.481 },
   shortDescription: "The ancient cattle market beside the Tiber.",
   mainImageUrl: "https://example.com/forum-boarium.jpg",
-  funFacts: [],
 };
 
 afterEach(cleanup);

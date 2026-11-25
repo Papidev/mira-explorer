@@ -34,7 +34,6 @@ const pois: Poi[] = [
     coordinates: { lat: 41.889, lng: 12.481 },
     shortDescription: "The ancient cattle market beside the Tiber.",
     mainImageUrl: "https://example.com/forum-boarium.jpg",
-    funFacts: [],
   },
   {
     id: "cloisters-of-bramante",
@@ -43,11 +42,10 @@ const pois: Poi[] = [
     city: "Rome",
     coordinates: { lat: 41.9, lng: 12.47 },
     shortDescription: "A Renaissance cloister by Donato Bramante.",
-    funFacts: [],
   },
 ];
 
-/** Places beside Forum Boarium, close enough to share a bubble with it. */
+/** POIs beside Forum Boarium, close enough to share a bubble with it. */
 const neighbor: Poi = { ...pois[1], coordinates: { lat: 41.889, lng: 12.4815 } };
 const otherNeighbor: Poi = {
   ...pois[1],

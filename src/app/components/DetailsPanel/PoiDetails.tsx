@@ -13,7 +13,7 @@ import { Heading } from "./Heading";
 type StoryState = ReturnType<typeof usePoiStoryContent>;
 
 /** A place's cover image, title and Story. */
-export const PlaceDetails = ({
+export const PoiDetails = ({
   poi,
   story: { content, detail, mainImageUrl: localMainImageUrl, isLoading },
   galleryKey,

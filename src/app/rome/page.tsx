@@ -5,7 +5,7 @@ import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
 import { siteOpenGraph, toMetaDescription } from "@/app/site";
 import { visitorContent } from "@/server/visitorContent";
 import { poiPath } from "./linkedPoi";
-import { placeJsonLd, toJsonLdScript } from "./placeJsonLd";
+import { poiJsonLd, toJsonLdScript } from "./poiJsonLd";
 import { RomeMap } from "@/app/components/RomeMap";
 import { WorkInProgressNote } from "@/app/components/ui/WorkInProgress";
 
@@ -25,7 +25,7 @@ const findLinkedPoi = cache(async (poi?: string, poiId?: string) => {
   return map.status === "found" ? map.findLinkedPoi({ poi, poiId }) : undefined;
 });
 
-const placeDescription = (poi: Poi) =>
+const poiDescription = (poi: Poi) =>
   toMetaDescription(poi.previewDescription ?? poi.shortDescription ?? cityDescription);
 
 export const generateMetadata = async ({ searchParams }: Props): Promise<Metadata> => {
@@ -38,7 +38,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
       alternates: { canonical: "/rome" },
       openGraph: { ...siteOpenGraph, title: "Rome", description: cityDescription, url: "/rome" },
     };
-  const description = placeDescription(poi);
+  const description = poiDescription(poi);
   const url = poiPath(poi);
   return {
     title: poi.name,
@@ -64,7 +64,7 @@ const RomePage = async ({ searchParams }: Props) => {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: toJsonLdScript(placeJsonLd(poi, placeDescription(poi))),
+            __html: toJsonLdScript(poiJsonLd(poi, poiDescription(poi))),
           }}
         />
       )}

@@ -9,7 +9,7 @@ import {
 import type { CategoryFilter } from "@/types/PoiCategory/filter";
 import { DrawerCloseButton } from "@/app/components/ui/DrawerCloseButton";
 import { CategoryGroup } from "./CategoryGroup";
-import { PlaceRow } from "./PlaceRow";
+import { PoiRow } from "./PoiRow";
 import { Search } from "./Search";
 
 export const Sidebar = ({
@@ -40,7 +40,7 @@ export const Sidebar = ({
 }) => {
   const [expanded, setExpanded] = useState(true);
   const categoriesId = useId();
-  const placesHeadingId = useId();
+  const poisHeadingId = useId();
   return (
     <aside
       aria-label="Discover places"
@@ -153,7 +153,7 @@ export const Sidebar = ({
               ))}
           </div>
         </fieldset>
-        <h3 id={placesHeadingId} className="text-ink-muted mt-5 px-1 text-sm font-semibold">
+        <h3 id={poisHeadingId} className="text-ink-muted mt-5 px-1 text-sm font-semibold">
           Places matching your filters
         </h3>
         {!visiblePois.length && (
@@ -164,7 +164,7 @@ export const Sidebar = ({
           </p>
         )}
         <ul
-          aria-labelledby={placesHeadingId}
+          aria-labelledby={poisHeadingId}
           className="mt-3 space-y-2"
           onClick={(event) => {
             const poiId = (event.target as Element)
@@ -174,7 +174,7 @@ export const Sidebar = ({
           }}
         >
           {visiblePois.map((poi) => (
-            <PlaceRow
+            <PoiRow
               key={poi.id}
               poi={poi}
               selected={selectedPoiId === poi.id}

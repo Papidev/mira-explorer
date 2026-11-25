@@ -8,27 +8,27 @@ export const PersonDetails = ({
   person,
   isLoading,
   loadingName,
-  placeName,
+  poiName,
   onBack,
 }: {
   person: PublicPerson | null;
   isLoading: boolean;
   /** Name from the place's Story, shown while the profile loads. */
   loadingName?: string;
-  placeName?: string;
+  poiName?: string;
   onBack: () => void;
 }) => (
   <>
     <Heading
       before={
-        placeName ? (
+        poiName ? (
           <button
             type="button"
             onClick={onBack}
             className="text-ink-muted hover:text-ink focus-visible:outline-focus mb-3 inline-flex max-w-full cursor-pointer items-center gap-2 rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4"
           >
             <ArrowLeftIcon className="size-4 shrink-0" aria-hidden="true" />
-            <span className="truncate">Back to {placeName}</span>
+            <span className="truncate">Back to {poiName}</span>
           </button>
         ) : null
       }

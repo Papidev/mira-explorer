@@ -20,7 +20,6 @@ const poi: Poi = {
   name: "Forum Boarium",
   city: "Rome",
   coordinates: { lat: 41.889, lng: 12.481 },
-  funFacts: [],
 };
 
 const storyContent = {

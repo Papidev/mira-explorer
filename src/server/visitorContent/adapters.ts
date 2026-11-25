@@ -10,7 +10,6 @@ export const toVisitorCity = (city: PublishedCityPreview) => ({
     ...poi,
     ...(wikidataId ? { wikidataId } : {}),
     categories: categoryIds,
-    funFacts: [],
     // Preview text stays plain; the detail renderer handles the full Markdown.
     previewDescription: introduction
       .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")

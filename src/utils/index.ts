@@ -79,13 +79,6 @@ const asPoi = (feature: GeoJsonFeature, index: number, fallbackCity: string): Po
       ].join(", ")
     : undefined;
 
-  const funFacts = [
-    feature.wikidataId?.replace(/^/, "Wikidata: "),
-    pickString(properties, "wikipedia")?.replace(/^/, "Wikipedia: "),
-    pickString(properties, "heritage")?.replace(/^/, "Heritage status: "),
-    pickString(properties, "charge")?.replace(/^/, "Ticket: "),
-  ].filter((value): value is string => Boolean(value));
-
   return {
     id: rawId,
     ...(feature.wikidataId ? { wikidataId: feature.wikidataId } : {}),
@@ -95,7 +88,6 @@ const asPoi = (feature: GeoJsonFeature, index: number, fallbackCity: string): Po
     address,
     period,
     shortDescription: description,
-    funFacts,
   };
 };
 
