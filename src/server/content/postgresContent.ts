@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   adminInventorySchema,
   adminPeopleIdsSchema,
-  adminPersonProfileSchema,
+  adminSavedPersonSchema,
   adminSavedStorySchema,
   catalogBaselineSchema,
   catalogWriteSchema,
@@ -1178,7 +1178,7 @@ export const createPostgresContent = (
 
   getAdminPeople: async (ids: string[]) => {
     const read = await readUnchanged(pool, adminPeopleQuery, [adminPeopleIdsSchema.parse(ids)]);
-    return z.array(adminPersonProfileSchema).parse(read("person"));
+    return z.array(adminSavedPersonSchema).parse(read("person"));
   },
 
   getPoiBaseline: async (poiId: string) => {
