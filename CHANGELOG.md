@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.4
+
+### Patch Changes
+
+- Describe each shared place to search engines with structured data: its name, Story excerpt, location, image, link and Wikidata identity.
+
 ## 0.29.3
 
 ### Patch Changes
