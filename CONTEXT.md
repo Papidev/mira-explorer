@@ -10,27 +10,27 @@ A POI appears on the visitor map only when it has:
 - eligible image metadata with source, author or rights status, license, and attribution when images are available; a successfully acquired empty gallery is valid and uses an image placeholder;
 - saved **Person** records for every retained **Related Person**.
 
-A Story may have no Related People. Imported places and metadata-only POIs remain internal. Curators may edit generated content.
+A Story may have no Related People. POIs without a published Story remain internal. Curators may edit generated content.
 
 Successfully saving complete, valid content automatically publishes its new version. There is currently no separate approval phase or publish action. A pending or failed save leaves the previous published version current. An approval phase is a possible later evolution; its rules are not yet defined.
 
 ## Language
 
 **POI**:
-An app-ready place or object on the map that may have metadata and a story.
-_Avoid_: Clean POI, polished POI, transformed POI, spot, location, attraction
+Anything a visitor can find at a spot on the map, such as a building, square, monument, or single object like a sculpture. It has **POI Metadata** and may have a **Story**.
+_Avoid_: Clean POI, polished POI, transformed POI, spot, location, attraction, landmark
 
 **POI Marker**:
-The interactive symbol representing a **POI** on the visitor map, from which visitors can discover the place and open its **Story**.
+The interactive symbol representing a **POI** on the visitor map, from which visitors can discover the POI and open its **Story**.
 _Avoid_: Pin, dot
 
 **POI Preview**:
-The compact summary associated with a **POI Marker**, showing the place's name, thumbnail, and short descriptor, with an action to open its **Story**. It appears when hovering over the marker. Markers are drawn on the map and cannot take keyboard focus; keyboard and screen-reader visitors reach every **POI** through the place list and search.
+The compact summary of a **POI** shown while a pointer hovers its **POI Marker**: name, thumbnail, and short descriptor, with an action to open its **Story**. A tap or click on the marker opens the Story directly, so touch screens never show a preview.
 _Avoid_: Tooltip, POI popup, Story
 
-**Geo Place**:
-The geographic representation of a place from a source dataset before irrelevant fields are removed and it becomes a **POI**.
-_Avoid_: Raw POI, Raw Place, Raw Location, Raw feature, source feature
+**Place**:
+A record from a source map dataset, before irrelevant fields are removed and it becomes a **POI**.
+_Avoid_: Geo Place, Map Feature, raw POI, source feature
 
 **POI ID**:
 A stable, human-readable identifier assigned by Mira to a **POI**, independent of identifiers from external sources.
@@ -45,7 +45,7 @@ An app-owned grouping shared across cities, with a singular name, used to filter
 _Avoid_: POI Type, Wikidata category
 
 **POI Subcategory**:
-A **POI Category** nested directly under a broader parent **POI Category**. Its **POIs** also belong to the parent's discovery scope; Cathedral, Basilica, Church, Abbey, Baptistery, and Temple are subcategories of Religion; Museum, Library, Archive, and Academy belong to Arts & Culture; built structures such as Castle and Aqueduct belong to Architecture; Square, Street, Fountain, Garden, and Park belong to Public Spaces; Cemetery, Grave, Mausoleum, and Monument belong to Memorials. Categories without a clearer group belong to Other places. Cathedral, Basilica, and Church discovery scopes follow the place naming and precedence rules.
+A **POI Category** nested directly under one broader parent **POI Category**, such as Cathedral under Religion. Its **POIs** also belong to the parent's discovery scope.
 _Avoid_: POI Type, Wikidata subclass
 
 **Category Filter**:
@@ -154,9 +154,9 @@ _Avoid_: Merged catalog, visitor catalog, public catalog (the local build snapsh
 
 ## Core rules
 
-### Places and categories
+### POIs and categories
 
-- A **Geo Place** becomes an app-ready **POI** before the **Story Workflow** starts. Each POI has one stable app-owned ID and optional external identifiers.
+- A **Place** becomes an app-ready **POI** before the **Story Workflow** starts. Each POI has one stable app-owned ID and optional external identifiers.
 - A POI may have several source **POI Types** and app-owned **POI Categories**. Metadata and category membership remain separate from Story Content. Category exceptions survive source and mapping changes until the Curator removes them.
 - Category hierarchy, naming, and filtering rules are defined in [POI Categories](docs/poi-categories.md).
 
@@ -165,12 +165,12 @@ _Avoid_: Merged catalog, visitor catalog, public catalog (the local build snapsh
 - A POI has at most one current Draft Story and one visitor-facing Story, each belonging to that POI. A Story combines Story Content and one Main Image.
 - Draft Story Generation starts from an existing POI and creates or replaces draft content, Sources, and image candidates. Regenerating content or candidates remains automated generation; reviewing content and selecting an image are Story Curation.
 - A Draft Story contains Story Content and one or more Sources; its selected image and candidates may be missing while generation is incomplete.
-- Story Content has a required introduction, optional supported history/design/art topics, and Related People. Its introduction and topic descriptions support Markdown for readable paragraphs and selective emphasis; existing plain-text Stories remain valid. Topics express content semantics; React components control presentation and need not expose one section per topic.
+- Story Content has a required introduction, optional supported history/design/art topics, and Related People. Topics express content meaning, not page layout.
 - Publish only the strongest few source-supported ideas rather than a complete article summary. Prefer visible details when they convey the cultural meaning. Dated history insights run oldest to newest, followed by undated insights.
 - Retain Sources and resolvable Source References for editorial review. Sources, Editorial Notes, AI reasoning, and processing metadata remain hidden from the default Visitor Experience.
 - Related People must be explicitly named in the Story Introduction or a Visitor Insight. Generated Stories mention each retained person's full display name at least once; people mentioned only in Sources are excluded. The public catalog also excludes people whose full display name is absent from the Story text.
-- Wikipedia, Wikidata, and Wikimedia Commons provide the initial source material; story text currently starts from Wikipedia. MDX and configurable React renderers remain future decisions.
-- Allowed Wikipedia editions are English, Italian, French, German, and Spanish. Acquire Wikipedia in English and the official languages of the POI's country that are in the allowed edition list. Related People also include the official languages of their countries of citizenship; retain the POI country context when regenerating a Person. Match editions through Wikidata identity, deduplicate languages, and write visitor content in English. Missing editions or country/language metadata produce warnings; usable Sources still support generation. Apply the same country-context principle when adding other linked entities.
+- Wikipedia, Wikidata, and Wikimedia Commons provide the initial source material; story text currently starts from Wikipedia.
+- Sources come from English Wikipedia plus the editions in the official languages of the POI's country; Related People add the languages of their countries of citizenship. Visitor content is written in English. A missing edition produces a warning but does not block generation. The allowed editions and matching rules are in the [legacy Story workflow](docs/story-workflow-architecture.md#generate-and-refresh).
 - Generation order, persistence, retries, and failure behavior belong to [Mira Admin](https://github.com/Papidev/mira-admin). The [legacy Story workflow](docs/story-workflow-architecture.md) documents the original versioned artifacts.
 
 ### People
