@@ -31,8 +31,15 @@ vi.mock("@/server/visitorContent", async () => {
     }),
   };
   return {
-    onlineVisitorReads: online,
-    visitorContent: createVisitorContent({ online, local: publicCatalog }),
+    visitorContent: createVisitorContent({
+      online: {
+        ...online,
+        getStory: async () => null,
+        getPerson: async () => null,
+        getPersonBySlug: async () => null,
+      },
+      local: publicCatalog,
+    }),
   };
 });
 vi.mock("@/server/publicCatalog", () => ({

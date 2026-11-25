@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.3
+
+### Patch Changes
+
+- Open place Stories and People through the same Visitor Content module as the Rome map, so a place hidden on the map can never be opened as a Story or reached from one of its People.
+
 ## 0.29.2
 
 ### Patch Changes

@@ -1,7 +1,5 @@
 import { connection } from "next/server";
-import { onlineVisitorReads, visitorContent } from "@/server/visitorContent";
-import { publicCatalog } from "@/server/publicCatalog";
-import { createVisitorHandler } from "@/server/visitorContent/handler";
+import { visitorContent } from "@/server/visitorContent";
 import { CityExplorer } from "@/app/components/CityExplorer";
 import { RomeHeader } from "@/app/rome/RomeHeader";
 
@@ -37,10 +35,11 @@ export const RomeMap = async ({
     : [12.4823, 41.8933]; // Piazza del Campidoglio: default arrival in Rome's historic centre.
   // A shared place's Story is in the page's HTML; on failure the panel loads it as usual.
   const initialStory = initialSelectedPoi
-    ? await createVisitorHandler(onlineVisitorReads, publicCatalog)
-        .loadStory("rome", initialSelectedPoi.id)
-        .then((story) => story && { ...story, poiId: initialSelectedPoi.id })
-        .catch(() => null)
+    ? await visitorContent
+        .story("rome", initialSelectedPoi.id)
+        .then((result) =>
+          result.status === "found" ? { ...result.story, poiId: initialSelectedPoi.id } : null,
+        )
     : null;
 
   return (
