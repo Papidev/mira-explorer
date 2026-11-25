@@ -3,7 +3,7 @@ import type { PublishedPerson } from "@mira/shared";
 import { describe, expect, it, vi } from "vitest";
 import { visitorLabels } from "@/server/content/visitorLabels";
 import { createCachedRead, createVisitorClear } from "./cache";
-import { createVisitorReads } from "./reads";
+import { createOnlineVisitorReads } from "./reads";
 
 const minutes = (count: number) => count * 60_000;
 
@@ -181,7 +181,7 @@ describe("shared visitor cache", () => {
       linkedPois: Array.from({ length: 127 }, (_, index) => ({ id: String(index) })),
     } as PublishedPerson;
     const visit = () =>
-      createVisitorReads(
+      createOnlineVisitorReads(
         () => ({
           getCityPreviews: async () => Promise.reject(new Error("unused")),
           getStory: async () => undefined,

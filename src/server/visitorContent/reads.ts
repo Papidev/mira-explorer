@@ -20,7 +20,7 @@ const personLabels = (person: PublishedPerson | null) =>
 
 // Missing identities and empty cities come from arbitrary URLs: they stay in instance memory only,
 // where the 10-minute recheck also lets newly published content appear.
-export const createVisitorReads = (
+export const createOnlineVisitorReads = (
   getRepository: () => Pick<
     ReturnType<typeof createPostgresContent>,
     "getCityPreviews" | "getStory" | "getPerson"

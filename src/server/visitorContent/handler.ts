@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { PublishedCityPreview, PublishedPerson, PublishedPoiDetail } from "@mira/shared";
 import type { createPublicCatalog } from "@/server/publicCatalog";
 import type { PublicStoryContent } from "@/server/storyWorkflow/storyContent";
-import { matchesPoiIdentity } from "./mergeCity";
+import { matchesPoiIdentity } from "./createVisitorContent";
 import { toVisitorPerson, toVisitorStory } from "./adapters";
 
 export const createVisitorHandler = (

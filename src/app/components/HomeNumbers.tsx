@@ -5,8 +5,8 @@ import { visitorContent } from "@/server/visitorContent";
 // Same online counts as the Rome map header. Hidden when the online read fails.
 export const HomeNumbers = async () => {
   await connection();
-  const city = await visitorContent.getCity("rome").catch(() => null);
-  if (!city) return null;
+  const map = await visitorContent.map("rome");
+  if (map.status !== "found") return null;
 
   return (
     <section
@@ -31,12 +31,12 @@ export const HomeNumbers = async () => {
           {[
             { value: 1, label: "City so far, with more to follow", short: "City so far" },
             {
-              value: city.pois.length,
+              value: map.publishedCounts.places,
               label: "Places, each with its Story",
               short: "Places with a Story",
             },
             {
-              value: city.peopleCount ?? 0,
+              value: map.publishedCounts.people,
               label: "Historical figures to discover",
               short: "Historical figures",
             },

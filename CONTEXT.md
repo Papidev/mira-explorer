@@ -148,6 +148,10 @@ _Avoid_: public footnote, URL embedded in prose, bibliography entry
 The public-facing experience that shows publishable stories from the public catalog to visitors.
 _Avoid_: Production output, AI output
 
+**Visitor Content**:
+What visitors can reach in a city: online **Publications** merged with local-only **POIs**, **Stories**, and **People** from the public catalog. An online Publication replaces the whole matching local **POI**, a confirmed online removal suppresses it, and an online failure leaves content unavailable instead of falling back to local content. Published totals count online Publications only.
+_Avoid_: Merged catalog, visitor catalog, public catalog (the local build snapshot only)
+
 ## Core rules
 
 ### Places and categories

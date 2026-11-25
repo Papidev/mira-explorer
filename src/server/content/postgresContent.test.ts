@@ -10,7 +10,7 @@ import { createContentHandler } from "./handler";
 import { toVisitorCity } from "../visitorContent/adapters";
 import { matchesPoiCategory } from "@/types/PoiCategory";
 import { createCachedRead, createVisitorClear } from "../visitorContent/cache";
-import { createVisitorReads } from "../visitorContent/reads";
+import { createOnlineVisitorReads } from "../visitorContent/reads";
 import { exampleStoryWrite as example } from "./__fixtures__/writes";
 
 describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
@@ -2829,7 +2829,7 @@ describe.skipIf(!process.env.HISTORICAL_EXPLORER_TEST_DATABASE_URL)(
       // A new server instance each time: memory can't hide what the shared cache holds.
       const visit = async () => {
         let queried = 0;
-        const reads = createVisitorReads(() => {
+        const reads = createOnlineVisitorReads(() => {
           queried++;
           return repository;
         }, deployment);
