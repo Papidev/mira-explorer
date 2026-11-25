@@ -4,8 +4,11 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("maplibre-gl", () => ({ setWorkerUrl: () => {} }));
 vi.mock("next/server", () => ({ connection: async () => {} }));
-vi.mock("@/server/visitorContent", () => ({
-  visitorContent: {
+// The real merge runs over a faked online read and the mocked local catalog.
+vi.mock("@/server/visitorContent", async () => {
+  const { createVisitorContent } = await import("@/server/visitorContent/createVisitorContent");
+  const { publicCatalog } = await import("@/server/publicCatalog");
+  const online = {
     getCity: async () => ({
       city: "rome",
       categoryDefinitions: [],
@@ -23,8 +26,12 @@ vi.mock("@/server/visitorContent", () => ({
         },
       ],
     }),
-  },
-}));
+  };
+  return {
+    onlineVisitorReads: online,
+    visitorContent: createVisitorContent({ online, local: publicCatalog }),
+  };
+});
 vi.mock("@/server/publicCatalog", () => ({
   publicCatalog: {
     getPois: () => [

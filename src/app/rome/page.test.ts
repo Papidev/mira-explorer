@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/server", () => ({ connection: async () => {} }));
-vi.mock("@/server/visitorContent", () => ({
-  visitorContent: {
+// The real merge runs over a faked online read and the mocked local catalog.
+vi.mock("@/server/visitorContent", async () => {
+  const { createVisitorContent } = await import("@/server/visitorContent/createVisitorContent");
+  const { publicCatalog } = await import("@/server/publicCatalog");
+  const online = {
     getCity: async () => ({
       city: "rome",
       categoryDefinitions: [],
@@ -15,12 +18,23 @@ vi.mock("@/server/visitorContent", () => ({
           coordinates: { lng: 12.475, lat: 41.906 },
           categoryIds: [],
           introduction: `The **Ara Pacis** is an altar to Peace. ${"Its reliefs show a procession. ".repeat(10)}`,
-          mainImage: { thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg" },
+          mainImage: {
+            id: "File:Ara Pacis.jpg",
+            commonsPageUrl: "https://commons.wikimedia.org/wiki/File:Ara_Pacis.jpg",
+            thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg",
+            originalImageUrl: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg",
+            license: "CC BY-SA 4.0",
+            attribution: "Wikimedia Commons",
+          },
         },
       ],
     }),
-  },
-}));
+  };
+  return {
+    onlineVisitorReads: online,
+    visitorContent: createVisitorContent({ online, local: publicCatalog }),
+  };
+});
 vi.mock("@/server/publicCatalog", () => ({
   publicCatalog: {
     getPois: () => [

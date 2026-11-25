@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.2
+
+### Patch Changes
+
+- Build the Rome map, its counts, shared place links and the sitemap from one Visitor Content module, so the online and local places a visitor reaches are merged by a single rule.
+
 ## 0.29.1
 
 ### Patch Changes

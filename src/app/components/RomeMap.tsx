@@ -1,11 +1,9 @@
 import { connection } from "next/server";
-import { visitorContent } from "@/server/visitorContent";
-import { mergeVisitorCity } from "@/server/visitorContent/mergeCity";
+import { onlineVisitorReads, visitorContent } from "@/server/visitorContent";
 import { publicCatalog } from "@/server/publicCatalog";
 import { createVisitorHandler } from "@/server/visitorContent/handler";
 import { CityExplorer } from "@/app/components/CityExplorer";
 import { RomeHeader } from "@/app/rome/RomeHeader";
-import { findLinkedPoi } from "@/app/rome/linkedPoi";
 
 type Props = {
   initialSelectedPoiId?: string;
@@ -19,8 +17,8 @@ export const RomeMap = async ({
   initialPersonSlug,
 }: Props = {}) => {
   await connection();
-  const city = await visitorContent.getCity("rome").catch(() => null);
-  if (!city)
+  const map = await visitorContent.map("rome");
+  if (map.status !== "found")
     return (
       <>
         <RomeHeader />
@@ -29,9 +27,8 @@ export const RomeMap = async ({
         </p>
       </>
     );
-  const { pois, categoryDefinitions, aliases } = mergeVisitorCity(city, publicCatalog);
-  const peopleCount = city.peopleCount ?? 0;
-  const initialSelectedPoi = findLinkedPoi(pois, aliases, {
+  const { pois, categoryDefinitions, aliases, publishedCounts } = map;
+  const initialSelectedPoi = map.findLinkedPoi({
     poi: initialPoiSlug,
     poiId: initialSelectedPoiId,
   });
@@ -40,7 +37,7 @@ export const RomeMap = async ({
     : [12.4823, 41.8933]; // Piazza del Campidoglio: default arrival in Rome's historic centre.
   // A shared place's Story is in the page's HTML; on failure the panel loads it as usual.
   const initialStory = initialSelectedPoi
-    ? await createVisitorHandler(visitorContent, publicCatalog)
+    ? await createVisitorHandler(onlineVisitorReads, publicCatalog)
         .loadStory("rome", initialSelectedPoi.id)
         .then((story) => story && { ...story, poiId: initialSelectedPoi.id })
         .catch(() => null)
@@ -48,7 +45,7 @@ export const RomeMap = async ({
 
   return (
     <>
-      <RomeHeader counts={{ places: city.pois.length, people: peopleCount }} />
+      <RomeHeader counts={publishedCounts} />
       {pois.length ? (
         <CityExplorer
           citySlug="rome"

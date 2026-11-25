@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { RefreshPoiCategories } from "@/app/components/RefreshPoiCategories";
 import { siteOpenGraph, toMetaDescription } from "@/app/site";
-import { publicCatalog } from "@/server/publicCatalog";
 import { visitorContent } from "@/server/visitorContent";
-import { mergeVisitorCity } from "@/server/visitorContent/mergeCity";
-import { findLinkedPoi, poiPath } from "./linkedPoi";
+import { poiPath } from "./linkedPoi";
 import { RomeMap } from "@/app/components/RomeMap";
 import { WorkInProgressNote } from "@/app/components/ui/WorkInProgress";
 
@@ -20,11 +18,8 @@ const cityDescription = "Discover the history, art, and culture of Rome's places
 
 export const generateMetadata = async ({ searchParams }: Props): Promise<Metadata> => {
   const query = await searchParams;
-  const city = await visitorContent.getCity("rome").catch(() => null);
-  const { pois, aliases } = city
-    ? mergeVisitorCity(city, publicCatalog)
-    : { pois: [], aliases: {} };
-  const poi = findLinkedPoi(pois, aliases, query);
+  const map = await visitorContent.map("rome");
+  const poi = map.status === "found" ? map.findLinkedPoi(query) : undefined;
   if (!poi)
     return {
       title: "Rome",

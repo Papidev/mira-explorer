@@ -1,4 +1,4 @@
-import { visitorContent } from "@/server/visitorContent";
+import { onlineVisitorReads } from "@/server/visitorContent";
 import { createVisitorHandler } from "@/server/visitorContent/handler";
 import { publicCatalog } from "@/server/publicCatalog";
 
@@ -8,5 +8,5 @@ type Context = {
 
 export const GET = async (_request: Request, { params }: Context) => {
   const { city, poiId } = await params;
-  return createVisitorHandler(visitorContent, publicCatalog).getStory(city, poiId);
+  return createVisitorHandler(onlineVisitorReads, publicCatalog).getStory(city, poiId);
 };
