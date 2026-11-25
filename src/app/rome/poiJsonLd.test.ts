@@ -18,7 +18,7 @@ describe("place structured data", () => {
       "@type": "TouristAttraction",
       name: "Ara Pacis",
       description: "An altar to Peace.",
-      url: "https://www.explorewithmira.app/rome?poi=ara-pacis",
+      url: "https://www.explorewithmira.app/rome/ara-pacis",
       geo: { "@type": "GeoCoordinates", latitude: 41.906, longitude: 12.475 },
       image: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg",
       sameAs: "https://www.wikidata.org/wiki/Q244953",

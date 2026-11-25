@@ -52,7 +52,15 @@ const server = setupServer(
 describe("map start-up", () => {
   it("shows the loading status until the map is first drawn", () => {
     holdMapLoad();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     expect(screen.getByRole("status")).toHaveTextContent("Loading the map…");
     finishMapLoad();
@@ -66,7 +74,15 @@ describe("map start-up", () => {
       ),
     );
     holdMapLoad();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     hoverMapMarker("A Church");
     expect(screen.getByRole("heading", { level: 3, name: "A Church" })).toBeInTheDocument();
@@ -87,7 +103,15 @@ describe("map start-up", () => {
         : matchMedia(query);
     try {
       window.innerWidth = 390;
-      render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+      render(
+        <CityExplorer
+          citySlug="rome"
+          cityName="Rome"
+          coordinates={[12, 41]}
+          initialZoom={15}
+          pois={pois}
+        />,
+      );
       clickMapMarker("A Church");
       expect(await screen.findByText("A real story response.")).toBeInTheDocument();
       expect(requestedUrls.some((url) => url.endsWith("/previews"))).toBe(false);
@@ -134,7 +158,15 @@ afterAll(() => {
 describe("visitor category filtering", () => {
   it("isolates a parent and its children on double-click, then restores all categories", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     expect(screen.getByText("Double-click a category to show only that one.")).toBeVisible();
     await user.dblClick(screen.getByRole("checkbox", { name: "Religion" }));
@@ -153,7 +185,15 @@ describe("visitor category filtering", () => {
 
   it("isolates a subcategory from mixed or empty selections and allows single-click additions", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
@@ -176,7 +216,15 @@ describe("visitor category filtering", () => {
 
   it("isolates categories by double-clicking their names, counts, or disclosure arrows", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     await user.dblClick(screen.getByText("Religion", { exact: true }));
     expect(screen.getByRole("checkbox", { name: "Religion" })).toBeChecked();
@@ -207,6 +255,7 @@ describe("visitor category filtering", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={[
@@ -243,7 +292,15 @@ describe("visitor category filtering", () => {
 
   it("opens subcategories from the category row while keeping checkbox selection separate", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     await user.click(screen.getByText("Religion", { exact: true }));
     expect(screen.getByRole("checkbox", { name: "Churches" })).toBeChecked();
@@ -271,7 +328,15 @@ describe("visitor category filtering", () => {
 
   it("toggles the category accordion from its title and summary without changing selection", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "Hide categories" })).toHaveAttribute(
       "aria-expanded",
@@ -308,7 +373,15 @@ describe("visitor category filtering", () => {
   it("opens and closes filters by swipe, then matches selected categories until fully cleared", async () => {
     window.innerWidth = 390;
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     const edge = screen.getByRole("button", { name: "Open filters" });
     expect(screen.queryByRole("button", { name: /^Categories/ })).not.toBeInTheDocument();
     fireEvent.touchStart(edge, { touches: [{ clientX: 5, clientY: 100 }] });
@@ -398,10 +471,11 @@ describe("visitor category filtering", () => {
 
   it("keeps matching details open, closes excluded details, and does not reopen them after clearing", async () => {
     const user = userEvent.setup();
-    window.history.replaceState(null, "", "/rome?poiId=museum&source=shared#map");
+    window.history.replaceState(null, "", "/rome/museum?source=shared#map");
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={pois}
@@ -436,14 +510,14 @@ describe("visitor category filtering", () => {
       }),
     );
     expect(screen.getByRole("heading", { name: "A Church" })).toBeInTheDocument();
-    expect(new URLSearchParams(window.location.search).get("poi")).toBe("church");
+    expect(window.location.pathname).toBe("/rome/church");
     expect(selectedMapMarkerName()).toBe("A Church");
     expect(await screen.findByText("A real story response.")).toBeInTheDocument();
     await user.click(screen.getByRole("checkbox", { name: "Churches" }));
     expect(getListedPois()).toHaveLength(0);
     expect(mapMarkerNames()).toEqual([]);
     expect(screen.queryByRole("heading", { name: "A Church" })).not.toBeInTheDocument();
-    expect(new URLSearchParams(window.location.search).has("poi")).toBe(false);
+    expect(window.location.pathname).toBe("/rome");
     window.history.back();
     expect(await screen.findByRole("heading", { name: "A Church" })).toBeInTheDocument();
     expect(getListedPois()).toHaveLength(4);
@@ -476,6 +550,7 @@ describe("visitor category filtering", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={pois}
@@ -483,32 +558,60 @@ describe("visitor category filtering", () => {
       />,
     );
     expect(screen.getByRole("heading", { name: "A Museum" })).toBeInTheDocument();
-    window.history.replaceState(null, "", "/rome?poiId=missing");
+    window.history.replaceState(null, "", "/rome/missing");
     fireEvent.popState(window);
     expect(screen.queryByRole("heading", { name: "A Museum" })).not.toBeInTheDocument();
   });
 
-  it("removes a link to an unknown place from the URL and keeps the rest", async () => {
-    window.history.replaceState(null, "", "/rome?poi=does-not-exist&source=shared#map");
-    const historyLength = window.history.length;
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+  it("names the tab after the open place, and after the city when none is open", async () => {
+    window.history.replaceState(null, "", "/rome/museum");
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
+    await waitFor(() => expect(document.title).toBe("A Museum · Mira"));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Close" }));
+    expect(document.title).toBe("Rome · Mira");
+    window.history.back();
+    await waitFor(() => expect(document.title).toBe("A Museum · Mira"));
+  });
 
-    await waitFor(() => expect(window.location.search).toBe("?source=shared"));
+  it("removes a link to an unknown place from the URL and keeps the rest", async () => {
+    window.history.replaceState(null, "", "/rome/does-not-exist?source=shared#map");
+    const historyLength = window.history.length;
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
+
+    await waitFor(() => expect(window.location.pathname).toBe("/rome"));
+    expect(window.location.search).toBe("?source=shared");
     expect(window.location.hash).toBe("#map");
     expect(window.history.length).toBe(historyLength);
     expect(screen.queryByRole("heading", { level: 2, name: /A / })).not.toBeInTheDocument();
 
-    window.history.pushState(null, "", "/rome?poiId=gone");
+    window.history.pushState(null, "", "/rome/gone");
     fireEvent.popState(window);
-    await waitFor(() => expect(window.location.search).toBe(""));
+    await waitFor(() => expect(window.location.pathname).toBe("/rome"));
   });
 
   it("selects and clears every child with its parent, with disjoint child counts", async () => {
     const user = userEvent.setup();
-    window.history.replaceState(null, "", "/rome?poiId=basilica");
+    window.history.replaceState(null, "", "/rome/basilica");
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={[
@@ -600,7 +703,15 @@ describe("visitor category filtering", () => {
 
   it("hides empty categories and subcategories, and collapsing preserves selection", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     expect(screen.queryByRole("checkbox", { name: "Aqueduct" })).not.toBeInTheDocument();
     expect(screen.queryByRole("checkbox", { name: "Churches" })).not.toBeInTheDocument();
@@ -633,6 +744,7 @@ it("shows newly created categories and preserves filter membership when a catego
   const view = render(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12, 41]}
       initialZoom={15}
       pois={catalog}
@@ -651,6 +763,7 @@ it("shows newly created categories and preserves filter membership when a catego
   view.rerender(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12, 41]}
       initialZoom={15}
       pois={catalog}
@@ -698,6 +811,7 @@ describe("category filter tree", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={treePois}
@@ -728,6 +842,7 @@ describe("category filter tree", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={treePois}
@@ -762,6 +877,7 @@ describe("category filter tree", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={treePois}
@@ -809,6 +925,7 @@ describe("category filter tree", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={treePois}
@@ -866,6 +983,7 @@ describe("category filter tree", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={treePois}
@@ -911,6 +1029,7 @@ it("centers the selected marker in the visible map from both the map and the lis
   render(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12.44, 41.9]}
       initialZoom={15}
       pois={[
@@ -946,6 +1065,7 @@ it("keeps at least 40% of the screen for the map when a place opens", async () =
   render(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12.44, 41.9]}
       initialZoom={15}
       pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
@@ -968,6 +1088,7 @@ it("keeps the filters beside an open place while the map still has 40% of the wi
   render(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12.44, 41.9]}
       initialZoom={15}
       pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
@@ -989,6 +1110,7 @@ it("caps the place panel at 45% of the width on a landscape phone", () => {
   render(
     <CityExplorer
       citySlug="rome"
+      cityName="Rome"
       coordinates={[12.44, 41.9]}
       initialZoom={15}
       pois={[{ ...pois[0], coordinates: { lng: 12.45, lat: 41.9 } }]}
@@ -1005,6 +1127,7 @@ describe("visitor place search", () => {
     render(
       <CityExplorer
         citySlug="rome"
+        cityName="Rome"
         coordinates={[12, 41]}
         initialZoom={15}
         pois={[
@@ -1030,7 +1153,7 @@ describe("visitor place search", () => {
     expect(await screen.findByRole("heading", { name: "Café Museum" })).toBeVisible();
     expect(selectedMapMarkerName()).toBe("Café Museum");
     expect(selectedMapMarkerTip()).toEqual({ x: -48, y: 0 });
-    expect(new URLSearchParams(window.location.search).get("poi")).toBe("cafe");
+    expect(window.location.pathname).toBe("/rome/cafe");
     expect(search).toHaveValue("");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
 
@@ -1045,7 +1168,15 @@ describe("visitor place search", () => {
 
   it("shows no matches without searching outside the supplied public catalog and dismisses with Escape", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     const search = screen.getByRole("combobox", { name: "Search" });
     await user.type(search, "unpublished place");
     expect(await screen.findByText("No places match your search.")).toBeVisible();
@@ -1056,12 +1187,20 @@ describe("visitor place search", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(search).toHaveValue("");
-    expect(new URLSearchParams(window.location.search).has("poi")).toBe(false);
+    expect(window.location.pathname).toBe("/rome");
   });
 
   it("opens an excluded search result without changing the filtered list, then removes its marker on close", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     await user.click(screen.getByRole("checkbox", { name: "All categories" }));
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     await user.click(screen.getByRole("checkbox", { name: "Museums" }));
@@ -1083,7 +1222,15 @@ describe("visitor place search", () => {
 
   it("replaces the previous search exception and keeps ordinary marker selections subject to filters", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     await user.click(screen.getByRole("checkbox", { name: "All categories" }));
     await user.click(screen.getByRole("button", { name: "Show subcategories for Arts & Culture" }));
     const search = screen.getByRole("combobox", { name: "Search" });
@@ -1109,7 +1256,15 @@ describe("visitor place search", () => {
   it("closes tablet discovery after selecting a suggestion and focuses the place", async () => {
     window.innerWidth = 800;
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     await user.click(screen.getByRole("button", { name: "Open filters" }));
     await user.type(screen.getByRole("combobox", { name: "Search" }), "museum");
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
@@ -1152,22 +1307,28 @@ describe("visitor place search", () => {
         });
       }),
     );
-    window.history.replaceState(null, "", "/rome?poi=colosseum&source=share#map");
+    window.history.replaceState(null, "", "/rome/colosseum?source=share#map");
     render(
-      <CityExplorer citySlug="rome" coordinates={[12.5, 41.9]} initialZoom={15} pois={[place]} />,
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12.5, 41.9]}
+        initialZoom={15}
+        pois={[place]}
+      />,
     );
     expect(await screen.findByText("A shared Story.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Vespasian" }));
     expect(await screen.findByText("A shared biography.")).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get("person")).toBe("vespasian");
-    expect(new URLSearchParams(window.location.search).get("poi")).toBe("colosseum");
+    expect(window.location.pathname).toBe("/rome/colosseum");
     window.history.back();
     expect(await screen.findByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
     window.history.forward();
     expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Back to Renamed Colosseum" }));
     expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
-    expect(window.location.search).toBe("?poi=colosseum&source=share");
+    expect(window.location.pathname + window.location.search).toBe("/rome/colosseum?source=share");
     expect(window.location.hash).toBe("#map");
     await user.click(screen.getByRole("button", { name: "Vespasian" }));
     expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
@@ -1175,7 +1336,7 @@ describe("visitor place search", () => {
     expect(screen.getByRole("heading", { name: "Renamed Colosseum" })).toBeInTheDocument();
   });
 
-  it.each(["?person=vespasian", "?poi=museum&person=vespasian"])(
+  it.each(["?person=vespasian", "/museum?person=vespasian"])(
     "opens a shared Person URL %s",
     async (query) => {
       server.use(
@@ -1192,47 +1353,61 @@ describe("visitor place search", () => {
       );
       window.history.replaceState(null, "", `/rome${query}`);
       render(
-        <CityExplorer citySlug="rome" coordinates={[12.5, 41.9]} initialZoom={15} pois={pois} />,
+        <CityExplorer
+          citySlug="rome"
+          cityName="Rome"
+          coordinates={[12.5, 41.9]}
+          initialZoom={15}
+          pois={pois}
+        />,
       );
       expect(await screen.findByRole("heading", { name: "Vespasian" })).toBeInTheDocument();
       expect(screen.getByText("Shared profile.")).toBeInTheDocument();
-      if (query.includes("poi="))
+      if (query.startsWith("/museum"))
         expect(screen.getByRole("button", { name: "Back to A Museum" })).toBeInTheDocument();
       else expect(screen.queryByRole("button", { name: /^Back to/ })).not.toBeInTheDocument();
       await userEvent.setup().click(screen.getByRole("button", { name: "Close" }));
-      expect(window.location.search).toBe(query.includes("poi=") ? "?poi=museum" : "");
-      if (query.includes("poi="))
+      expect(window.location.pathname + window.location.search).toBe(
+        query.startsWith("/museum") ? "/rome/museum" : "/rome",
+      );
+      if (query.startsWith("/museum"))
         expect(screen.getByRole("heading", { name: "A Museum" })).toBeInTheDocument();
     },
   );
 
-  it.each(["poiId", "poi"])(
-    "replaces a legacy %s link with its canonical slug and preserves other URL parts",
-    async (parameter) => {
-      window.history.replaceState(null, "", `/rome?${parameter}=old-local-id&source=share#map`);
-      render(
-        <CityExplorer
-          citySlug="rome"
-          coordinates={[12.5, 41.9]}
-          initialZoom={15}
-          pois={[{ ...pois[1], id: "online-id", slug: "colosseum" }]}
-          aliases={{ "old-local-id": "online-id" }}
-        />,
-      );
-      expect(await screen.findByRole("heading", { name: "A Museum" })).toBeInTheDocument();
-      expect(new URLSearchParams(window.location.search).get("poi")).toBe("colosseum");
-      expect(new URLSearchParams(window.location.search).get("source")).toBe("share");
-      expect(new URLSearchParams(window.location.search).has("poiId")).toBe(false);
-      expect(window.location.hash).toBe("#map");
-    },
-  );
+  it("replaces a renamed place link with its canonical slug and preserves other URL parts", async () => {
+    window.history.replaceState(null, "", "/rome/old-local-id?source=share#map");
+    const historyLength = window.history.length;
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12.5, 41.9]}
+        initialZoom={15}
+        pois={[{ ...pois[1], id: "online-id", slug: "colosseum" }]}
+        aliases={{ "old-local-id": "online-id" }}
+      />,
+    );
+    expect(await screen.findByRole("heading", { name: "A Museum" })).toBeInTheDocument();
+    expect(window.location.pathname + window.location.search).toBe("/rome/colosseum?source=share");
+    expect(window.location.hash).toBe("#map");
+    expect(window.history.length).toBe(historyLength);
+  });
 });
 
 describe("phone place search", () => {
   it("searches from a bar over the map instead of the filters panel", async () => {
     window.innerWidth = 390;
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
 
     const search = screen.getByRole("combobox", { name: "Search" });
     expect(screen.getAllByRole("combobox")).toHaveLength(1);
@@ -1243,13 +1418,21 @@ describe("phone place search", () => {
     await user.type(search, "museum");
     await user.click(await screen.findByRole("option", { name: "A Museum" }));
     expect(await screen.findByRole("heading", { name: "A Museum" })).toBeVisible();
-    expect(new URLSearchParams(window.location.search).get("poi")).toBe("museum");
+    expect(window.location.pathname).toBe("/rome/museum");
   });
 
   it("lists places only while the filters panel is open or closing", async () => {
     window.innerWidth = 390;
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     const poiRow = () => screen.queryByRole("button", { name: "A Museum", hidden: true });
 
     expect(poiRow()).not.toBeInTheDocument();
@@ -1264,7 +1447,15 @@ describe("phone place search", () => {
 describe("transport on the map", () => {
   it("lets visitors hide a group of stops, and keeps it hidden after a theme switch", async () => {
     const user = userEvent.setup();
-    render(<CityExplorer citySlug="rome" coordinates={[12, 41]} initialZoom={15} pois={pois} />);
+    render(
+      <CityExplorer
+        citySlug="rome"
+        cityName="Rome"
+        coordinates={[12, 41]}
+        initialZoom={15}
+        pois={pois}
+      />,
+    );
     expect(mapDrawsLayer("poi_surface")).toBe(true);
 
     await user.click(screen.getByRole("button", { name: "Transport on the map" }));

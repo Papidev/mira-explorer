@@ -6,7 +6,7 @@ import type { Poi } from "@/types/Poi";
 import { compareBirthDates } from "@/utils/compareBirthDates";
 import { toVisitorCity, toVisitorPerson, toVisitorStory } from "./adapters";
 
-/** `?poi=<slug>` is the shared link; `?poiId=` and local IDs replaced online still resolve. */
+/** A link names a place by slug (`/rome/<slug>`); `poiId` and local IDs replaced online still resolve. */
 export type PoiLink = { poi?: string; poiId?: string };
 
 type OnlineReads = {

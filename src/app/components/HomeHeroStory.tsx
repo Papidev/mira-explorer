@@ -7,9 +7,10 @@ import { RomeCta } from "@/app/components/ui/RomeCta";
 
 type Props = {
   cover: (typeof catalog.pois)[number];
+  href: string;
 };
 
-export const HomeHeroStory = ({ cover }: Props) => (
+export const HomeHeroStory = ({ cover, href }: Props) => (
   <figure className="relative lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-28">
     <div className="relative lg:pb-14">
       <svg
@@ -53,7 +54,7 @@ export const HomeHeroStory = ({ cover }: Props) => (
       </div>
 
       <Link
-        href={`/rome?poi=${encodeURIComponent(cover.poi.id)}`}
+        href={href}
         className="group border-line bg-surface hover:bg-canvas focus-visible:outline-focus mt-4 block rounded-2xl border p-5 shadow-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 sm:ml-auto sm:w-80 lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
       >
         <span className="text-accent text-xs/5 font-semibold tracking-[0.2em] uppercase">

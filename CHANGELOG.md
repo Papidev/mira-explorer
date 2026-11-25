@@ -1,5 +1,11 @@
 # mira-explorer
 
+## 0.29.6
+
+### Patch Changes
+
+- Give each place on the Rome map its own address, `/rome/<slug>`. Older `?poi=` and `?poiId=` links, place IDs and renamed slugs redirect permanently to it, unknown places redirect to the map, and the browser tab shows the open place's name.
+
 ## 0.29.5
 
 ### Patch Changes

@@ -65,18 +65,17 @@ describe("Rome map arrival", () => {
     });
   });
 
-  it.each([
-    { initialPoiSlug: "peripheral-place" },
-    { initialSelectedPoiId: "peripheral-place" },
-    { initialPoiSlug: "missing-place" },
-  ])("resolves an explicit POI link or falls back to the city centre: %o", async (query) => {
-    const map = await RomeMap(query);
-    expect(map.props.children[1].props).toMatchObject(
-      query.initialPoiSlug === "missing-place"
-        ? { coordinates: [12.4823, 41.8933], initialSelectedPoiId: null }
-        : { coordinates: [12.6, 41.8], initialSelectedPoiId: "peripheral-place" },
-    );
-  });
+  it.each([{ initialPoiSlug: "peripheral-place" }, { initialPoiSlug: "missing-place" }])(
+    "resolves an explicit POI link or falls back to the city centre: %o",
+    async (query) => {
+      const map = await RomeMap(query);
+      expect(map.props.children[1].props).toMatchObject(
+        query.initialPoiSlug === "missing-place"
+          ? { coordinates: [12.4823, 41.8933], initialSelectedPoiId: null }
+          : { coordinates: [12.6, 41.8], initialSelectedPoiId: "peripheral-place" },
+      );
+    },
+  );
 
   it("shows the online totals even when the map includes a local place", async () => {
     const map = await RomeMap();
