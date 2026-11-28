@@ -56,21 +56,34 @@ vi.mock("@/server/publicCatalog", () => ({
   },
 }));
 
+import { getURLFromRedirectError } from "next/dist/client/components/redirect";
 import sitemap from "@/app/sitemap";
-import { generateMetadata } from "./page";
+import RomePage, { generateMetadata } from "./page";
 
-const metadataFor = (query: Record<string, string>) =>
-  generateMetadata({ searchParams: Promise.resolve(query) });
+const propsFor = (path: string) => {
+  const url = new URL(path, "https://www.explorewithmira.app");
+  const slug = url.pathname.split("/").slice(2).filter(Boolean).map(decodeURIComponent);
+  return {
+    params: Promise.resolve(slug.length ? { slug } : {}),
+    searchParams: Promise.resolve(Object.fromEntries(url.searchParams)),
+  };
+};
+
+const redirectOf = (path: string) =>
+  RomePage(propsFor(path)).then(
+    () => null,
+    (error) => getURLFromRedirectError(error),
+  );
 
 describe("Rome link previews", () => {
   it("describes a shared place with its name, Story excerpt, image and canonical link", async () => {
-    const metadata = await metadataFor({ poi: "ara-pacis" });
+    const metadata = await generateMetadata(propsFor("/rome/ara-pacis"));
     expect(metadata).toMatchObject({
       title: "Ara Pacis",
-      alternates: { canonical: "/rome?poi=ara-pacis" },
+      alternates: { canonical: "/rome/ara-pacis" },
       openGraph: {
         title: "Ara Pacis",
-        url: "/rome?poi=ara-pacis",
+        url: "/rome/ara-pacis",
         images: [
           { url: "https://upload.wikimedia.org/wikipedia/commons/ara.jpg", alt: "Ara Pacis" },
         ],
@@ -80,15 +93,32 @@ describe("Rome link previews", () => {
     expect(metadata.description!.length).toBeLessThanOrEqual(160);
   });
 
-  it("points legacy ID links to the slug link", async () => {
-    const metadata = await metadataFor({ poiId: "0b6f3c1e-8c1a-4a55-9a51-1c2f8f7c9d10" });
-    expect(metadata.alternates?.canonical).toBe("/rome?poi=ara-pacis");
-  });
-
   it("falls back to the city preview for unknown places", async () => {
-    const metadata = await metadataFor({ poi: "missing-place" });
+    const metadata = await generateMetadata(propsFor("/rome/missing-place"));
     expect(metadata).toMatchObject({ title: "Rome", alternates: { canonical: "/rome" } });
   });
+});
+
+describe("Rome place links", () => {
+  it.each([
+    [
+      "/rome?poi=ara-pacis&person=augustus&utm_source=x",
+      "/rome/ara-pacis?person=augustus&utm_source=x",
+    ],
+    ["/rome?poiId=0b6f3c1e-8c1a-4a55-9a51-1c2f8f7c9d10", "/rome/ara-pacis"],
+    ["/rome/0b6f3c1e-8c1a-4a55-9a51-1c2f8f7c9d10", "/rome/ara-pacis"],
+    ["/rome/missing-place?person=augustus", "/rome?person=augustus"],
+    ["/rome?poi=missing-place", "/rome"],
+  ])("moves %s to %s", async (from, to) => {
+    expect(await redirectOf(from)).toBe(to);
+  });
+
+  it.each(["/rome", "/rome/ara-pacis", "/rome/local-place?person=augustus"])(
+    "opens %s as it is",
+    async (path) => {
+      expect(await redirectOf(path)).toBeNull();
+    },
+  );
 });
 
 describe("sitemap", () => {
@@ -96,8 +126,8 @@ describe("sitemap", () => {
     expect((await sitemap()).map(({ url }) => url)).toEqual([
       "https://www.explorewithmira.app",
       "https://www.explorewithmira.app/rome",
-      "https://www.explorewithmira.app/rome?poi=ara-pacis",
-      "https://www.explorewithmira.app/rome?poi=local-place",
+      "https://www.explorewithmira.app/rome/ara-pacis",
+      "https://www.explorewithmira.app/rome/local-place",
     ]);
   });
 });

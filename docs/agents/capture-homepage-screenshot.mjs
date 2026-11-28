@@ -74,7 +74,7 @@ try {
   await send("Emulation.setEmulatedMedia", {
     features: [{ name: "prefers-color-scheme", value: "light" }],
   });
-  await send("Page.navigate", { url: new URL("/rome?poi=castel-sant-angelo", base).href });
+  await send("Page.navigate", { url: new URL("/rome/castel-sant-angelo", base).href });
   await waitFor("the map", `document.querySelector(".maplibregl-canvas")`);
 
   // The map adapter is not global; reach it through the React fiber of the map container.

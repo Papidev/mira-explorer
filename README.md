@@ -41,11 +41,11 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000). Installation activates Husky: staged files are formatted with Prettier and staged JS/TS checked/fixed with ESLint. Select checks according to [Testing & Verification](AGENTS.md#testing--verification).
 
-| Route              | Purpose                   |
-| ------------------ | ------------------------- |
-| `/`                | Project home.             |
-| `/rome`            | Visitor map.              |
-| `/rome?poiId=<id>` | Map with POI detail open. |
+| Route          | Purpose                   |
+| -------------- | ------------------------- |
+| `/`            | Project home.             |
+| `/rome`        | Visitor map.              |
+| `/rome/<slug>` | Map with POI detail open. |
 
 | Script               | Purpose                                           |
 | -------------------- | ------------------------------------------------- |
@@ -140,7 +140,7 @@ Configure `CONTENT_DATABASE_URL` and `CONTENT_DATABASE_CA` in the Next.js enviro
 
 The map loads online preview fields (name, coordinates, categories, introduction and selected image) and merges them with eligible local POIs and category definitions. An online empty gallery stays empty and shows an image placeholder; local images are never used to fill it. Opening a Story uses `/api/pois/<city>/<poiId>/dialog-content`. A local slug that matches an online publication resolves to that online UUID, including links from the homepage. Otherwise it opens the local Story. A missing or failed online detail never falls back to that POI's local Story.
 
-Visitor links use `/rome?poi=colosseum`, `/rome?person=vespasian`, or `/rome?poi=colosseum&person=vespasian`. Opening a Person from a POI keeps that POI in the URL; Back to the place or closing the Person removes only `person`. Browser Back/Forward restores both selections. Existing `poiId` links and local-catalog aliases remain supported and are replaced with the canonical URL without adding a history entry. Other query parameters and the hash are preserved.
+Visitor links use `/rome/colosseum`, `/rome?person=vespasian`, or `/rome/colosseum?person=vespasian`. Opening a Person from a POI keeps that POI in the URL; Back to the place or closing the Person removes only `person`. Browser Back/Forward restores both selections. Legacy `?poi=` and `?poiId=` links, POI IDs in the path, and local-catalog aliases permanently redirect to the canonical path; unknown places redirect to `/rome`. While online content is unavailable, links are left as they are. Other query parameters and the hash are preserved.
 
 Online POI slugs are unique per city; Person slugs are global. Slugs are assigned once from the English Wikipedia title (Italian/title-name fallback) for POIs and the saved profile name for People. Accents and punctuation are normalized; homonyms receive numeric suffixes. Renames, regeneration and catalog removal do not release or change assigned slugs. Local-only catalog IDs already provide stable readable slugs.
 
@@ -202,7 +202,7 @@ align with the title text baseline.
 
 Typography variants and the choice of A are preserved locally on
 `feat/story-typography-prototype-reference` (`7bf851d`). Its development-only
-comparison opens at `/rome?poiId=castle-of-the-holy-angel&variant=A` (or `B`).
+comparison opens at `/rome/castle-of-the-holy-angel?variant=A` (or `B`).
 
 Existing Stories without `textFormat` retain plain-text rendering and their
 optional `emphasis` arrays; no saved content is migrated automatically. When
@@ -227,7 +227,7 @@ Filters and Stories open in panels over the map, with full-width panels on mobil
 
 **Search** in the discovery panel searches all published POIs in the current city by name, ignoring case and accents. Suggestions show the name, available address, and city. Select a suggestion with the pointer or keyboard to center the map, highlight its marker, and open its Story. Search includes places excluded by active categories: selecting one temporarily shows only that result alongside the filtered markers, with a notice in its Story. Category selections and the filtered place count stay unchanged. Closing the Story or selecting another place removes the previous exception. An empty search has no suggestions; unmatched names show a no-results message. Search uses the merged online and local POIs already loaded by the page and never queries external places.
 
-The selected POI is stored in `?poiId=<id>`. Opening a different POI adds a browser-history entry; closing its Story, clicking the map, or excluding it through filters removes `poiId` in a new entry. Other query parameters and the URL fragment are preserved. Refresh and shared links reopen the selected Story; Back/Forward restore selection without reloading the map. If history restores a POI excluded by the current filters, all categories are selected so the restored place is visible. Unknown POI IDs leave the Story panel closed. Reopening the same POI does not add a duplicate history entry.
+The selected POI is stored in the path (`/rome/<slug>`). Opening a different POI adds a browser-history entry; closing its Story, clicking the map, or excluding it through filters returns to `/rome` in a new entry. Other query parameters and the URL fragment are preserved. Refresh and shared links reopen the selected Story; Back/Forward restore selection without reloading the map. If history restores a POI excluded by the current filters, all categories are selected so the restored place is visible. Unknown POIs leave the Story panel closed. Reopening the same POI does not add a duplicate history entry.
 
 Story loading feedback appears only after 200 ms, avoiding a brief loading-message flash for fast responses. Missing-content feedback appears only once the request finishes.
 

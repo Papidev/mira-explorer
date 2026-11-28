@@ -10,7 +10,7 @@ import { Sidebar } from "./Sidebar";
 import { Search } from "./Search";
 import { useFilterSwipe } from "./useFilterSwipe";
 import { useSelectedPoi } from "./useSelectedPoi";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PanelResizeHandle } from "@/app/components/ui/PanelResizeHandle";
 import { DrawerTab } from "@/app/components/ui/DrawerTab";
 import { Drawer } from "@/app/components/ui/Drawer";
@@ -30,6 +30,7 @@ const MAP_MIN_SHARE = 0.4;
 
 type Props = {
   citySlug: string;
+  cityName: string;
   coordinates: [number, number];
   initialZoom: number;
   initialSelectedPoiId?: string | null;
@@ -42,6 +43,7 @@ type Props = {
 
 export const CityExplorer = ({
   citySlug,
+  cityName,
   coordinates,
   initialZoom,
   initialSelectedPoiId = null,
@@ -83,6 +85,7 @@ export const CityExplorer = ({
   const closeFiltersSwipe = useFilterSwipe("left", () => setSidebarOpen(false));
   const [zoom, setZoom] = useState(initialZoom);
   const { selectedPoiId, selectPoi, selectedPersonSlug, selectPerson } = useSelectedPoi(
+    citySlug,
     initialSelectedPoiId,
     pois,
     initialPersonSlug,
@@ -96,6 +99,12 @@ export const CityExplorer = ({
     ? (searchPoiId === selectedPoiId ? pois : visiblePois).find((poi) => poi.id === selectedPoiId)
     : undefined;
   const searchExcluded = Boolean(selectedPoi && !visiblePois.includes(selectedPoi));
+  // Selection changes the URL without a navigation, so the tab title follows it here.
+  // Matches the page metadata and the root layout's "%s · Mira" template.
+  const title = `${selectedPoi?.name ?? cityName} · Mira`;
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
   if (selectedPoiId !== previousSelectedPoiId) {
     setPreviousSelectedPoiId(selectedPoiId);
     setOpenRequestId((current) => current + 1);

@@ -1,3 +1,4 @@
+import { poiPath } from "@/app/rome/linkedPoi";
 import { AppVersion } from "@/app/components/ui/AppVersion";
 import {
   ArrowLongRightIcon,
@@ -31,6 +32,14 @@ export const metadata: Metadata = {
     url: "/",
   },
 };
+
+// The homepage reads the local catalog. Online slugs of its picks keep their links canonical
+// instead of redirecting from the local ID; a missing entry still redirects.
+const onlineSlugs: Record<string, string> = {
+  "castle-of-the-holy-angel": "castel-sant-angelo",
+  "cloisters-of-bramante": "chiostro-del-bramante",
+};
+const homePoiPath = ({ id }: { id: string }) => poiPath({ id, slug: onlineSlugs[id] });
 
 const Home = () => {
   const cover =
@@ -108,7 +117,7 @@ const Home = () => {
               </h1>
             </div>
 
-            {cover && <HomeHeroStory cover={cover} />}
+            {cover && <HomeHeroStory cover={cover} href={homePoiPath(cover.poi)} />}
 
             <div className="lg:col-start-1">
               <div className="text-ink-muted space-y-4 text-base/7 sm:text-lg/8">
@@ -278,7 +287,7 @@ const Home = () => {
                   {discoveries.map(({ poi, mainImage }) => (
                     <article key={poi.id}>
                       <Link
-                        href={`/rome?poi=${encodeURIComponent(poi.id)}`}
+                        href={homePoiPath(poi)}
                         className="group focus-visible:outline-focus block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4"
                       >
                         <div className="bg-surface-muted relative aspect-4/3 overflow-hidden rounded-xl">

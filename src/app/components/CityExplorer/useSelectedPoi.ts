@@ -17,61 +17,68 @@ const updateUrl = (url: URL, replace = false) => {
   window.dispatchEvent(new Event("poi-selection-change"));
 };
 
+const slugOf = (poi: Poi) => poi.slug ?? poi.id;
+
+const decode = (segment: string) => {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+};
+
+/** The selected place lives in the path (`/<city>/<slug>`), the selected Person in `?person=`. */
 export const useSelectedPoi = (
+  citySlug: string,
   initialSelectedPoiId: string | null,
   pois: Poi[],
   initialPersonSlug: string | null = null,
   aliases: Record<string, string> = {},
 ) => {
-  const search = useSyncExternalStore(
+  const cityPath = `/${citySlug}`;
+  const placePath = (poi: Poi) => `${cityPath}/${encodeURIComponent(slugOf(poi))}`;
+  const location = useSyncExternalStore(
     subscribe,
-    () => window.location.search,
-    () =>
-      new URLSearchParams({
-        ...(initialSelectedPoiId ? { poiId: initialSelectedPoiId } : {}),
-        ...(initialPersonSlug ? { person: initialPersonSlug } : {}),
-      }).toString(),
+    () => window.location.pathname + window.location.search,
+    () => {
+      const poi = pois.find(({ id }) => id === initialSelectedPoiId);
+      const search = initialPersonSlug
+        ? `?${new URLSearchParams({ person: initialPersonSlug })}`
+        : "";
+      return (poi ? placePath(poi) : cityPath) + search;
+    },
   );
-  const query = new URLSearchParams(search);
-  const legacyId = query.get("poiId");
-  const matches = pois.filter((poi) => (poi.slug ?? poi.id) === query.get("poi"));
-  const selectedPoiId = query.has("poi")
-    ? matches.length === 1
-      ? matches[0].id
-      : matches.length === 0 && aliases[query.get("poi") ?? ""]
-        ? aliases[query.get("poi") ?? ""]
-        : null
-    : legacyId
-      ? (aliases[legacyId] ?? legacyId)
-      : null;
+  const url = new URL(location, "http://localhost");
+  const slug = url.pathname.startsWith(`${cityPath}/`)
+    ? decode(url.pathname.slice(cityPath.length + 1)) || null
+    : null;
+  const matches = slug === null ? [] : pois.filter((poi) => slugOf(poi) === slug);
+  const selectedPoiId =
+    slug === null
+      ? null
+      : matches.length === 1
+        ? matches[0].id
+        : matches.length === 0
+          ? (aliases[slug] ?? null)
+          : null;
 
   useEffect(() => {
     const poi = pois.find(({ id }) => id === selectedPoiId);
+    // Renamed places get their canonical path; a place that isn't on the map just opens the map.
     const url = new URL(window.location.href);
-    if (!poi) {
-      // A link to a place that isn't on the map just opens the map, with a clean URL.
-      url.searchParams.delete("poi");
-      url.searchParams.delete("poiId");
-      updateUrl(url, true);
-      return;
-    }
-    if (url.searchParams.get("poi") === (poi.slug ?? poi.id) && !url.searchParams.has("poiId"))
-      return;
-    url.searchParams.delete("poiId");
-    url.searchParams.set("poi", poi.slug ?? poi.id);
+    url.pathname = poi ? placePath(poi) : cityPath;
     updateUrl(url, true);
-  }, [selectedPoiId, pois]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- placePath only depends on cityPath
+  }, [selectedPoiId, pois, cityPath]);
 
   return {
     selectedPoiId,
-    selectedPersonSlug: query.get("person"),
+    selectedPersonSlug: url.searchParams.get("person"),
     selectPoi: (poiId: string | null) => {
       const url = new URL(window.location.href);
-      url.searchParams.delete("poiId");
       url.searchParams.delete("person");
       const poi = pois.find(({ id }) => id === poiId);
-      if (poi) url.searchParams.set("poi", poi.slug ?? poi.id);
-      else url.searchParams.delete("poi");
+      url.pathname = poi ? placePath(poi) : cityPath;
       updateUrl(url);
     },
     selectPerson: (slug: string | null) => {

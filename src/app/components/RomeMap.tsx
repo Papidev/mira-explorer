@@ -4,16 +4,11 @@ import { CityExplorer } from "@/app/components/CityExplorer";
 import { RomeHeader } from "@/app/rome/RomeHeader";
 
 type Props = {
-  initialSelectedPoiId?: string;
   initialPoiSlug?: string;
   initialPersonSlug?: string;
 };
 
-export const RomeMap = async ({
-  initialSelectedPoiId,
-  initialPoiSlug,
-  initialPersonSlug,
-}: Props = {}) => {
+export const RomeMap = async ({ initialPoiSlug, initialPersonSlug }: Props = {}) => {
   await connection();
   const map = await visitorContent.map("rome");
   if (map.status !== "found")
@@ -26,10 +21,7 @@ export const RomeMap = async ({
       </>
     );
   const { pois, categoryDefinitions, aliases, publishedCounts } = map;
-  const initialSelectedPoi = map.findLinkedPoi({
-    poi: initialPoiSlug,
-    poiId: initialSelectedPoiId,
-  });
+  const initialSelectedPoi = map.findLinkedPoi({ poi: initialPoiSlug });
   const coordinates: [number, number] = initialSelectedPoi
     ? [initialSelectedPoi.coordinates.lng, initialSelectedPoi.coordinates.lat]
     : [12.4823, 41.8933]; // Piazza del Campidoglio: default arrival in Rome's historic centre.
@@ -48,6 +40,7 @@ export const RomeMap = async ({
       {pois.length ? (
         <CityExplorer
           citySlug="rome"
+          cityName="Rome"
           categoryDefinitions={categoryDefinitions}
           coordinates={coordinates}
           initialZoom={15}
